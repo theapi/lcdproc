@@ -20,52 +20,75 @@ class Server
     if (!$this->socket) {
       throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
     }
-
     $this->streams[] = $this->socket;
-    $write = null;
-    $except = null;
 
-    while (1) {
-      $changed = stream_select($this->streams, $write, $except, 200000);
-      if ($changed === FALSE) {
+    do {
+      $read = $this->streams;
+      $write = $error = NULL;
+      $numChanged = stream_select($read, $write, $except, NULL);
+      if ($numChanged === FALSE) {
         // Mmm a problem
         break;
       }
 
-      for ($i = 0; $i < $changed; $i++) {
-        if ($this->streams[$i] === $this->socket) {
-          // the server has something
+      foreach ($read as $stream) {  //var_dump(stream_socket_get_name($stream, 1));
+        if ($stream === $this->socket) {
+          // New client connection
           $conn = stream_socket_accept($this->socket);
-          // TODO: lcdproc instead of time :)
-          fwrite($conn, "Hello! The time is ".date("n/j/Y g:i a")."\n");
+
           // add the client to the array to be watched
           $this->streams[] = $conn;
+          // NB ignore the client until they say 'hello'
         }
         else {
-
-          $sock_data = fread($this->streams[$i], 1024);
-          if (strlen($sock_data) === 0) { // connection closed
-            $this->removeStream($i);
-          }
-          else if ($sock_data === FALSE) {
-            // something bad happened
-            $this->removeStream($i);
-          }
-          else {
-            fwrite($this->streams[$i], "You have sent :[".$sock_data."]\n");
-          }
-
+          $this->handleRead($stream);
         }
       }
-    }
+    } while (1);
 
     fclose($this->socket);
   }
 
-  public function removeStream($index)
+  public function removeStream($stream)
   {
-    fclose($this->streams[$index]);
-    unset($this->streams[$index]);
+    $key = array_search($stream, $this->streams);
+    fclose($this->streams[$key]);
+    unset($this->streams[$key]);
+  }
+
+  public function handleRead($stream) {
+    $data = fread($stream, 1024);
+
+    if ($data === FALSE || strlen($data) === 0) { // connection closed
+      $this->removeStream($stream);
+      return;
+    }
+
+    switch (trim($data)) {
+      case 'hello':
+        $this->handleHello($stream);
+        break;
+
+      default:
+        $this->sendHuh($stream);
+    }
+
+  }
+
+  /**
+   * Client init.
+   * You must send this before the server will pay
+	 * any attention to you.  You'll get some info about the server
+	 * in return...  (a "connect" string)
+   */
+  public function handleHello($stream) {
+    // A little white lie about who we are
+    // but the dimensions are correct for the pi plate
+    fwrite($stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
+  }
+
+  public function sendHuh($stream) {
+    fwrite($stream, "huh?\n");
   }
 
 }
