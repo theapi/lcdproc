@@ -13,7 +13,11 @@ class Client
   protected $menu;
   protected $screenlist = array();
 
-  public function create($stream) {
+  public function __construct($stream) {
+    $this->create($stream);
+  }
+
+  protected function create($stream) {
     $this->stream = $stream;
     $this->state = 'NEW';
     return $this;

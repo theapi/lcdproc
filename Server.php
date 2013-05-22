@@ -79,7 +79,7 @@ class Server
       return;
     }
 
-    //TODO: $this->clients->findClientByStream($stream);
+    //TODO: $this->clients->findByStream($stream);
     $client_key = array_search($stream, $this->streams);
     if ($client_key !== FALSE) {
       $client = $this->clients[$client_key];
@@ -91,8 +91,7 @@ class Server
       case 'hello':
 
           // Create the client
-          $client = new Client();
-          $client->create($stream);
+          $client = new Client($stream);
           $client->funcHello($args);
           $this->clients[] = $client;
 
