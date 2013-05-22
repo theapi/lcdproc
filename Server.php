@@ -1,6 +1,11 @@
 <?php
 namespace Theapi\Lcdproc;
 
+use Theapi\Lcdproc\Server\Client;
+
+// TODO: auto loader (composer)
+require_once 'Client.php';
+
 class Server
 {
 
@@ -41,7 +46,7 @@ class Server
 
           // add the client to the array to be watched
           $this->streams[] = $conn;
-          // NB ignore the client until they say 'hello'
+
         }
         else {
           $this->handleRead($stream);
@@ -69,13 +74,34 @@ class Server
     }
 
     $args = explode(' ', trim($data));
+    if (count($args) == 0) {
+      // send error
+      return;
+    }
 
-    switch ($args[0]) {
+    //TODO: $this->clients->findClientByStream($stream);
+    $client_key = array_search($stream, $this->streams);
+    if ($client_key !== FALSE) {
+      $client = $this->clients[$client_key];
+    }
+
+    $function = array_shift($args);
+
+    switch ($function) {
       case 'hello':
-        $this->fnHello($stream);
+
+          // Create the client
+          $client = new Client();
+          $client->create($stream);
+          $client->funcHello($args);
+          $this->clients[] = $client;
+
         break;
       case 'client_set':
         $this->fnClientSet($stream, $args);
+        break;
+      case 'debug': // not part of the spec
+        $this->fnDebug($stream);
         break;
 
       default:
@@ -84,35 +110,37 @@ class Server
 
   }
 
-  /**
-   * Client init.
-   * You must send this before the server will pay
-	 * any attention to you.  You'll get some info about the server
-	 * in return...  (a "connect" string)
-   */
-  public function fnHello($stream) {
-    // Now they've said hello prepare for them to introduce themselves
-    $key = array_search($stream, $this->streams);
-    $this->clients[$key] = array();
 
-    // A little white lie about who we are
-    // but the dimensions are correct for the pi plate
-    fwrite($stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
-  }
+
 
   /**
    * Set client's name and other info
    */
   public function fnClientSet($stream, $args) {
-    if (count($args) == 3 && $args[1] == 'name') {
-      $key = array_search($stream, $this->streams);
-      $this->clients[$key]['name'] = $args[2];
-      // no response
-      return;
+
+    if (count($args) == 3) {
+      $arg1 = trim($args[1], ' -');
+      if ($arg1 == 'name') {
+
+        //TODO: $this->clients->findClientByStream($stream);
+
+        $key = array_search($stream, $this->streams);
+
+        $this->clients[$key]->funcClientSet();
+
+        // send success
+        fwrite($stream, "success\n");
+        return;
+      }
     }
 
     // bad request
     $this->sendHuh($stream);
+  }
+
+  public function fnDebug($stream) {
+    $key = array_search($stream, $this->streams);
+    var_dump($stream, $key, $this->clients[$key]);
   }
 
   public function sendHuh($stream) {
