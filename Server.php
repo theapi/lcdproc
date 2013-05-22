@@ -1,10 +1,13 @@
 <?php
 namespace Theapi\Lcdproc;
 
+
+use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
 // TODO: auto loader (composer)
 require_once 'Client.php';
+require_once 'Clients.php';
 
 class Server
 {
@@ -16,8 +19,12 @@ class Server
   // Hold arrays for stream_select to listen to
   protected $streams = array();
 
-  // Clients that have said 'hello'
-  protected $clients = array();
+  // The clients object
+  protected $clients;
+
+  public function __construct() {
+    $this->clients = new Clients();
+  }
 
   public function run($ip = '127.0.0.1', $port = 13666)
   {
@@ -39,14 +46,18 @@ class Server
         break;
       }
 
-      foreach ($read as $stream) {  //var_dump(stream_socket_get_name($stream, 1));
+      foreach ($read as $stream) {
+
+        var_dump(stream_socket_get_name($stream, 1));
+
+        //var_dump((string) $stream );
+
         if ($stream === $this->socket) {
           // New client connection
           $conn = stream_socket_accept($this->socket);
 
-          // add the client to the array to be watched
+          // add the connection to the array to be watched
           $this->streams[] = $conn;
-
         }
         else {
           $this->handleRead($stream);
@@ -79,62 +90,30 @@ class Server
       return;
     }
 
-    //TODO: $this->clients->findByStream($stream);
-    $client_key = array_search($stream, $this->streams);
-    if ($client_key !== FALSE) {
-      $client = $this->clients[$client_key];
+    $client = $this->clients->findByStream($stream);
+    if (empty($client)) {
+      // a new client
+      $client = new Client($stream);
+      $this->clients->addClient($client);
     }
 
     $function = array_shift($args);
 
     switch ($function) {
       case 'hello':
-
-          // Create the client
-          $client = new Client($stream);
-          $client->funcHello($args);
-          $this->clients[] = $client;
-
+        $client->funcHello($args);
         break;
       case 'client_set':
-        $this->fnClientSet($stream, $args);
+        $client->funcClientSet($args);
         break;
       case 'debug': // not part of the spec
         $this->fnDebug($stream);
         break;
 
       default:
-        $this->sendHuh($stream);
+        self::sendError($stream, "unkown command\n");
     }
 
-  }
-
-
-
-
-  /**
-   * Set client's name and other info
-   */
-  public function fnClientSet($stream, $args) {
-
-    if (count($args) == 3) {
-      $arg1 = trim($args[1], ' -');
-      if ($arg1 == 'name') {
-
-        //TODO: $this->clients->findClientByStream($stream);
-
-        $key = array_search($stream, $this->streams);
-
-        $this->clients[$key]->funcClientSet();
-
-        // send success
-        fwrite($stream, "success\n");
-        return;
-      }
-    }
-
-    // bad request
-    $this->sendHuh($stream);
   }
 
   public function fnDebug($stream) {
@@ -142,8 +121,12 @@ class Server
     var_dump($stream, $key, $this->clients[$key]);
   }
 
-  public function sendHuh($stream) {
-    fwrite($stream, "huh?\n");
+  public static function sendString($stream, $message) {
+    fwrite($stream, $message);
+  }
+
+  public static function sendError($stream, $message) {
+    fwrite($stream, 'huh? ' . $message);
   }
 
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server;
+
 class Client
 {
 
@@ -15,6 +17,10 @@ class Client
 
   public function __construct($stream) {
     $this->create($stream);
+  }
+
+  public function getStream() {
+    return $this->stream;
   }
 
   protected function create($stream) {
@@ -64,7 +70,8 @@ class Client
 	 */
   public function funcHello($args) {
     $this->state = 'ACTIVE'; // TODO constants for client states
-    fwrite($stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
+    Server::sendString($this->stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
+    //fwrite($stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
   }
 
   /**
@@ -72,7 +79,25 @@ class Client
 	 *
    * Usage: client_set -name <id>
 	 */
-  public function funcClientSet($name, $id) {
+  public function funcClientSet($args) {
+
+    if (count($args) < 2) {
+      // error
+      return;
+    }
+
+    $key = trim($args[0], ' -');
+    $value = trim($args[1]);
+
+    if (!empty($key) && !empty($value)) {
+      if ($key != 'name') {
+        Server::sendError($this->stream, "invalid parameter ($key)\n");
+        //sock_printf_error(c->sock, "invalid parameter (%s)\n", p);
+        return;
+      }
+      $this->name = $value;
+      Server::sendString($this->stream, "success\n");
+    }
 
   }
 
