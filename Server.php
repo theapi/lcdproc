@@ -1,5 +1,5 @@
 <?php
-namespace Theapi\Piplate\Lcdproc;
+namespace Theapi\Lcdproc;
 
 class Server
 {
