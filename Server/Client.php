@@ -1,12 +1,14 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Commands\ClientCommands;
+
 use Theapi\Lcdproc\Server;
 
 class Client
 {
 
-  protected $stream;
+  public $stream;
   protected $messages = array();
   protected $backlight;
   protected $heartbeat;
@@ -14,19 +16,45 @@ class Client
   protected $name;
   protected $menu;
   protected $screenlist = array();
+  protected $commands;
 
   public function __construct($stream) {
     $this->create($stream);
+  }
+
+  public function command($name, $args) {
+
+    // Got to say hello first
+    if ($this->state == 'NEW' && $name != 'hello') {
+      // TODO check that even huh should be sent if not helloed
+      Server::sendError($this->stream, "\n");
+      return;
+    }
+
+    // Get the mapping of lcdproc commands to our methods
+    $commands = $this->commands->getCommands();
+    if (isset($commands[$name]) && method_exists($this->commands, $commands[$name])) {
+      $method = $commands[$name];
+      $this->commands->$method($args);
+    }
+    else {
+      Server::sendError($this->stream, "unkown command\n");
+    }
   }
 
   public function getStream() {
     return $this->stream;
   }
 
+  public function setState($value) {
+    $this->state = $value;
+  }
+
   protected function create($stream) {
     $this->stream = $stream;
     $this->state = 'NEW';
-    return $this;
+
+    $this->commands = new ClientCommands($this);
   }
 
   public function destroy() {
@@ -63,42 +91,6 @@ class Client
 
   }
 
-  /**
-	 * The client must say "hello" before doing anything else.
-	 *
-   * Usage: hello
-	 */
-  public function funcHello($args) {
-    $this->state = 'ACTIVE'; // TODO constants for client states
-    Server::sendString($this->stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
-    //fwrite($stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
-  }
 
-  /**
-	 * Sets info about the client, such as its name
-	 *
-   * Usage: client_set -name <id>
-	 */
-  public function funcClientSet($args) {
-
-    if (count($args) < 2) {
-      // error
-      return;
-    }
-
-    $key = trim($args[0], ' -');
-    $value = trim($args[1]);
-
-    if (!empty($key) && !empty($value)) {
-      if ($key != 'name') {
-        Server::sendError($this->stream, "invalid parameter ($key)\n");
-        //sock_printf_error(c->sock, "invalid parameter (%s)\n", p);
-        return;
-      }
-      $this->name = $value;
-      Server::sendString($this->stream, "success\n");
-    }
-
-  }
 
 }

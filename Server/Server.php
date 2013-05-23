@@ -2,12 +2,17 @@
 namespace Theapi\Lcdproc;
 
 
+use Theapi\Lcdproc\Server\Drivers;
+
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
 // TODO: auto loader (composer)
 require_once 'Client.php';
 require_once 'Clients.php';
+require_once 'Drivers.php';
+require_once 'Drivers/Piplate.php';
+require_once 'Commands/ClientCommands.php';
 
 class Server
 {
@@ -21,9 +26,25 @@ class Server
 
   // The clients object
   protected $clients;
+  // The drivers object
+  protected $drivers;
 
-  public function __construct() {
+  public function __construct($driverName = 'piplate') {
+    // screenlist_init
+
+    // init_drivers
+    $this->drivers = new Drivers();
+    $this->drivers->loadDriver($driverName);
+
+    // clients_init
     $this->clients = new Clients();
+
+    // input_init
+
+    // menuscreens_init
+
+    // server_screen_init
+
   }
 
   public function run($ip = '127.0.0.1', $port = 13666)
@@ -31,27 +52,48 @@ class Server
     $this->ip = $ip;
     $this->port = $port;
 
-    $this->socket = stream_socket_server('tcp://' . $ip . ':' . $port, $errno, $errstr);
+    $this->socket = stream_socket_server('tcp://' . $this->ip . ':' . $port, $errno, $errstr);
     if (!$this->socket) {
       throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
     }
     $this->streams[] = $this->socket;
 
+    $this->doMainLoop();
+  }
+
+  public function doMainLoop()
+  {
+
+    /*
+    $renderFreq = 2; // Complete guess for now
+
+    $processLag = 0;
+    $renderLag = 0;
+
+    // Microtime as a float
+    $time = microtime(TRUE);
+    */
+
     do {
+
+      /*
+      $lastTime = $time;
+      $time = microtime(TRUE);
+      $timeDiff = $time - $lastTime;
+      */
+
+
       $read = $this->streams;
       $write = $error = NULL;
-      $numChanged = stream_select($read, $write, $except, NULL);
+
+      // sock_poll_clients (with a little blocking)
+      $numChanged = stream_select($read, $write, $except, 0, 200000);
       if ($numChanged === FALSE) {
         // Mmm a problem
         break;
       }
 
-      foreach ($read as $stream) {
-
-        var_dump(stream_socket_get_name($stream, 1));
-
-        //var_dump((string) $stream );
-
+      foreach ($read as $stream) {          var_dump(stream_socket_get_name($stream, 1));
         if ($stream === $this->socket) {
           // New client connection
           $conn = stream_socket_accept($this->socket);
@@ -60,9 +102,15 @@ class Server
           $this->streams[] = $conn;
         }
         else {
-          $this->handleRead($stream);
+          $this->handleInput($stream);
         }
       }
+
+      // Time for rendering
+
+
+
+
     } while (1);
 
     fclose($this->socket);
@@ -76,7 +124,7 @@ class Server
     unset($this->streams[$key]);
   }
 
-  public function handleRead($stream) {
+  public function handleInput($stream) {
     $data = fread($stream, 1024);
 
     if ($data === FALSE || strlen($data) === 0) { // connection closed
@@ -101,11 +149,10 @@ class Server
 
     switch ($function) {
       case 'hello':
-        $client->funcHello($args);
-        break;
       case 'client_set':
-        $client->funcClientSet($args);
+        $client->command($function, $args);
         break;
+
       case 'debug': // not part of the spec
         $this->fnDebug($stream);
         break;
