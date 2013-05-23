@@ -10,7 +10,7 @@ set_time_limit(0);
 // Turn on implicit output flushing
 ob_implicit_flush();
 
-require 'Server.php';
+require 'Server/Server.php';
 
 $server = new Server();
 $server->run();
