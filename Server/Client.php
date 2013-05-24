@@ -18,6 +18,19 @@ class Client
   protected $screenlist = array();
   protected $commands;
 
+	/**
+	 * Client did not yet send hello.
+	 */
+  const STATE_NEW = 0;
+	/**
+	 * Client sent hello, but not yet bye.
+	 */
+  const STATE_ACTIVE = 1;
+  /**
+	 * Client sent bye.
+	 */
+  const STATE_GONE = 2;
+
   public function __construct($stream) {
     $this->create($stream);
   }
@@ -25,7 +38,7 @@ class Client
   public function command($name, $args) {
 
     // Got to say hello first
-    if ($this->state == 'NEW' && $name != 'hello') {
+    if (!$this->isActive() && $name != 'hello') {
       // TODO check that even huh should be sent if not helloed
       Server::sendError($this->stream, "\n");
       return;
@@ -46,13 +59,20 @@ class Client
     return $this->stream;
   }
 
-  public function setState($value) {
-    $this->state = $value;
+  public function setStateActive() {
+    $this->state = self::STATE_ACTIVE;
+  }
+
+  public function isActive() {
+    if ($this->state == self::STATE_ACTIVE) {
+      return TRUE;
+    }
+    return FALSE;
   }
 
   protected function create($stream) {
     $this->stream = $stream;
-    $this->state = 'NEW';
+    $this->state = self::STATE_NEW;
 
     $this->commands = new ClientCommands($this);
   }

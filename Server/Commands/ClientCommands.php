@@ -29,7 +29,7 @@ class ClientCommands
    * Usage: hello
 	 */
   public function hello($args) {
-    $this->client->setState('ACTIVE'); // TODO constants for client states
+    $this->client->setStateActive();
     Server::sendString($this->client->stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
   }
 
