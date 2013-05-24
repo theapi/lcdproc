@@ -2,8 +2,8 @@
 namespace Theapi\Lcdproc;
 
 
+use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Drivers;
-
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
@@ -13,6 +13,8 @@ require_once 'Clients.php';
 require_once 'Drivers.php';
 require_once 'Drivers/Piplate.php';
 require_once 'Commands/ClientCommands.php';
+require_once 'Commands/ServerCommands.php';
+require_once 'Exception/ClientException.php';
 
 class Server
 {
@@ -148,17 +150,17 @@ class Server
     $function = array_shift($args);
 
     switch ($function) {
-      case 'hello':
-      case 'client_set':
-        $client->command($function, $args);
-        break;
 
       case 'debug': // not part of the spec
         $this->fnDebug($stream);
         break;
 
       default:
-        self::sendError($stream, "unkown command\n");
+        try {
+          $client->command($function, $args);
+        } catch (CLientException $e) {
+          self::sendError($e->getStream(), $e->getMessage());
+        }
     }
 
   }
@@ -172,8 +174,10 @@ class Server
     fwrite($stream, $message);
   }
 
+
   public static function sendError($stream, $message) {
-    fwrite($stream, 'huh? ' . $message);
+    fwrite($stream, 'huh? ' . $message . "\n");
   }
+
 
 }

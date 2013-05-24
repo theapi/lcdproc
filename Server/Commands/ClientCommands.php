@@ -3,26 +3,16 @@ namespace Theapi\Lcdproc\Server\Commands;
 
 
 use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Exception\ClientException;
 
 class ClientCommands
 {
 
   protected $client;
 
-  // Map lcdproc commands to methods
-  protected $commands = array(
-    'hello' => 'hello',
-    'client_set' => 'clientSet',
-  );
-
   public function __construct($client) {
     $this->client = $client;
   }
-
-  public function getCommands() {
-    return $this->commands;
-  }
-
   /**
 	 * The client must say "hello" before doing anything else.
 	 *
@@ -30,6 +20,8 @@ class ClientCommands
 	 */
   public function hello($args) {
     $this->client->setStateActive();
+
+    // Should really ask the driver for its dimensions
     Server::sendString($this->client->stream, "connect LCDproc 0.5dev protocol 0.3 lcd wid 16 hgt 2 cellwid 5 cellhgt 8\n");
   }
 
@@ -41,8 +33,7 @@ class ClientCommands
   public function clientSet($args) {
 
     if (count($args) < 2) {
-      // error
-      return;
+      throw new ClientException($this->client->stream, 'not enough arguments');
     }
 
     $key = trim($args[0], ' -');
@@ -50,9 +41,9 @@ class ClientCommands
 
     if (!empty($key) && !empty($value)) {
       if ($key != 'name') {
-        Server::sendError($this->client->stream, "invalid parameter ($key)\n");
-        return;
+        throw new ClientException($this->client->stream, "invalid parameter ($key)");
       }
+
       $this->name = $value;
       Server::sendString($this->client->stream, "success\n");
     }

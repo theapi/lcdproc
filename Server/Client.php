@@ -1,8 +1,9 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Commands\ClientCommands;
-
+use Theapi\Lcdproc\Server\Commands\ServerCommands;
 use Theapi\Lcdproc\Server;
 
 class Client
@@ -16,7 +17,15 @@ class Client
   protected $name;
   protected $menu;
   protected $screenlist = array();
-  protected $commands;
+
+  // Set the mapping of lcdproc commands to our methods
+  protected $commands = array(
+    'hello'      => array('clientCommands', 'hello'),
+    'client_set' => array('clientCommands', 'clientSet'),
+    'output'     => array('serverCommands', 'output'),
+    'sleep'      => array('serverCommands', 'sleep'),
+    'noop'       => array('serverCommands', 'noop'),
+  );
 
 	/**
 	 * Client did not yet send hello.
@@ -32,26 +41,34 @@ class Client
   const STATE_GONE = 2;
 
   public function __construct($stream) {
-    $this->create($stream);
+    $this->stream = $stream;
+    $this->state = self::STATE_NEW;
+
+    $this->clientCommands = new ClientCommands($this);
+    $this->serverCommands = new ServerCommands($this);
+
   }
 
   public function command($name, $args) {
 
     // Got to say hello first
     if (!$this->isActive() && $name != 'hello') {
-      // TODO check that even huh should be sent if not helloed
-      Server::sendError($this->stream, "\n");
-      return;
+      throw new ClientException($this->stream, 'not enough arguments');
     }
 
-    // Get the mapping of lcdproc commands to our methods
-    $commands = $this->commands->getCommands();
-    if (isset($commands[$name]) && method_exists($this->commands, $commands[$name])) {
-      $method = $commands[$name];
-      $this->commands->$method($args);
+    if (isset($this->commands[$name])) {
+      $commandHandler = $this->commands[$name][0];
+      $method = $this->commands[$name][1];
+      if (method_exists($this->$commandHandler, $method)) {
+        $this->$commandHandler->$method($args);
+      }
+      else {
+        // oops there's a command mapping mixup
+        // TODO: exceptions for coding errors
+      }
     }
     else {
-      Server::sendError($this->stream, "unkown command\n");
+      throw new ClientException($this->stream, 'unkown command');
     }
   }
 
@@ -68,13 +85,6 @@ class Client
       return TRUE;
     }
     return FALSE;
-  }
-
-  protected function create($stream) {
-    $this->stream = $stream;
-    $this->state = self::STATE_NEW;
-
-    $this->commands = new ClientCommands($this);
   }
 
   public function destroy() {
