@@ -11,8 +11,14 @@ use Theapi\Lcdproc\Server\Drivers\Piplate;
 class Drivers
 {
 
+  protected $config;
+
   protected $loadedDrivers = array();
   protected $displayProps;
+
+  public function __construct($config) {
+    $this->config = $config;
+  }
 
   /**
 	 * Load driver based on no logic at all :)
@@ -28,9 +34,15 @@ class Drivers
     $driver = new Piplate();
     $this->loadedDrivers[] = $driver;
 
-    $this->displayProps = new \stdClass();
-    $this->displayProps->cellWidth = $driver->width();
-    $this->displayProps->cellHeight = $driver->height();
+    // if driver does output
+    if ($driver->doesOutput() && empty($this->displayProps)) {
+      $this->displayProps = new \stdClass();
+      $this->displayProps->width = $driver->width();
+      $this->displayProps->height = $driver->height();
+      $this->displayProps->cellWidth = $driver->cellWidth();
+      $this->displayProps->cellHeight = $driver->cellHeight();
+      $this->config->displayProps = $this->displayProps;
+    }
 
     return 1;
   }

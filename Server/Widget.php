@@ -1,7 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
-use Theapi\Lcdproc\Server\Client;
+use Theapi\Lcdproc\Server\Screen;
+use Theapi\Lcdproc\Server\Exception\ClientException;
 
 /**
  * This houses code that handles the creation and destruction of widget
@@ -20,14 +21,44 @@ use Theapi\Lcdproc\Server\Client;
 class Widget
 {
 
+
+  const WID_NONE     = 'none';
+  const WID_STRING   = 'string';
+  const WID_HBAR     = 'hbar';
+  const WID_VBAR     = 'vbar';
+  const WID_ICON     = 'icon';
+  const WID_TITLE    = 'title';
+  const WID_SCROLLER = 'scroller';
+  const WID_FRAME    = 'frame';
+  const WID_NUM      = 'num';
+
+
   /**
    * Create a widget.
    *
    * @param string $id
-   * @param Client $client
+   * @param string $type;
+   * @param Screen $client
    */
-  public function create($id, Client $client) {
+  public function __construct($id, $type, Screen $screen) {
+    if (!$id) {
+  		throw new ClientException($screen->client->stream, 'Need id string');
+  	}
 
+  	$this->id = $id;
+  	$this->type = $type;
+  	$this->screen = $screen;
+  	$this->x = 1;
+  	$this->y = 1;
+  	$this->width = 0;
+  	$this->height = 0;
+  	$this->left = 1;
+  	$this->top = 1;
+  	$this->right = 0;
+  	$this->bottom = 0;
+  	$this->length = 1;
+  	$this->speed = 1;
+  	$this->text = NULL;
   }
 
   /**

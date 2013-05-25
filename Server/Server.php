@@ -2,14 +2,22 @@
 namespace Theapi\Lcdproc;
 
 
+use Theapi\Lcdproc\Server\ScreenList;
+use Theapi\Lcdproc\Server\ServerScreens;
+use Theapi\Lcdproc\Server\Config;
 use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Drivers;
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
 // TODO: auto loader (composer)
+require_once 'Config.php';
 require_once 'Client.php';
 require_once 'Clients.php';
+require_once 'ScreenList.php';
+require_once 'Screen.php';
+require_once 'ServerScreens.php';
+require_once 'Widget.php';
 require_once 'Drivers.php';
 require_once 'Drivers/Piplate.php';
 require_once 'Commands/ClientCommands.php';
@@ -26,16 +34,31 @@ class Server
   // Hold arrays for stream_select to listen to
   protected $streams = array();
 
+  // $this can be passed as a container,
+  // so the initialised classes are available to be used
+
+  // The config object
+  public $config;
   // The clients object
-  protected $clients;
+  public $clients;
   // The drivers object
-  protected $drivers;
+  public $drivers;
+  // The serverScreen object
+  public $screenList;
+  // The serverScreen object
+  public $serverScreen;
+
 
   public function __construct($driverName = 'piplate') {
+
+    // set_default_settings
+    $this->config = new Config();
+
     // screenlist_init
+    $this->screenList = new ScreenList();
 
     // init_drivers
-    $this->drivers = new Drivers();
+    $this->drivers = new Drivers($this->config);
     $this->drivers->loadDriver($driverName);
 
     // clients_init
@@ -46,7 +69,7 @@ class Server
     // menuscreens_init
 
     // server_screen_init
-
+    $this->serverScreen = new ServerScreens($this);
   }
 
   public function run($ip = '127.0.0.1', $port = 13666)
@@ -109,6 +132,7 @@ class Server
       }
 
       // Time for rendering
+      echo "Time for rendering\n";
 
 
 
@@ -171,12 +195,16 @@ class Server
   }
 
   public static function sendString($stream, $message) {
-    fwrite($stream, $message);
+    if (stream_get_meta_data($stream)) {
+      fwrite($stream, $message);
+    }
   }
 
 
   public static function sendError($stream, $message) {
-    fwrite($stream, 'huh? ' . $message . "\n");
+    if (stream_get_meta_data($stream)) {
+      fwrite($stream, 'huh? ' . $message . "\n");
+    }
   }
 
 

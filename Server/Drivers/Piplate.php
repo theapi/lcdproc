@@ -6,6 +6,8 @@ class Piplate
 
   protected $width = 16;
   protected $height = 2;
+  protected $cellWidth = 5;
+  protected $cellHeight = 5;
 
   /**
    * Initialize the driver.
@@ -21,8 +23,11 @@ echo "Piplate construct\n";
 	 */
   public function close() {
     // close socket to python script
-echo "Piplate close\n";
 
+  }
+
+  public function doesOutput() {
+    return TRUE;
   }
 
   public function width() {
@@ -31,6 +36,14 @@ echo "Piplate close\n";
 
   public function height() {
     return $this->height;
+  }
+
+  public function cellWidth() {
+    return $this->cellWidth;
+  }
+
+  public function cellHeight() {
+    return $this->cellHeight;
   }
 
   /**

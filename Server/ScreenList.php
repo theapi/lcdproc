@@ -33,8 +33,8 @@ class ScreenList
   /**
    * Adds a screen to the screenlist.
    */
-  public function add() {
-
+  public function add($screen) {
+    $this->screenList[$screen->id] = $screen;
   }
 
   /**
