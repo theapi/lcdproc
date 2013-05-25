@@ -9,12 +9,24 @@ class Piplate
   protected $cellWidth = 5;
   protected $cellHeight = 5;
 
+  protected $debug = 0;
+
+  protected $out = '';
+
   /**
    * Initialize the driver.
    */
   public function __construct() {
     // connect to the socket that the python script is listening on
-echo "Piplate construct\n";
+
+    $this->server = '192.168.0.11';
+    $this->port = 8888;
+
+    $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+
+    if (!$this->fp) {
+       throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
+    }
 
   }
 
@@ -50,7 +62,7 @@ echo "Piplate construct\n";
    * Clear the screen.
    */
   public function clear() {
-
+    $this->write('');
   }
 
   /**
@@ -58,6 +70,8 @@ echo "Piplate construct\n";
    */
   public function flush() {
 
+    $this->write($this->out);
+    $this->out = '';
   }
 
   /**
@@ -67,8 +81,13 @@ echo "Piplate construct\n";
    * @param y        Vertical character position (row).
    * @param string   String that gets written.
    */
-  public function string(int $x, int $y, $string) {
+  public function string($x, $y, $string) {
+    // TODO: adjust for $x & $y
+    if ($y == 2) {
+      $this->out .= "\n";
+    }
 
+    $this->out .= $string;
   }
 
   /**
@@ -78,15 +97,15 @@ echo "Piplate construct\n";
    * @param y        Vertical character position (row).
    * @param chr   String that gets written.
    */
-  public function chr(int $x, int $y, $chr) {
+  public function chr($x, $y, $chr) {
 
   }
 
-  public function vbar(int $x, int $y, int $len, int $promille, int $pattern) {
+  public function vbar($x, $y, $len, $promille, $pattern) {
 
   }
 
-  public function hbar(int $x, int $y, int $len, int $promille, int $pattern) {
+  public function hbar($x, $y, $len, $promille, $pattern) {
 
   }
 
@@ -95,7 +114,7 @@ echo "Piplate construct\n";
 	 * @param x        Horizontal character position (column).
 	 * @param num      Character to write (0 - 10 with 10 representing ':')
 	 */
-  public function num(int $x, int $num) {
+  public function num($x, $num) {
 
   }
 
@@ -103,7 +122,7 @@ echo "Piplate construct\n";
 	 * Perform heartbeat.
 	 * @param state    Heartbeat state.
 	 */
-  public function heartbeat(int $state) {
+  public function heartbeat($state) {
 
   }
 
@@ -113,11 +132,11 @@ echo "Piplate construct\n";
 	 * @param y        Vertical character position (row).
 	 * @param icon     synbolic value representing the icon.
 	 */
-  public function icon(int $x, int $y, int $icon) {
+  public function icon($x, $y, $icon) {
 
   }
 
-  public function cursor(int $x, int $y, int $state) {
+  public function cursor($x, $y, $state) {
 
   }
 
@@ -126,7 +145,7 @@ echo "Piplate construct\n";
 	 *
 	 * @param state    New backlight status.
 	 */
-  public function backlight(int $state) {
+  public function backlight($state) {
 
   }
 
@@ -143,5 +162,53 @@ echo "Piplate construct\n";
   public function getInfo() {
     return 'Adafruit pilate driver';
   }
+
+    public function read()
+    {
+        if (!$this->fp) {
+            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
+        }
+
+        $line = fgets($this->fp);
+        $line = trim($line);
+
+        if ($this->debug > 2) {
+            $info = stream_get_meta_data($link);
+            echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
+        }
+
+        if ($this->debug > 1) {
+            echo " < $line\n";
+        }
+        return $line;
+    }
+
+    public function write($buf)
+    {
+        if (!$this->fp) {
+            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
+        }
+
+        $buf = trim($buf);
+
+        if ($this->debug > 1) {
+            foreach(explode("\n", $buf) as $line) echo " > $line\n";
+        }
+		    fwrite($this->fp, "$buf\n");
+    }
+
+    public function disconnect()
+    {
+        if ($this->debug > 1) {
+            echo ">< Disconnecting from LCDd\n";
+        }
+
+        $this->write('bye');
+        fclose($this->fp);
+
+        if ($this->debug > 1) {
+            echo ">< Disconnected!\n";
+        }
+    }
 
 }

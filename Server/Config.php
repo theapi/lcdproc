@@ -40,7 +40,7 @@ class Config
 
 
   protected $serverScreenOn = TRUE;
-  protected $helloMsg = "Welcome to\nPHP LCDproc";
+  protected $helloMsg =  array('Welcome to', 'PHP LCDproc');
 
   protected $backlight = self::BACKLIGHT_OFF;
   protected $heartbeat = self::HEARTBEAT_OFF;

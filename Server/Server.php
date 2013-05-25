@@ -77,7 +77,7 @@ class Server
     $this->ip = $ip;
     $this->port = $port;
 
-    $this->socket = stream_socket_server('tcp://' . $this->ip . ':' . $port, $errno, $errstr);
+    $this->socket = stream_socket_server('tcp://' . $this->ip . ':' . $this->port, $errno, $errstr);
     if (!$this->socket) {
       throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
     }
@@ -112,7 +112,7 @@ class Server
       $write = $error = NULL;
 
       // sock_poll_clients (with a little blocking)
-      $numChanged = stream_select($read, $write, $except, 0, 200000);
+      $numChanged = stream_select($read, $write, $except, 0, 500000);
       if ($numChanged === FALSE) {
         // Mmm a problem
         break;
@@ -132,10 +132,13 @@ class Server
       }
 
       // Time for rendering
-      echo "Time for rendering\n";
+      $this->screenList->process();
+      $screen = $this->screenList->current();
+      if ($screen->id == '_server_screen') {
+        $this->serverScreen->update();
+      }
 
-
-
+      // render_screen(s, timer);
 
     } while (1);
 

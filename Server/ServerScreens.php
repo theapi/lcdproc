@@ -3,6 +3,7 @@ namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Screen;
 use Theapi\Lcdproc\Server\Widget;
+use Theapi\Lcdproc\Server\Clients;
 
 /**
  * This contains code to allow the server to generate its own screens.
@@ -45,7 +46,7 @@ class ServerScreens
 
 	  // Create all the widgets...
     for ($i = 0; $i < $this->config->displayProps->height; $i++) {
-      $id = 'line' . $i+1;
+      $id = 'line' . ($i+1);
 
       try {
   		  $w = new Widget($id, Widget::WID_STRING, $this->screen);
@@ -70,7 +71,7 @@ class ServerScreens
         $id = 'line' . $i+1;
         $w = $this->screen->findWidget($id);
         if ($w) {
-          $w->text = $this->config->helloMsg;
+          $w->text = $this->config->helloMsg[$i];
         }
       }
     }
@@ -81,6 +82,13 @@ class ServerScreens
   }
 
   public function reset($rotate, $heartbeat, $title) {
+
+    // naughty hard coded for now
+    $w = $this->screen->findWidget('line1');
+    if ($w) {
+      $w->text = 'PHP LCDproc';
+    }
+
     /*
     server_screen->heartbeat = (heartbeat && (rotate != SERVERSCREEN_BLANK))
 					? HEARTBEAT_OPEN : HEARTBEAT_OFF;
@@ -88,8 +96,9 @@ class ServerScreens
 					? PRI_INFO : PRI_BACKGROUND;
 		*/
 
+    /*
     for ($i = 0; $i < $this->config->displayProps->height; $i++) {
-      $id = 'line' . $i+1;
+      $id = 'line' . ($i+1);
       $w = $this->screen->findWidget($id);
       if ($w) {
         $w->x = 1;
@@ -105,6 +114,24 @@ class ServerScreens
 
       }
     }
+    */
+
+  }
+
+  public function update() {
+    // yada yada get useful info...
+
+    // bunch of stuff should be done here
+
+
+    // tmp jump straight to render
+    //TODO: not jump straight to render
+    $w = $this->screen->findWidget('line1');
+    $this->container->drivers->string($w->x , $w->y, $w->text);
+    $w = $this->screen->findWidget('line2');
+    $w->text = (string) microtime(TRUE);
+    $this->container->drivers->string($w->x , $w->y, $w->text);
+    $this->container->drivers->flush();
 
   }
 

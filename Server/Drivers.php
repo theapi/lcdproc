@@ -101,7 +101,7 @@ class Drivers
    * @param y        Vertical character position (row).
    * @param string   String that gets written.
    */
-  public function string(int $x, int $y, $string) {
+  public function string($x, $y, $string) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'string')) {
         $driver->string($x, $y, $string);
@@ -116,7 +116,7 @@ class Drivers
    * @param y        Vertical character position (row).
    * @param chr   String that gets written.
    */
-  public function chr(int $x, int $y, $chr) {
+  public function chr($x, $y, $chr) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'chr')) {
         $driver->chr($x, $y, $chr);
@@ -124,11 +124,11 @@ class Drivers
     }
   }
 
-  public function vbar(int $x, int $y, int $len, int $promille, int $pattern) {
+  public function vbar($x, $y, $len, $promille, $pattern) {
 
   }
 
-  public function hbar(int $x, int $y, int $len, int $promille, int $pattern) {
+  public function hbar($x, $y, $len, $promille, $pattern) {
 
   }
 
@@ -138,7 +138,7 @@ class Drivers
 	 * @param x        Horizontal character position (column).
 	 * @param num      Character to write (0 - 10 with 10 representing ':')
 	 */
-  public function num(int $x, int $num) {
+  public function num($x, $num) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'num')) {
         $driver->num($x, $num);
@@ -152,7 +152,7 @@ class Drivers
 	 * otherwise call the general driver_alt_heartbeat() function from the server core.
 	 * @param state    Heartbeat state.
 	 */
-  public function heartbeat(int $state) {
+  public function heartbeat($state) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'heartbeat')) {
         $driver->heartbeat($state);
@@ -167,11 +167,11 @@ class Drivers
 	 * @param y        Vertical character position (row).
 	 * @param icon     synbolic value representing the icon.
 	 */
-  public function icon(int $x, int $y, int $icon) {
+  public function icon($x, $y, $icon) {
 
   }
 
-  public function cursor(int $x, int $y, int $state) {
+  public function cursor($x, $y, $state) {
 
   }
 
@@ -180,7 +180,7 @@ class Drivers
 	 * Call backlight() function of all drivers that have a backlight() function defined.
 	 * @param state    New backlight status.
 	 */
-  public function backlight(int $state) {
+  public function backlight($state) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'backlight')) {
         $driver->backlight($state);
@@ -193,7 +193,7 @@ class Drivers
 	 * Call ouptput() function of all drivers that have an ouptput() function defined.
 	 * @param state    New ouptut status.
 	 */
-  public function output(int $state) {
+  public function output($state) {
     foreach ($this->loadedDrivers as $driver) {
       if (method_exists($driver, 'ouptput')) {
         $driver->ouptput($state);

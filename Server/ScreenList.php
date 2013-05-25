@@ -18,6 +18,8 @@ class ScreenList
 
   protected $screenList = array();
 
+  protected $currentId;
+
   /**
    * If enabled, screens will rotate
    */
@@ -60,14 +62,28 @@ class ScreenList
    * NB: cannot use the method name "switch" as used in the original source
    */
   public function switchScreen() {
-
+    if (empty($this->currentId)) {
+      reset($this->screenList);
+      $this->currentId = key($this->screenList);
+    }
   }
 
   /**
    * Returns the currently active screen.
    */
   public function current() {
-
+    if (empty($this->currentId)) {
+       $this->switchScreen();
+    }
+    if (!empty($this->currentId)) {
+      if (isset($this->screenList[$this->currentId])) {
+        return $this->screenList[$this->currentId];
+      }
+      else {
+        unset($this->currentId);
+      }
+    }
+    return NULL;
   }
 
   /**
