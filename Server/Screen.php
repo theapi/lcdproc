@@ -20,19 +20,26 @@ use Theapi\Lcdproc\Server\Config;
 class Screen
 {
 
+  const PRI_HIDDEN = 0;
+  const PRI_BACKGROUND = 1;
+  const PRI_INFO = 2;
+  const PRI_FOREGROUND = 3;
+  const PRI_ALERT = 4;
+  const PRI_INPUT = 5;
+
+
   protected $config;
 
   public $name = NULL;
   public $duration = 0;
+  public $client = NULL;
+	public $priority = self::PRI_INFO;
 
-
-	//protected $priority = PRI_INFO; //TODO: PRI_INFO
 	protected $backlight = Config::BACKLIGHT_OFF;
 	protected $heartbeat = Config::HEARTBEAT_OFF;
 	protected $width;
 	protected $height;
 	protected $keys = NULL;
-	protected $client = NULL;
 	protected $widgetlist = array();
 	protected $timeout = -1; 	/*ignored unless greater than 0.*/
 	protected $cursor = Config::CURSOR_OFF;

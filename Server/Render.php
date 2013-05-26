@@ -7,6 +7,7 @@ namespace Theapi\Lcdproc\Server;
  */
 
 use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Screen;
 
 class Render
 {
@@ -28,6 +29,11 @@ class Render
    * @return  -1 on error, 0 on success.
    */
   public static function screen($screen, $timer) {
+    if (!$screen instanceof Screen) {
+      return -1;
+    }
+
+    //var_dump($screen); exit;
 
   }
 

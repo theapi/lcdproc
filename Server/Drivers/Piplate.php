@@ -11,9 +11,12 @@ class Piplate
 
   protected $debug = 0;
 
+  protected $disabled = TRUE; // so I can test without the Pi on
+
   // Two rows of 16 spaces
   protected $outBlank = array('                ', '                ');
   protected $out = array();
+  protected $fp;
 
   /**
    * Initialize the driver.
@@ -24,10 +27,13 @@ class Piplate
     $this->server = '192.168.0.11';
     $this->port = 8888;
 
-    $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
 
-    if (!$this->fp) {
-       throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno, 0);
+    if (!$this->disabled) {
+      $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+
+      if (!$this->fp) {
+         throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno, 0);
+      }
     }
 
     // Setup the array of spaces
@@ -187,56 +193,61 @@ class Piplate
     return 'Adafruit pilate driver';
   }
 
-    public function read()
-    {
-        if (!$this->fp) {
-            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
-        }
-
-        $line = fgets($this->fp);
-
-        if ($this->debug > 2) {
-            $info = stream_get_meta_data($this->fp);
-            echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
-        }
-
-        if ($this->debug > 1) {
-            echo " < $line\n";
-        }
-        return $line;
+  public function read() {
+    if ($this->disabled) {
+      return;
     }
 
-    public function write($buf)
-    {
-        if (!$this->fp) {
-            throw new \Exception('No connection to ' . $this->server . ':' . $this->port, 0);
-        }
-
-        $info = stream_get_meta_data($this->fp);
-        $alive = !$info['eof'] && !$info['timed_out'];
-        if (!$alive) {
-            throw new \Exception('Lost connection to ' . $this->server . ':' . $this->port, 0);
-        }
-
-        if ($this->debug > 1) {
-            foreach(explode("\n", $buf) as $line) echo " > $line\n";
-        }
-		    @fwrite($this->fp, "$buf\n");
-
+    if (!$this->fp) {
+       throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
     }
 
-    public function disconnect()
-    {
-        if ($this->debug > 1) {
-            echo ">< Disconnecting from LCDd\n";
-        }
+    $line = fgets($this->fp);
 
-        $this->write('bye');
-        fclose($this->fp);
-
-        if ($this->debug > 1) {
-            echo ">< Disconnected!\n";
-        }
+    if ($this->debug > 2) {
+       $info = stream_get_meta_data($this->fp);
+       echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
     }
+
+    if ($this->debug > 1) {
+      echo " < $line\n";
+    }
+    return $line;
+  }
+
+  public function write($buf) {
+    if ($this->disabled) {
+      return;
+    }
+
+    if (!$this->fp) {
+      throw new \Exception('No connection to ' . $this->server . ':' . $this->port, 0);
+    }
+
+    $info = stream_get_meta_data($this->fp);
+    $alive = !$info['eof'] && !$info['timed_out'];
+    if (!$alive) {
+      throw new \Exception('Lost connection to ' . $this->server . ':' . $this->port, 0);
+    }
+
+    if ($this->debug > 1) {
+      foreach(explode("\n", $buf) as $line) echo " > $line\n";
+    }
+    @fwrite($this->fp, "$buf\n");
+
+  }
+
+  public function disconnect() {
+    if ($this->debug > 1) {
+      echo ">< Disconnecting from LCDd\n";
+    }
+
+    $this->write('bye');
+    fclose($this->fp);
+
+    if ($this->debug > 1) {
+      echo ">< Disconnected!\n";
+    }
+  }
 
 }

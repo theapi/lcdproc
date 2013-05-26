@@ -2,6 +2,7 @@
 namespace Theapi\Lcdproc;
 
 
+use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\ScreenList;
 use Theapi\Lcdproc\Server\ServerScreens;
 use Theapi\Lcdproc\Server\Config;
@@ -14,6 +15,7 @@ use Theapi\Lcdproc\Server\Client;
 require_once 'Config.php';
 require_once 'Client.php';
 require_once 'Clients.php';
+require_once 'Render.php';
 require_once 'ScreenList.php';
 require_once 'Screen.php';
 require_once 'ServerScreens.php';
@@ -39,6 +41,8 @@ class Server
 
   // The config object
   public $config;
+  // The render object
+  public $render;
   // The clients object
   public $clients;
   // The drivers object
@@ -48,6 +52,9 @@ class Server
   // The serverScreen object
   public $serverScreen;
 
+  // err
+  public $timer = 0;
+
 
   public function __construct($driverName = 'piplate') {
 
@@ -55,7 +62,7 @@ class Server
     $this->config = new Config();
 
     // screenlist_init
-    $this->screenList = new ScreenList();
+    $this->screenList = new ScreenList($this);
 
     // init_drivers
     $this->drivers = new Drivers($this->config);
@@ -63,6 +70,8 @@ class Server
 
     // clients_init
     $this->clients = new Clients();
+
+    $this->render = new Render();
 
     // input_init
 
@@ -107,7 +116,6 @@ class Server
       $timeDiff = $time - $lastTime;
       */
 
-
       $read = $this->streams;
       $write = $error = NULL;
 
@@ -132,13 +140,14 @@ class Server
       }
 
       // Time for rendering
+      $this->timer++;
       $this->screenList->process();
       $screen = $this->screenList->current();
       if ($screen->id == '_server_screen') {
         $this->serverScreen->update();
       }
 
-      // render_screen(s, timer);
+      $this->render->screen($screen, $this->timer);
 
     } while (1);
 
