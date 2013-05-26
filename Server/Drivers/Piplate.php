@@ -11,7 +11,9 @@ class Piplate
 
   protected $debug = 0;
 
-  protected $out = '';
+  // Two rows of 16 spaces
+  protected $outBlank = array('                ', '                ');
+  protected $out = array();
 
   /**
    * Initialize the driver.
@@ -25,9 +27,11 @@ class Piplate
     $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
 
     if (!$this->fp) {
-       throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
+       throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno, 0);
     }
 
+    // Setup the array of spaces
+    $this->out = $this->outBlank;
   }
 
   /**
@@ -62,16 +66,33 @@ class Piplate
    * Clear the screen.
    */
   public function clear() {
-    $this->write('');
+    // Reset to the blank screen array
+    $this->out = $this->outBlank;
+    $this->flush();
   }
 
   /**
    * Flush data on screen to the display.
    */
   public function flush() {
+    $string = join("\n", $this->out);
 
-    $this->write($this->out);
-    $this->out = '';
+    try {
+      $this->write($string);
+      // read just to clear the memory
+      $this->read();
+    } catch (\Exception $e) {
+      if ($e->getCode() == 0) {
+        // no connection
+        // try later etc...
+
+        // for now, give up
+        throw $e;
+      }
+    }
+
+    // Reset to the blank screen array
+    $this->out = $this->outBlank;
   }
 
   /**
@@ -82,12 +103,15 @@ class Piplate
    * @param string   String that gets written.
    */
   public function string($x, $y, $string) {
-    // TODO: adjust for $x & $y
-    if ($y == 2) {
-      $this->out .= "\n";
-    }
+    // Our positions start with 0 not 1
+    $x--;
+    $y--;
 
-    $this->out .= $string;
+    $len = strlen($string);
+    for ($i =0; $i < $len; $i++) {
+      $pos = $x + $i;
+      $this->chr($pos, $y, $string[$i]);
+    }
   }
 
   /**
@@ -98,7 +122,7 @@ class Piplate
    * @param chr   String that gets written.
    */
   public function chr($x, $y, $chr) {
-
+    $this->out[$y][$x] = $chr;
   }
 
   public function vbar($x, $y, $len, $promille, $pattern) {
@@ -170,10 +194,9 @@ class Piplate
         }
 
         $line = fgets($this->fp);
-        $line = trim($line);
 
         if ($this->debug > 2) {
-            $info = stream_get_meta_data($link);
+            $info = stream_get_meta_data($this->fp);
             echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
         }
 
@@ -186,15 +209,20 @@ class Piplate
     public function write($buf)
     {
         if (!$this->fp) {
-            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
+            throw new \Exception('No connection to ' . $this->server . ':' . $this->port, 0);
         }
 
-        $buf = trim($buf);
+        $info = stream_get_meta_data($this->fp);
+        $alive = !$info['eof'] && !$info['timed_out'];
+        if (!$alive) {
+            throw new \Exception('Lost connection to ' . $this->server . ':' . $this->port, 0);
+        }
 
         if ($this->debug > 1) {
             foreach(explode("\n", $buf) as $line) echo " > $line\n";
         }
-		    fwrite($this->fp, "$buf\n");
+		    @fwrite($this->fp, "$buf\n");
+
     }
 
     public function disconnect()
