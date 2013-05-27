@@ -146,7 +146,7 @@ class ClientCommands
           $this->client->backlight = Render::BACKLIGHT_OFF;
         }
         else {
-          $this->client->backlight == Render::BACKLIGHT_ON;
+          $this->client->backlight = Render::BACKLIGHT_ON;
         }
         break;
       case 'blink':
