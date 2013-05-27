@@ -12,6 +12,12 @@ use Theapi\Lcdproc\Screen;
 class Render
 {
 
+  const BACKLIGHT_OFF	  = 0;
+  const BACKLIGHT_ON	  =	1;
+  const BACKLIGHT_OPEN	=	2;
+  const BACKLIGHT_BLINK	=	100;
+  const BACKLIGHT_FLASH	=	200;
+
   /**
    * Renders a screen. The following actions are taken in order:
    *

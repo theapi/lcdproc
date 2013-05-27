@@ -126,7 +126,7 @@ class Server
         break;
       }
 
-      foreach ($read as $stream) {          var_dump(stream_socket_get_name($stream, 1));
+      foreach ($read as $stream) {          //var_dump(stream_socket_get_name($stream, 1));
         if ($stream === $this->socket) {
           // New client connection
           $conn = stream_socket_accept($this->socket);
@@ -179,7 +179,7 @@ class Server
     $client = $this->clients->findByStream($stream);
     if (empty($client)) {
       // a new client
-      $client = new Client($stream);
+      $client = new Client($this, $stream);
       $this->clients->addClient($client);
     }
 

@@ -11,7 +11,7 @@ class Client
 
   public $stream;
   protected $messages = array();
-  protected $backlight;
+  public $backlight;
   protected $heartbeat;
   protected $state;
   protected $name;
@@ -40,7 +40,8 @@ class Client
 	 */
   const STATE_GONE = 2;
 
-  public function __construct($stream) {
+  public function __construct($container, $stream) {
+    $this->container = $container;
     $this->stream = $stream;
     $this->state = self::STATE_NEW;
 
@@ -53,14 +54,17 @@ class Client
 
     // Got to say hello first
     if (!$this->isActive() && $name != 'hello') {
-      throw new ClientException($this->stream, 'not enough arguments');
+      throw new ClientException($this->stream, 'Invalid command ' . $name);
     }
 
     if (isset($this->commands[$name])) {
       $commandHandler = $this->commands[$name][0];
       $method = $this->commands[$name][1];
       if (method_exists($this->$commandHandler, $method)) {
-        $this->$commandHandler->$method($args);
+        $error = $this->$commandHandler->$method($args);
+        if ($error) {
+          throw new ClientException($this->stream, 'Function returned error ' . $method);
+        }
       }
       else {
         // oops there's a command mapping mixup
@@ -68,7 +72,7 @@ class Client
       }
     }
     else {
-      throw new ClientException($this->stream, 'unkown command');
+      throw new ClientException($this->stream, 'Invalid command ' . $name);
     }
   }
 
@@ -78,6 +82,10 @@ class Client
 
   public function setStateActive() {
     $this->state = self::STATE_ACTIVE;
+  }
+
+  public function setStateGone() {
+    $this->state = self::STATE_GONE;
   }
 
   public function isActive() {
