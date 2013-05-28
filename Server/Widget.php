@@ -65,7 +65,7 @@ class Widget
    * Destroy a widget.
    */
   public function destroy() {
-
+    // Just unset in the screen. No need to worry about memory like c does.
   }
 
   /**

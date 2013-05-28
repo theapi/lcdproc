@@ -19,7 +19,7 @@ class Client
   protected $state;
   protected $name;
   protected $menu;
-  protected $screenlist = array();
+  protected $screenList = array();
 
   // Set the mapping of lcdproc commands to our methods
   protected $commands = array(
@@ -144,15 +144,35 @@ class Client
   }
 
   public function findScreen($id) {
+    if (empty($id)) {
+      return NULL;
+    }
 
+    if (isset($this->screenList[$id])) {
+      return $this->screenList[$id];
+    }
+
+    return NULL;
   }
 
   public function addScreen($screen) {
+    $this->screenList[$screen->id] = $screen;
 
+    // Now, add it to the screenlist...
+    $this->container->screenList->add($screen);
+
+    return 0;
   }
 
   public function removeScreen($screen) {
+    if (isset($this->screenList[$screen->id])) {
+      unset($this->screenList[$screen->id]);
+    }
 
+    // Now, remove it from the screenlist...
+    $this->container->screenList->remove($screen);
+
+    return 0;
   }
 
   public function sceenCount() {

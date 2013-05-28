@@ -46,6 +46,7 @@ class ScreenList
    */
   public function add($screen) {
     $this->screenList[$screen->id] = $screen;
+
     if (empty($this->currentId)) {
       $this->currentId = $screen->id;
     }
@@ -54,8 +55,23 @@ class ScreenList
   /**
    * Removes a screen from the screenlist.
    */
-  public function remove() {
+  public function remove($screen) {
+    $current_screen = $this->current();
 
+    if ($screen == $current_screen) {
+      $this->gotoNext();
+      if ($screen == $current_screen) {
+        // Hmm, no other screen had same priority
+        unset($this->screenList[$screen->id]);
+
+        // And now once more
+        $this->gotoNext();
+
+      }
+    }
+    else {
+      unset($this->screenList[$screen->id]);
+    }
   }
 
   /**

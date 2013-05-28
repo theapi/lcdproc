@@ -75,6 +75,12 @@ class Screen
    * Destroy a screen.
    */
   public function destroy() {
+    //menuscreen_remove_screen(s);
+
+    $this->client->container->screenList->remove($this);
+
+    // detroy widgets
+    $this->widgetlist = array();
 
   }
 
@@ -83,13 +89,19 @@ class Screen
    */
   public function addWidget($widget) {
     $this->widgetlist[$widget->id] = $widget;
+
+    return 0;
   }
 
   /**
    * Remove a widget from a screen.
    */
   public function removeWidget($widget) {
+    if (isset($this->widgetlist[$widget->id])) {
+      unset($this->widgetlist[$widget->id]);
+    }
 
+    return 0;
   }
 
   /**
@@ -107,15 +119,30 @@ class Screen
    * Convert a priority name to the priority id.
    * @param priname  Name of the screen priority.
    */
-  public function priNameToPri($priName) {
-
+  public static function priNameToPri($priName) {
+    switch ($priName) {
+      case 'hidden':
+        return self::PRI_HIDDEN;
+      case 'background':
+        return self::PRI_BACKGROUND;
+      case 'info':
+        return self::PRI_INFO;
+      case 'foreground':
+        return self::PRI_FOREGROUND;
+      case 'alert':
+        return self::PRI_ALERT;
+      case 'input':
+        return self::PRI_INPUT;
+      default:
+        return NULL;
+    }
   }
 
   /**
    * Convert a priority id to the associated name.
    * @param pri  Priority id.
    */
-  public function priToPriName($pri) {
+  public static function priToPriName($pri) {
 
   }
 }

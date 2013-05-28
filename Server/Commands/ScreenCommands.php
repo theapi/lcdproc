@@ -1,6 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server\Commands;
 
+use Theapi\Lcdproc\Server\Screen;
+
 /**
  * Implements handlers for the client commands concerning screens.
  *
@@ -38,9 +40,27 @@ class ScreenCommands
       return 1;
     }
 
-    //TODO: functionality
+    if (count($args) != 1) {
+      throw new ClientException($this->client->stream, 'Usage: screen_add <screenid>');
+    }
 
-    Server::sendString($this->client->stream, "success\n");
+    $s = $this->client->findScreen($args[0]);
+    if ($s != NULL) {
+      throw new ClientException($this->client->stream, 'Screen already exists');
+    }
+
+    $s = new Screen($this->client->config, $args[0]);
+    if ($s != NULL) {
+      throw new ClientException($this->client->stream, 'failed to create screen');
+    }
+
+    $err = $this->client->addScreen($s);
+    if ($err == 0) {
+       Server::sendString($this->client->stream, "success\n");
+    }
+    else {
+      Server::sendString($this->client->stream, "failed to add screen\n");
+    }
 
     return 0;
   }
@@ -54,9 +74,24 @@ class ScreenCommands
       return 1;
     }
 
-    //TODO: functionality
+    if (count($args) != 1) {
+      throw new ClientException($this->client->stream, 'Usage: screen_del <screenid>');
+    }
 
-    Server::sendString($this->client->stream, "success\n");
+    $s = $this->client->findScreen($args[0]);
+    if ($s == NULL) {
+      throw new ClientException($this->client->stream, 'Unknown screen id');
+    }
+
+    $err = $this->client->removeScreen($s);
+    if ($err == 0) {
+       Server::sendString($this->client->stream, "success\n");
+    }
+    else {
+      Server::sendString($this->client->stream, "failed to remove screen\n");
+    }
+
+    $s->destroy();
 
     return 0;
   }
@@ -77,9 +112,75 @@ class ScreenCommands
       return 1;
     }
 
-    //TODO: functionality
+      if (count($args) == 0) {
+      throw new ClientException($this->client->stream, 'Usage: screen_set <id>
+         [-name <name>]
+				 [-wid <width>] [-hgt <height>] [-priority <prio>]
+				 [-duration <int>] [-timeout <int>]
+				 [-heartbeat <type>] [-backlight <type>]
+				 [-cursor <type>]
+				 [-cursor_x <xpos>] [-cursor_y <ypos>]');
+    }
 
-    Server::sendString($this->client->stream, "success\n");
+    if (count($args) == 1) {
+      throw new ClientException($this->client->stream, 'What do you want to set?');
+    }
+
+    $s = $this->client->findScreen($args[0]);
+    if ($s == NULL) {
+      throw new ClientException($this->client->stream, 'Unknown screen id');
+    }
+
+    // Handle the rest of the parameters
+
+    // ignore leading '-' in options: we allow both forms
+    $key = trim($args[0], ' -');
+    $value = trim($args[1]);
+
+    switch ($key) {
+
+      // Handle the "name" parameter
+      case 'name':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-name requires a parameter');
+        }
+        else {
+          $s->name = $value;
+          Server::sendString($this->client->stream, "success\n");
+        }
+        break;
+
+      // Handle the "priority" parameter
+      case 'priority':
+        // first try to interpret it as a number
+        if (is_numeric($value)) {
+          $number = (int) $value;
+					if ($number <= 64) {
+						$number = Screen::PRI_FOREGROUND;
+					} else if (number < 192) {
+						$number = Screen::PRI_INFO;
+					} else {
+						$number = Screen::PRI_BACKGROUND;
+					}
+				} else {
+				  // Try if it is a priority class
+          $number = Screen::priNameToPri($value);
+
+				}
+				if ($number >= 0) {
+				  $s->priority = $number;
+				  Server::sendString($this->client->stream, "success\n");
+				} else {
+				  throw new ClientException($this->client->stream, '-priority requires a parameter');
+				}
+        break;
+
+      // Handle the "duration" parameter
+      case 'duration':
+
+        break;
+
+    }
 
     return 0;
   }
