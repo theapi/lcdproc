@@ -23,8 +23,14 @@ class Client
 
   // Set the mapping of lcdproc commands to our methods
   protected $commands = array(
+    'test'           => array('clientCommands', 'test'),
     'hello'          => array('clientCommands', 'hello'),
     'client_set'     => array('clientCommands', 'clientSet'),
+    'client_add_key' => array('clientCommands', 'clientAddKey'),
+    'screen_del_key' => array('clientCommands', 'clientDelKey'),
+    'backlight'      => array('clientCommands', 'backlight'),
+    'info'           => array('clientCommands', 'info'),
+    'bye'            => array('clientCommands', 'bye'),
 
     'output'         => array('serverCommands', 'output'),
     'sleep'          => array('serverCommands', 'sleep'),
@@ -45,6 +51,8 @@ class Client
     'menu_set_item'  => array('menuCommands', 'setItem'),
     'menu_goto'      => array('menuCommands', 'menuGoto'),
     'menu_set_main'  => array('menuCommands', 'setMain'),
+
+
   );
 
 	/**

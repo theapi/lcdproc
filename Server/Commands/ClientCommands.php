@@ -14,6 +14,16 @@ class ClientCommands
   public function __construct($client) {
     $this->client = $client;
   }
+
+  /**
+   * Debugging only..  prints out a list of arguments it receives
+   */
+  public function test($args) {
+    Server::sendString($this->client->stream, print_r($args, TRUE));
+
+    return 0;
+  }
+
   /**
 	 * The client must say "hello" before doing anything else.
 	 *
