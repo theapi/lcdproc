@@ -2,7 +2,7 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 /**
- * Implements handlers for the client commands concerning screens.
+ * Implements handlers for client commands concerning widgets.
  *
  * This contains definitions for all the functions which clients can run.
  *

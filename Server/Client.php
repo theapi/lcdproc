@@ -6,6 +6,7 @@ use Theapi\Lcdproc\Server\Commands\ClientCommands;
 use Theapi\Lcdproc\Server\Commands\ServerCommands;
 use Theapi\Lcdproc\Server\Commands\ScreenCommands;
 use Theapi\Lcdproc\Server\Commands\WidgetCommands;
+use Theapi\Lcdproc\Server\Commands\MenuCommands;
 use Theapi\Lcdproc\Server;
 
 class Client
@@ -38,6 +39,12 @@ class Client
     'widget_add'     => array('widgetCommands', 'add'),
     'widget_del'     => array('widgetCommands', 'del'),
     'widget_set'     => array('widgetCommands', 'set'),
+
+    'menu_add_item'  => array('menuCommands', 'addItem'),
+    'menu_del_item'  => array('menuCommands', 'delItem'),
+    'menu_set_item'  => array('menuCommands', 'setItem'),
+    'menu_goto'      => array('menuCommands', 'menuGoto'),
+    'menu_set_main'  => array('menuCommands', 'setMain'),
   );
 
 	/**
@@ -62,6 +69,7 @@ class Client
     $this->serverCommands = new ServerCommands($this);
     $this->screenCommands = new ScreenCommands($this);
     $this->widgetCommands = new ScreenCommands($this);
+    $this->menuCommands   = new MenuCommands($this);
   }
 
   public function command($name, $args) {
