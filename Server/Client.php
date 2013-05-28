@@ -25,9 +25,9 @@ class Client
   protected $commands = array(
     'test'           => array('clientCommands', 'test'),
     'hello'          => array('clientCommands', 'hello'),
-    'client_set'     => array('clientCommands', 'clientSet'),
-    'client_add_key' => array('clientCommands', 'clientAddKey'),
-    'screen_del_key' => array('clientCommands', 'clientDelKey'),
+    'client_set'     => array('clientCommands', 'set'),
+    'client_add_key' => array('clientCommands', 'addKey'),
+    'client_del_key' => array('clientCommands', 'delKey'),
     'backlight'      => array('clientCommands', 'backlight'),
     'info'           => array('clientCommands', 'info'),
     'bye'            => array('clientCommands', 'bye'),

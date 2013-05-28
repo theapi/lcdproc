@@ -60,7 +60,7 @@ class ClientCommands
 	 *
    * Usage: client_set -name <id>
 	 */
-  public function clientSet($args) {
+  public function set($args) {
     if (!$this->client->isActive()) {
       return 1;
     }
@@ -89,7 +89,7 @@ class ClientCommands
    * Tells the server the client would like to accept keypresses
    * of a particular type
    */
-  public function clientAddKey($args) {
+  public function addKey($args) {
     if (!$this->client->isActive()) {
       return 1;
     }
@@ -110,7 +110,7 @@ class ClientCommands
    * Tells the server the client would NOT like to accept keypresses
    * of a particular type
    */
-  public function clientDelKey($args) {
+  public function delKey($args) {
     if (!$this->client->isActive()) {
       return 1;
     }
