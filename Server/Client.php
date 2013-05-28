@@ -4,6 +4,8 @@ namespace Theapi\Lcdproc\Server;
 use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Commands\ClientCommands;
 use Theapi\Lcdproc\Server\Commands\ServerCommands;
+use Theapi\Lcdproc\Server\Commands\ScreenCommands;
+use Theapi\Lcdproc\Server\Commands\WidgetCommands;
 use Theapi\Lcdproc\Server;
 
 class Client
@@ -20,11 +22,22 @@ class Client
 
   // Set the mapping of lcdproc commands to our methods
   protected $commands = array(
-    'hello'      => array('clientCommands', 'hello'),
-    'client_set' => array('clientCommands', 'clientSet'),
-    'output'     => array('serverCommands', 'output'),
-    'sleep'      => array('serverCommands', 'sleep'),
-    'noop'       => array('serverCommands', 'noop'),
+    'hello'          => array('clientCommands', 'hello'),
+    'client_set'     => array('clientCommands', 'clientSet'),
+
+    'output'         => array('serverCommands', 'output'),
+    'sleep'          => array('serverCommands', 'sleep'),
+    'noop'           => array('serverCommands', 'noop'),
+
+    'screen_add'     => array('screenCommands', 'add'),
+    'screen_del'     => array('screenCommands', 'del'),
+    'screen_set'     => array('screenCommands', 'set'),
+    'screen_add_key' => array('screenCommands', 'addKey'),
+    'screen_del_key' => array('screenCommands', 'delKey'),
+
+    'widget_add'     => array('widgetCommands', 'add'),
+    'widget_del'     => array('widgetCommands', 'del'),
+    'widget_set'     => array('widgetCommands', 'set'),
   );
 
 	/**
@@ -47,7 +60,8 @@ class Client
 
     $this->clientCommands = new ClientCommands($this);
     $this->serverCommands = new ServerCommands($this);
-
+    $this->screenCommands = new ScreenCommands($this);
+    $this->widgetCommands = new ScreenCommands($this);
   }
 
   public function command($name, $args) {
