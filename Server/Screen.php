@@ -27,25 +27,22 @@ class Screen
   const PRI_ALERT = 4;
   const PRI_INPUT = 5;
 
-
-  protected $config;
-
   public $name = NULL;
+  public $priority = self::PRI_INFO;
   public $duration = 0;
+  public $backlight = Config::BACKLIGHT_OFF;
+	public $heartbeat = Config::HEARTBEAT_OFF;
+  public $width;
+	public $height;
+	public $keys = NULL;
   public $client = NULL;
-	public $priority = self::PRI_INFO;
+	public $timeout = -1; 	/*ignored unless greater than 0.*/
+	public $cursor = Config::CURSOR_OFF;
+	public $cursor_x = 1;
+	public $cursor_y = 1;
 
-	protected $backlight = Config::BACKLIGHT_OFF;
-	protected $heartbeat = Config::HEARTBEAT_OFF;
-	protected $width;
-	protected $height;
-	protected $keys = NULL;
 	protected $widgetlist = array();
-	protected $timeout = -1; 	/*ignored unless greater than 0.*/
-	protected $cursor = Config::CURSOR_OFF;
-	protected $cursor_x = 1;
-	protected $cursor_y = 1;
-
+  protected $config;
 
 	/**
    * Create a screen.

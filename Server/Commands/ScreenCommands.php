@@ -2,6 +2,7 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 use Theapi\Lcdproc\Server\Screen;
+use Theapi\Lcdproc\Server\Config;
 
 /**
  * Implements handlers for the client commands concerning screens.
@@ -155,13 +156,13 @@ class ScreenCommands
         // first try to interpret it as a number
         if (is_numeric($value)) {
           $number = (int) $value;
-					if ($number <= 64) {
-						$number = Screen::PRI_FOREGROUND;
-					} else if (number < 192) {
-						$number = Screen::PRI_INFO;
-					} else {
-						$number = Screen::PRI_BACKGROUND;
-					}
+          if ($number <= 64) {
+          	$number = Screen::PRI_FOREGROUND;
+          } else if (number < 192) {
+          	$number = Screen::PRI_INFO;
+          } else {
+          	$number = Screen::PRI_BACKGROUND;
+          }
 				} else {
 				  // Try if it is a priority class
           $number = Screen::priNameToPri($value);
@@ -177,9 +178,128 @@ class ScreenCommands
 
       // Handle the "duration" parameter
       case 'duration':
-
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-heartbeat requires a parameter');
+        }
+        $s->duration = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
         break;
 
+      // Handle the "wid" parameter
+      case 'wid':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-wid requires a parameter');
+        }
+        $s->width = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "hgt" parameter
+      case 'hgt':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-hgt requires a parameter');
+        }
+        $s->height = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "timeout" parameter
+      case 'timeout':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-timeout requires a parameter');
+        }
+        $s->timeout = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "backlight" parameter
+      case 'backlight':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-backlight requires a parameter');
+        }
+
+        // set the backlight status based on what the client has set
+        switch ($this->client->backlight) {
+          case Config::BACKLIGHT_OPEN:
+            switch ($value) {
+              case 'on':
+                $s->backlight = Config::BACKLIGHT_ON;
+                break;
+
+              case 'off':
+                $s->backlight = Config::BACKLIGHT_OFF;
+                break;
+
+              case 'toggle':
+                if ($s->backlight == Config::BACKLIGHT_ON) {
+                  $s->backlight = Config::BACKLIGHT_OFF;
+                } else {
+                  $s->backlight = Config::BACKLIGHT_ON;
+                }
+                break;
+
+              case 'blink':
+                $s->backlight = Config::BACKLIGHT_BLINK;
+                break;
+              case 'flash':
+                $s->backlight = Config::BACKLIGHT_FLASH;
+                break;
+              default:
+                // Maybe its a colour
+                $s->backlight = $value;
+                break;
+            }
+          break;
+
+          default:
+            // If the backlight is not OPEN then inherit its state
+            $s->backlight = $this->client->backlight;
+            break;
+        }
+
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "cursor" parameter
+      case 'cursor':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-cursor requires a parameter');
+        }
+
+        switch ($value) {
+          case 'off':
+            $s->cursor = Config::CURSOR_OFF;
+            break;
+          case 'on':
+            $s->cursor = Config::CURSOR_ON;
+            break;
+          case 'under':
+            $s->cursor = Config::CURSOR_UNDER;
+            break;
+          case 'block':
+            $s->cursor = Config::CURSOR_BLOCK;
+            break;
+        }
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "cursor_x" parameter
+      case 'cursor_x':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-cursor_x requires a parameter');
+        }
+        $s->cursor_x = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
+        break;
+
+      // Handle the "cursor_y" parameter
+      case 'cursor_y':
+        if (empty($value)) {
+          throw new ClientException($this->client->stream, '-cursor_y requires a parameter');
+        }
+        $s->cursor_y = (int) $value;
+        Server::sendString($this->client->stream, "success\n");
+        break;
     }
 
     return 0;

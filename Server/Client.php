@@ -7,6 +7,7 @@ use Theapi\Lcdproc\Server\Commands\ServerCommands;
 use Theapi\Lcdproc\Server\Commands\ScreenCommands;
 use Theapi\Lcdproc\Server\Commands\WidgetCommands;
 use Theapi\Lcdproc\Server\Commands\MenuCommands;
+use Theapi\Lcdproc\Server\Config;
 use Theapi\Lcdproc\Server;
 
 class Client
@@ -14,7 +15,7 @@ class Client
 
   public $stream;
   protected $messages = array();
-  public $backlight;
+  public $backlight = Config::BACKLIGHT_OPEN;
   protected $heartbeat;
   protected $state;
   protected $name;

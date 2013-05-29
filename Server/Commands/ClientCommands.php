@@ -25,10 +25,10 @@ class ClientCommands
   }
 
   /**
-	 * The client must say "hello" before doing anything else.
-	 *
+   * The client must say "hello" before doing anything else.
+   *
    * Usage: hello
-	 */
+   */
   public function hello($args) {
     $this->client->setStateActive();
 
@@ -56,10 +56,10 @@ class ClientCommands
   }
 
   /**
-	 * Sets info about the client, such as its name
-	 *
+   * Sets info about the client, such as its name
+   *
    * Usage: client_set -name <id>
-	 */
+   */
   public function set($args) {
     if (!$this->client->isActive()) {
       return 1;
