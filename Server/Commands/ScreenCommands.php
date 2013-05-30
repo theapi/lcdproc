@@ -116,13 +116,16 @@ class ScreenCommands
         }
 
         if (count($args) == 0) {
-            throw new ClientException($this->client->stream, 'Usage: screen_set <id>
-                            [-name <name>]
-                            [-wid <width>] [-hgt <height>] [-priority <prio>]
-                            [-duration <int>] [-timeout <int>]
-                            [-heartbeat <type>] [-backlight <type>]
-                            [-cursor <type>]
-                            [-cursor_x <xpos>] [-cursor_y <ypos>]');
+            throw new ClientException(
+                $this->client->stream,
+                'Usage: screen_set <id>
+                [-name <name>]
+                [-wid <width>] [-hgt <height>] [-priority <prio>]
+                [-duration <int>] [-timeout <int>]
+                [-heartbeat <type>] [-backlight <type>]
+                [-cursor <type>]
+                [-cursor_x <xpos>] [-cursor_y <ypos>]'
+            );
         }
 
         if (count($args) == 1) {
@@ -159,7 +162,7 @@ class ScreenCommands
                     $number = (int) $value;
                     if ($number <= 64) {
                         $number = Screen::PRI_FOREGROUND;
-                    } elseif (number < 192) {
+                    } elseif ($number < 192) {
                         $number = Screen::PRI_INFO;
                     } else {
                         $number = Screen::PRI_BACKGROUND;
@@ -226,11 +229,9 @@ class ScreenCommands
                             case 'on':
                                 $s->backlight = Config::BACKLIGHT_ON;
                                 break;
-
                             case 'off':
                                 $s->backlight = Config::BACKLIGHT_OFF;
                                 break;
-
                             case 'toggle':
                                 if ($s->backlight == Config::BACKLIGHT_ON) {
                                     $s->backlight = Config::BACKLIGHT_OFF;
@@ -238,7 +239,6 @@ class ScreenCommands
                                     $s->backlight = Config::BACKLIGHT_ON;
                                 }
                                 break;
-
                             case 'blink':
                                 $s->backlight = Config::BACKLIGHT_BLINK;
                                 break;
@@ -251,7 +251,6 @@ class ScreenCommands
                                 break;
                         }
                         break;
-
                     default:
                         // If the backlight is not OPEN then inherit its state
                         $s->backlight = $this->client->backlight;
@@ -343,5 +342,4 @@ class ScreenCommands
 
         return 0;
     }
-
 }

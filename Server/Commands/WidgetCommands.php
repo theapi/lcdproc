@@ -88,5 +88,4 @@ class WidgetCommands
 
         return 0;
     }
-
 }

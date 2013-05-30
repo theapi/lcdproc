@@ -273,10 +273,9 @@ class MenuCommands
      * created on behalf of the clients. It informs the client with
      * an event message.
      */
-    public function MenuEventFunc()
+    public function menuEventFunc()
     {
 
         return 0;
     }
-
 }

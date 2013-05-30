@@ -55,5 +55,4 @@ class ServerCommands
 
         Server::sendString($this->client->stream, "noop complete\n");
     }
-
 }
