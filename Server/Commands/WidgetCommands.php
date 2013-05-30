@@ -12,10 +12,10 @@ namespace Theapi\Lcdproc\Server\Commands;
 
 /* This file is part of phpLCDd, the php lcdproc server.
  *
- * This file is released under the GNU General Public License.
- * Refer to the COPYING file distributed with this package.
- *
- */
+* This file is released under the GNU General Public License.
+* Refer to the COPYING file distributed with this package.
+*
+*/
 
 use Theapi\Lcdproc\Server;
 use Theapi\Lcdproc\Server\Exception\ClientException;
@@ -23,66 +23,70 @@ use Theapi\Lcdproc\Server\Exception\ClientException;
 class WidgetCommands
 {
 
-  protected $client;
+    protected $client;
 
-  public function __construct($client) {
-    $this->client = $client;
-  }
-
-
-  /**
-   * Adds a widget to a screen, but doesn't give it a value
-   *
-   * Usage: widget_add <screenid> <widgetid> <widgettype> [-in <id>]
-   */
-  public function add($args) {
-    if (!$this->client->isActive()) {
-      return 1;
+    public function __construct($client)
+    {
+        $this->client = $client;
     }
 
-    //TODO: functionality
 
-    Server::sendString($this->client->stream, "success\n");
+    /**
+     * Adds a widget to a screen, but doesn't give it a value
+     *
+     * Usage: widget_add <screenid> <widgetid> <widgettype> [-in <id>]
+     */
+    public function add($args)
+    {
+        if (!$this->client->isActive()) {
+            return 1;
+        }
 
-    return 0;
-  }
+        //TODO: functionality
 
+        Server::sendString($this->client->stream, "success\n");
 
-  /**
-   * Removes a widget from a screen, and forgets about it
-   *
-   * Usage: widget_del <screenid> <widgetid>
-   */
-  public function del($args) {
-    if (!$this->client->isActive()) {
-      return 1;
+        return 0;
     }
 
-    //TODO: functionality
 
-    Server::sendString($this->client->stream, "success\n");
+    /**
+     * Removes a widget from a screen, and forgets about it
+     *
+     * Usage: widget_del <screenid> <widgetid>
+     */
+    public function del($args)
+    {
+        if (!$this->client->isActive()) {
+            return 1;
+        }
 
-    return 0;
-  }
+        //TODO: functionality
 
-  /**
-   * Configures information about a widget, such as its size, shape,
-   * contents, position, speed, etc.
-   *
-   *
-   * widget_set <screenid> <widgetid> <widget-SPECIFIC-data>
-   *
-   */
-  public function set($args) {
-    if (!$this->client->isActive()) {
-      return 1;
+        Server::sendString($this->client->stream, "success\n");
+
+        return 0;
     }
 
-    //TODO: functionality
+    /**
+     * Configures information about a widget, such as its size, shape,
+     * contents, position, speed, etc.
+     *
+     *
+     * widget_set <screenid> <widgetid> <widget-SPECIFIC-data>
+     *
+     */
+    public function set($args)
+    {
+        if (!$this->client->isActive()) {
+            return 1;
+        }
 
-    Server::sendString($this->client->stream, "success\n");
+        //TODO: functionality
 
-    return 0;
-  }
+        Server::sendString($this->client->stream, "success\n");
+
+        return 0;
+    }
 
 }

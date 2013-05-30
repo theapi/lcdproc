@@ -8,48 +8,52 @@ use Theapi\Lcdproc\Server\Exception\ClientException;
 class ServerCommands
 {
 
-  protected $client;
+    protected $client;
 
-  public function __construct($client) {
-    $this->client = $client;
-  }
-
-  /**
-   * Sets the state of the output port
-   *
-   * (so does nothing)
-   */
-  public function output($args) {
-    if (!$this->client->isActive()) {
-      throw new ClientException($this->client->stream);
+    public function __construct($client)
+    {
+        $this->client = $client;
     }
 
-    // Lie :)
-    Server::sendString($this->client->stream, "success\n");
-  }
+    /**
+     * Sets the state of the output port
+     *
+     * (so does nothing)
+     */
+    public function output($args)
+    {
+        if (!$this->client->isActive()) {
+            throw new ClientException($this->client->stream);
+        }
 
-  /**
-	 * The sleep_func was intended to make the server sleep for some seconds.
-   * This function is currently ignored as making the server sleep actually
-   * stalls it and disrupts other clients.
-	 */
-  public function sleep($args) {
-    if (!$this->client->isActive()) {
-      throw new ClientException($this->client->stream);
+        // Lie :)
+        Server::sendString($this->client->stream, "success\n");
     }
 
-    Server::sendString($this->client->stream, "ignored (not fully implemented)\n");
-  }
+    /**
+     * The sleep_func was intended to make the server sleep for some seconds.
+     * This function is currently ignored as making the server sleep actually
+     * stalls it and disrupts other clients.
+     */
+    public function sleep($args)
+    {
+        if (!$this->client->isActive()) {
+            throw new ClientException($this->client->stream);
+        }
 
-  /**
-	 * Does nothing, returns "noop complete" message.
-	 */
-  public function noop($args) {
-    if (!$this->client->isActive()) {
-      throw new ClientException($this->client->stream);
+        Server::sendString($this->client->stream, "ignored (not fully implemented)\n");
     }
 
-    Server::sendString($this->client->stream, "noop complete\n");
-  }
+    /**
+     * Does nothing, returns "noop complete" message.
+     */
+    public function noop($args)
+    {
+        if (!$this->client->isActive()) {
+            throw new ClientException($this->client->stream);
+        }
+
+        Server::sendString($this->client->stream, "noop complete\n");
+    }
 
 }
