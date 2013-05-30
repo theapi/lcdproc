@@ -97,13 +97,11 @@ class Client
                 if ($error) {
                     throw new ClientException($this->stream, 'Function returned error ' . $method);
                 }
-            }
-            else {
+            } else {
                 // oops there's a command mapping mixup
                 // TODO: exceptions for coding errors
             }
-        }
-        else {
+        } else {
             throw new ClientException($this->stream, 'Invalid command ' . $name);
         }
     }
@@ -191,5 +189,4 @@ class Client
     {
 
     }
-
 }

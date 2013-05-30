@@ -13,7 +13,7 @@ class Clients
     public function addClient($client)
     {
         $key = (string) $client->getStream();
-        $this->clientList[$key] = $client; var_dump($key);
+        $this->clientList[$key] = $client;
     }
 
     public function removeClient($client)
@@ -44,5 +44,4 @@ class Clients
         }
         return null;
     }
-
 }
