@@ -233,6 +233,7 @@ class Piplate
         if ($this->debug > 1) {
             echo " < $line\n";
         }
+
         return $line;
     }
 
@@ -253,7 +254,9 @@ class Piplate
         }
 
         if ($this->debug > 1) {
-            foreach(explode("\n", $buf) as $line) echo " > $line\n";
+            foreach (explode("\n", $buf) as $line) {
+                echo " > $line\n";
+            }
         }
         @fwrite($this->fp, "$buf\n");
 
@@ -272,5 +275,4 @@ class Piplate
             echo ">< Disconnected!\n";
         }
     }
-
 }

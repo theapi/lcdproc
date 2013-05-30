@@ -42,6 +42,7 @@ class Clients
         if (isset($this->clientList[$key])) {
             return $this->clientList[$key];
         }
+
         return null;
     }
 }

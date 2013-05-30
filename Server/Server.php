@@ -163,8 +163,9 @@ class Server
     {
         $data = fread($stream, 1024);
 
-        if ($data === false || strlen($data) === 0) { // connection closed
+        if ($data === false || strlen($data) === 0) {
             $this->removeStream($stream);
+            // connection closed
             return;
         }
 
@@ -184,11 +185,9 @@ class Server
         $function = array_shift($args);
 
         switch ($function) {
-
             case 'debug': // not part of the spec
                 $this->fnDebug($stream);
                 break;
-
             default:
                 try {
                     $client->command($function, $args);
@@ -219,5 +218,4 @@ class Server
             fwrite($stream, 'huh? ' . $message . "\n");
         }
     }
-
 }

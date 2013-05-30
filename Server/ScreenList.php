@@ -169,8 +169,7 @@ class ScreenList
 
         if (isset($this->screenList[$this->currentId])) {
             return $this->screenList[$this->currentId];
-        }
-        else {
+        } else {
             unset($this->currentId);
         }
 
@@ -189,6 +188,7 @@ class ScreenList
         foreach ($this->screenList as $id => $screen) {
             if ($next) {
                 $this->switchScreen($screen);
+
                 return;
             }
             if ($id == $current->id) {
@@ -214,10 +214,13 @@ class ScreenList
      */
     public static function comparePriority($one, $two)
     {
-        if (!$one) return 0;
-        if (!$two) return 0;
+        if (!$one) {
+             return 0;
+        }
+        if (!$two) {
+            return 0;
+        }
 
         return ($two->priority - $one->priority);
     }
-
 }

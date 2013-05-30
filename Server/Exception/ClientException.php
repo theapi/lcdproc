@@ -19,5 +19,4 @@ class CLientException extends \Exception
     {
         return $this->stream;
     }
-
 }

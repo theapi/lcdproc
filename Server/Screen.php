@@ -114,6 +114,7 @@ class Screen
             // not doing 'Search subscreens recursively' for now
             return $this->widgetlist[$id];
         }
+
         return null;
     }
 
@@ -149,5 +150,4 @@ class Screen
     {
 
     }
-
 }

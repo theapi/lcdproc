@@ -53,6 +53,7 @@ class ServerScreens
                 $w = new Widget($id, Widget::WID_STRING, $this->screen);
             } catch (CLientException $e) {
                 echo $e->getMessage();
+                // TODO: log rather than echo
                 return;
             }
 
@@ -130,12 +131,11 @@ class ServerScreens
         // tmp jump straight to render
         //TODO: not jump straight to render
         $w = $this->screen->findWidget('line1');
-        $this->container->drivers->string($w->x , $w->y, $w->text);
+        $this->container->drivers->string($w->x, $w->y, $w->text);
         $w = $this->screen->findWidget('line2');
         $w->text = (string) microtime(true);
-        $this->container->drivers->string($w->x , $w->y, $w->text);
+        $this->container->drivers->string($w->x, $w->y, $w->text);
         $this->container->drivers->flush();
 
     }
-
 }
