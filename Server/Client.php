@@ -126,6 +126,7 @@ class Client
         if ($this->state == self::STATE_ACTIVE) {
             return true;
         }
+
         return false;
     }
 
