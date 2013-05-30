@@ -14,4 +14,3 @@ require 'Server/Server.php';
 
 $server = new Server();
 $server->run();
-
