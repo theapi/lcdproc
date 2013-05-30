@@ -11,6 +11,10 @@ use Theapi\Lcdproc\Server\Drivers\Piplate;
 class Drivers
 {
 
+    //TODO: get the python scrpt to accept these utf-8 chars
+    const ICON_HEART_OPEN   = '♡'; // "\xE2\x99\xA1";
+    const ICON_HEART_FILLED = "\xE2\x9D\xA4"; //'❤'; //0x108; //'❤'; // "\xE2\x9D\xA4";
+
     protected $config;
 
     protected $loadedDrivers = array();

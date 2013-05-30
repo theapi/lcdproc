@@ -100,9 +100,28 @@ class WidgetCommands
             return 1;
         }
 
-        //TODO: functionality
+        if (count($args) != 2) {
+            throw new ClientException($this->client->stream, 'Usage: widget_del <screenid> <widgetid>');
+        }
 
-        Server::sendString($this->client->stream, "success\n");
+        $sid = $args[0];
+        $wid = $args[1];
+        $s = $this->client->findScreen($sid);
+        if ($s != null) {
+            throw new ClientException($this->client->stream, 'Invalid screen id');
+        }
+
+        $w = $s->findWidget($wid);
+        if ($w != null) {
+            throw new ClientException($this->client->stream, 'Invalid widget id');
+        }
+
+        $err = $s->removeWidget($w);
+        if ($err == 0) {
+            Server::sendString($this->client->stream, "success\n");
+        } else {
+            throw new ClientException($this->client->stream, 'Error removing widget');
+        }
 
         return 0;
     }
@@ -110,7 +129,6 @@ class WidgetCommands
     /**
      * Configures information about a widget, such as its size, shape,
      * contents, position, speed, etc.
-     *
      *
      * widget_set <screenid> <widgetid> <widget-SPECIFIC-data>
      *
@@ -121,9 +139,99 @@ class WidgetCommands
             return 1;
         }
 
-        //TODO: functionality
+        // If there weren't enough parameters...
+        // We can't test for too many, since each widget may have a
+        // different number - plus, if the argument count is wrong, what ELSE
+        // could be wrong...?
+        if (count($args) < 3) {
+            throw new ClientException(
+                $this->client->stream,
+                'Usage: widget_set <screenid> <widgetid> <widget-SPECIFIC-data>'
+            );
+        }
 
-        Server::sendString($this->client->stream, "success\n");
+        // Find screen
+        $sid = $args[0];
+        $s = $this->client->findScreen($sid);
+        if ($s != null) {
+            throw new ClientException($this->client->stream, 'Unknown screen id');
+        }
+
+        // Find widget
+        $wid = $args[1];
+        $w = $s->findWidget($wid);
+        if ($w != null) {
+            throw new ClientException($this->client->stream, 'Unknown widget id');
+        }
+
+        switch ($w->type) {
+            case Widget::WID_STRING:
+                // String takes "x y text"
+                if (!isset($args[4])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+                if (!is_numeric($args[2]) || !is_numeric($args[3])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                $w->x = (int) $args[2];
+                $w->y = (int) $args[3];
+                $w->text = $args[4];
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_HBAR:
+                // Hbar takes "x y length"
+                if (!isset($args[4])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+                if (!is_numeric($args[2]) || !is_numeric($args[3])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                $w->x = (int) $args[2];
+                $w->y = (int) $args[3];
+                // This is the length in pixels
+                $w->length = (int) $args[4];
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_VBAR:
+                // Vbar takes "x y length"
+                if (!isset($args[4])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+                if (!is_numeric($args[2]) || !is_numeric($args[3])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                $w->x = (int) $args[2];
+                $w->y = (int) $args[3];
+                // This is the length in pixels
+                $w->length = (int) $args[4];
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_ICON:
+                // Icon takes "x y icon"
+                if (!isset($args[4])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+                if (!is_numeric($args[2]) || !is_numeric($args[3])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                $w->x = (int) $args[2];
+                $w->y = (int) $args[3];
+                $icon = Widget::iconNameToIcon($args[4]);
+                if (!$icon) {
+                    throw new ClientException($this->client->stream, 'Invalid icon name');
+                }
+                $w->length = $icon; // Mmm, that ain't gonna work
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+
+        }
 
         return 0;
     }

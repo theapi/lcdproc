@@ -4,6 +4,7 @@ namespace Theapi\Lcdproc\Server;
 use Theapi\Lcdproc\Server\Screen;
 use Theapi\Lcdproc\Server\Widget;
 use Theapi\Lcdproc\Server\Clients;
+use Theapi\Lcdproc\Server\Drivers;
 
 /**
  * This contains code to allow the server to generate its own screens.
@@ -88,7 +89,7 @@ class ServerScreens
         // naughty hard coded for now
         $w = $this->screen->findWidget('line1');
         if ($w) {
-            $w->text = 'PHP LCDproc';
+            $w->text = Drivers::ICON_HEART_FILLED . ' PHP LCDproc';
             $w->x = 3; // Just testing
         }
 

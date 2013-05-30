@@ -120,7 +120,7 @@ class Widget
     /**
      * Find a widget icon by type.
      */
-    public function iconToIconName($type)
+    public static function iconToIconName($type)
     {
 
     }
@@ -128,7 +128,7 @@ class Widget
     /**
      * Find a widget icon by name.
      */
-    public function iconNameToIcon($type)
+    public static function iconNameToIcon($type)
     {
 
     }
