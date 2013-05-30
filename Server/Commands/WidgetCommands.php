@@ -1,6 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server\Commands;
 
+use Theapi\Lcdproc\Server\Widget;
+
 /**
  * Implements handlers for client commands concerning widgets.
  *
@@ -12,10 +14,10 @@ namespace Theapi\Lcdproc\Server\Commands;
 
 /* This file is part of phpLCDd, the php lcdproc server.
  *
-* This file is released under the GNU General Public License.
-* Refer to the COPYING file distributed with this package.
-*
-*/
+ * This file is released under the GNU General Public License.
+ * Refer to the COPYING file distributed with this package.
+ *
+ */
 
 use Theapi\Lcdproc\Server;
 use Theapi\Lcdproc\Server\Exception\ClientException;
@@ -42,9 +44,46 @@ class WidgetCommands
             return 1;
         }
 
-        //TODO: functionality
+        $countArgs = count($args);
+        if ($countArgs < 3 || $countArgs > 5) {
+            throw new ClientException(
+                $this->client->stream,
+                'Usage: widget_add <screenid> <widgetid> <widgettype> [-in <id>]'
+            );
+        }
 
-        Server::sendString($this->client->stream, "success\n");
+        $sid = $args[0];
+        $wid = $args[1];
+        $s = $this->client->findScreen($sid);
+        if ($s != null) {
+            throw new ClientException($this->client->stream, 'Invalid screen id');
+        }
+
+        // Find widget type
+        $wtype = Widget::typeNameToType($args[2]);
+        if ($wtype == Widget::WID_NONE) {
+            throw new ClientException($this->client->stream, 'Invalid widget type');
+        }
+
+        // Check for additional flags...
+        if ($countArgs > 3) {
+            // Not implementing frames (in options)...
+            throw new ClientException($this->client->stream, 'Frames not implemented');
+        }
+
+        // Create the widget
+        $w = new Widget($wid, $wtype, $s);
+        if ($w == null) {
+            throw new ClientException($this->client->stream, 'Error adding widget');
+        }
+
+        // Add the widget to the screen
+        $err = $s->addWidget($w);
+        if ($err == 0) {
+            Server::sendString($this->client->stream, "success\n");
+        } else {
+            throw new ClientException($this->client->stream, 'Error adding widget');
+        }
 
         return 0;
     }

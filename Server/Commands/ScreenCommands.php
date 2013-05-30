@@ -144,7 +144,6 @@ class ScreenCommands
         $value = trim($args[1]);
 
         switch ($key) {
-
             // Handle the "name" parameter
             case 'name':
                 if (empty($value)) {
@@ -154,8 +153,7 @@ class ScreenCommands
                     Server::sendString($this->client->stream, "success\n");
                 }
                 break;
-
-                // Handle the "priority" parameter
+            // Handle the "priority" parameter
             case 'priority':
                 // first try to interpret it as a number
                 if (is_numeric($value)) {
@@ -179,8 +177,7 @@ class ScreenCommands
                     throw new ClientException($this->client->stream, '-priority requires a parameter');
                 }
                 break;
-
-                // Handle the "duration" parameter
+            // Handle the "duration" parameter
             case 'duration':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-heartbeat requires a parameter');
@@ -188,8 +185,7 @@ class ScreenCommands
                 $s->duration = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "wid" parameter
+            // Handle the "wid" parameter
             case 'wid':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-wid requires a parameter');
@@ -197,8 +193,7 @@ class ScreenCommands
                 $s->width = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "hgt" parameter
+            // Handle the "hgt" parameter
             case 'hgt':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-hgt requires a parameter');
@@ -206,8 +201,7 @@ class ScreenCommands
                 $s->height = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "timeout" parameter
+            // Handle the "timeout" parameter
             case 'timeout':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-timeout requires a parameter');
@@ -215,8 +209,7 @@ class ScreenCommands
                 $s->timeout = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "backlight" parameter
+            // Handle the "backlight" parameter
             case 'backlight':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-backlight requires a parameter');
@@ -259,8 +252,7 @@ class ScreenCommands
 
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "cursor" parameter
+            // Handle the "cursor" parameter
             case 'cursor':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-cursor requires a parameter');
@@ -282,8 +274,7 @@ class ScreenCommands
                 }
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "cursor_x" parameter
+            // Handle the "cursor_x" parameter
             case 'cursor_x':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-cursor_x requires a parameter');
@@ -291,8 +282,7 @@ class ScreenCommands
                 $s->cursor_x = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
                 break;
-
-                // Handle the "cursor_y" parameter
+            // Handle the "cursor_y" parameter
             case 'cursor_y':
                 if (empty($value)) {
                     throw new ClientException($this->client->stream, '-cursor_y requires a parameter');

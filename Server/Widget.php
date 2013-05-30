@@ -74,16 +74,37 @@ class Widget
      *
      * @param $typeName  Name of the widget type.
      */
-    public function typeNameToType($typeName)
+    public static function typeNameToType($typeName)
     {
-
+        switch ($typeName) {
+            case 'none':
+                return self::WID_NONE;
+            case 'string':
+                return self::WID_STRING;
+            case 'hbar':
+                return self::WID_HBAR;
+            case 'vbar':
+                return self::WID_VBAR;
+            case 'icon':
+                return self::WID_ICON;
+            case 'title':
+                return self::WID_TITLE;
+            case 'scroller':
+                return self::WID_SCROLLER;
+            case 'frame':
+                return self::WID_FRAME;
+            case 'num':
+                return self::WID_NUM;
+            default:
+                return self::WID_NONE;
+        }
     }
 
     /**
      * Convert a widget type to the associated type name.
      *
      */
-    public function typeToTypeName($type)
+    public static function typeToTypeName($type)
     {
 
     }
