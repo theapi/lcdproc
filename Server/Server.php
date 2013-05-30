@@ -28,196 +28,196 @@ require_once 'Exception/ClientException.php';
 
 class Server
 {
+    // $this can be passed as a container,
+    // so the initialised classes are available to be used
 
-  protected $ip;
-  protected $port;
-  protected $socket;
+    // The config object
+    public $config;
+    // The render object
+    public $render;
+    // The clients object
+    public $clients;
+    // The drivers object
+    public $drivers;
+    // The serverScreen object
+    public $screenList;
+    // The serverScreen object
+    public $serverScreen;
 
-  // Hold arrays for stream_select to listen to
-  protected $streams = array();
+    public $timer = 0;
 
-  // $this can be passed as a container,
-  // so the initialised classes are available to be used
+    protected $ip;
+    protected $port;
+    protected $socket;
 
-  // The config object
-  public $config;
-  // The render object
-  public $render;
-  // The clients object
-  public $clients;
-  // The drivers object
-  public $drivers;
-  // The serverScreen object
-  public $screenList;
-  // The serverScreen object
-  public $serverScreen;
-
-  // err
-  public $timer = 0;
+    // Hold arrays for stream_select to listen to
+    protected $streams = array();
 
 
-  public function __construct($driverName = 'piplate') {
+    public function __construct($driverName = 'piplate')
+    {
+        // set_default_settings
+        $this->config = new Config();
 
-    // set_default_settings
-    $this->config = new Config();
+        // screenlist_init
+        $this->screenList = new ScreenList($this);
 
-    // screenlist_init
-    $this->screenList = new ScreenList($this);
+        // init_drivers
+        $this->drivers = new Drivers($this->config);
+        $this->drivers->loadDriver($driverName);
 
-    // init_drivers
-    $this->drivers = new Drivers($this->config);
-    $this->drivers->loadDriver($driverName);
+        // clients_init
+        $this->clients = new Clients();
 
-    // clients_init
-    $this->clients = new Clients();
+        $this->render = new Render();
 
-    $this->render = new Render();
+        // input_init
 
-    // input_init
+        // menuscreens_init
 
-    // menuscreens_init
-
-    // server_screen_init
-    $this->serverScreen = new ServerScreens($this);
-  }
-
-  public function run($ip = '127.0.0.1', $port = 13666)
-  {
-    $this->ip = $ip;
-    $this->port = $port;
-
-    $this->socket = stream_socket_server('tcp://' . $this->ip . ':' . $this->port, $errno, $errstr);
-    if (!$this->socket) {
-      throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
+        // server_screen_init
+        $this->serverScreen = new ServerScreens($this);
     }
-    $this->streams[] = $this->socket;
 
-    $this->doMainLoop();
-  }
+    public function run($ip = '127.0.0.1', $port = 13666)
+    {
+        $this->ip = $ip;
+        $this->port = $port;
 
-  public function doMainLoop()
-  {
-
-    /*
-    $renderFreq = 2; // Complete guess for now
-
-    $processLag = 0;
-    $renderLag = 0;
-
-    // Microtime as a float
-    $time = microtime(TRUE);
-    */
-
-    do {
-
-      /*
-      $lastTime = $time;
-      $time = microtime(TRUE);
-      $timeDiff = $time - $lastTime;
-      */
-
-      $read = $this->streams;
-      $write = $error = NULL;
-
-      // sock_poll_clients (with a little blocking)
-      $numChanged = stream_select($read, $write, $except, 0, 500000);
-      if ($numChanged === FALSE) {
-        // Mmm a problem
-        break;
-      }
-
-      foreach ($read as $stream) {          //var_dump(stream_socket_get_name($stream, 1));
-        if ($stream === $this->socket) {
-          // New client connection
-          $conn = stream_socket_accept($this->socket);
-
-          // add the connection to the array to be watched
-          $this->streams[] = $conn;
+        $this->socket = stream_socket_server('tcp://' . $this->ip . ':' . $this->port, $errno, $errstr);
+        if (!$this->socket) {
+            throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
         }
-        else {
-          $this->handleInput($stream);
+        $this->streams[] = $this->socket;
+
+        $this->doMainLoop();
+    }
+
+    public function doMainLoop()
+    {
+
+        /*
+         $renderFreq = 2; // Complete guess for now
+
+        $processLag = 0;
+        $renderLag = 0;
+
+        // Microtime as a float
+        $time = microtime(true);
+        */
+
+        do {
+
+            /*
+             $lastTime = $time;
+            $time = microtime(true);
+            $timeDiff = $time - $lastTime;
+            */
+
+            $read = $this->streams;
+            $write = $error = null;
+
+            // sock_poll_clients (with a little blocking)
+            $numChanged = stream_select($read, $write, $except, 0, 500000);
+            if ($numChanged === false) {
+                // Mmm a problem
+                break;
+            }
+
+            foreach ($read as $stream) {          //var_dump(stream_socket_get_name($stream, 1));
+                if ($stream === $this->socket) {
+                    // New client connection
+                    $conn = stream_socket_accept($this->socket);
+
+                    // add the connection to the array to be watched
+                    $this->streams[] = $conn;
+                } else {
+                    $this->handleInput($stream);
+                }
+            }
+
+            // Time for rendering
+            $this->timer++;
+            $this->screenList->process();
+            $screen = $this->screenList->current();
+            if ($screen->id == '_server_screen') {
+                $this->serverScreen->update();
+            }
+
+            $this->render->screen($screen, $this->timer);
+
+        } while (1);
+
+        fclose($this->socket);
+    }
+
+    public function removeStream($stream)
+    {
+        $key = array_search($stream, $this->streams);
+        fclose($this->streams[$key]);
+        unset($this->clients[$key]);
+        unset($this->streams[$key]);
+    }
+
+    public function handleInput($stream)
+    {
+        $data = fread($stream, 1024);
+
+        if ($data === false || strlen($data) === 0) { // connection closed
+            $this->removeStream($stream);
+            return;
         }
-      }
 
-      // Time for rendering
-      $this->timer++;
-      $this->screenList->process();
-      $screen = $this->screenList->current();
-      if ($screen->id == '_server_screen') {
-        $this->serverScreen->update();
-      }
+        $args = explode(' ', trim($data));
+        if (count($args) == 0) {
+            // send error
+            return;
+        }
 
-      $this->render->screen($screen, $this->timer);
+        $client = $this->clients->findByStream($stream);
+        if (empty($client)) {
+            // a new client
+            $client = new Client($this, $stream);
+            $this->clients->addClient($client);
+        }
 
-    } while (1);
+        $function = array_shift($args);
 
-    fclose($this->socket);
-  }
+        switch ($function) {
 
-  public function removeStream($stream)
-  {
-    $key = array_search($stream, $this->streams);
-    fclose($this->streams[$key]);
-    unset($this->clients[$key]);
-    unset($this->streams[$key]);
-  }
+            case 'debug': // not part of the spec
+                $this->fnDebug($stream);
+                break;
 
-  public function handleInput($stream) {
-    $data = fread($stream, 1024);
+            default:
+                try {
+                    $client->command($function, $args);
+                } catch (CLientException $e) {
+                    self::sendError($e->getStream(), $e->getMessage());
+                }
+        }
 
-    if ($data === FALSE || strlen($data) === 0) { // connection closed
-      $this->removeStream($stream);
-      return;
     }
 
-    $args = explode(' ', trim($data));
-    if (count($args) == 0) {
-      // send error
-      return;
+    public function fnDebug($stream)
+    {
+        $key = array_search($stream, $this->streams);
+        var_dump($stream, $key, $this->clients[$key]);
     }
 
-    $client = $this->clients->findByStream($stream);
-    if (empty($client)) {
-      // a new client
-      $client = new Client($this, $stream);
-      $this->clients->addClient($client);
-    }
-
-    $function = array_shift($args);
-
-    switch ($function) {
-
-      case 'debug': // not part of the spec
-        $this->fnDebug($stream);
-        break;
-
-      default:
-        try {
-          $client->command($function, $args);
-        } catch (CLientException $e) {
-          self::sendError($e->getStream(), $e->getMessage());
+    public static function sendString($stream, $message)
+    {
+        if (stream_get_meta_data($stream)) {
+            fwrite($stream, $message);
         }
     }
 
-  }
 
-  public function fnDebug($stream) {
-    $key = array_search($stream, $this->streams);
-    var_dump($stream, $key, $this->clients[$key]);
-  }
-
-  public static function sendString($stream, $message) {
-    if (stream_get_meta_data($stream)) {
-      fwrite($stream, $message);
+    public static function sendError($stream, $message)
+    {
+        if (stream_get_meta_data($stream)) {
+            fwrite($stream, 'huh? ' . $message . "\n");
+        }
     }
-  }
-
-
-  public static function sendError($stream, $message) {
-    if (stream_get_meta_data($stream)) {
-      fwrite($stream, 'huh? ' . $message . "\n");
-    }
-  }
-
 
 }

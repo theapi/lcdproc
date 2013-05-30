@@ -8,14 +8,16 @@ namespace Theapi\Lcdproc\Server\Exception;
 class CLientException extends \Exception
 {
 
-  protected $stream;
+    protected $stream;
 
-  public function __construct($stream, $message = '', $code = 0, $previous = null) {
-    $this->stream = $stream;
-  }
+    public function __construct($stream, $message = '', $code = 0, $previous = null)
+    {
+        $this->stream = $stream;
+    }
 
-  public function getStream() {
-    return $this->stream;
-  }
+    public function getStream()
+    {
+        return $this->stream;
+    }
 
 }

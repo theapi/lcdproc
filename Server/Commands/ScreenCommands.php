@@ -48,12 +48,12 @@ class ScreenCommands
         }
 
         $s = $this->client->findScreen($args[0]);
-        if ($s != NULL) {
+        if ($s != null) {
             throw new ClientException($this->client->stream, 'Screen already exists');
         }
 
         $s = new Screen($this->client->config, $args[0]);
-        if ($s != NULL) {
+        if ($s != null) {
             throw new ClientException($this->client->stream, 'failed to create screen');
         }
 
@@ -82,7 +82,7 @@ class ScreenCommands
         }
 
         $s = $this->client->findScreen($args[0]);
-        if ($s == NULL) {
+        if ($s == null) {
             throw new ClientException($this->client->stream, 'Unknown screen id');
         }
 
@@ -130,7 +130,7 @@ class ScreenCommands
         }
 
         $s = $this->client->findScreen($args[0]);
-        if ($s == NULL) {
+        if ($s == null) {
             throw new ClientException($this->client->stream, 'Unknown screen id');
         }
 

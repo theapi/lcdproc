@@ -21,7 +21,7 @@ class ClientCommands
      */
     public function test($args)
     {
-        Server::sendString($this->client->stream, print_r($args, TRUE));
+        Server::sendString($this->client->stream, print_r($args, true));
 
         return 0;
     }
