@@ -226,11 +226,71 @@ class WidgetCommands
                 if (!$icon) {
                     throw new ClientException($this->client->stream, 'Invalid icon name');
                 }
-                $w->length = $icon; // Mmm, that ain't gonna work
+                $w->length = $icon;
 
                 Server::sendString($this->client->stream, "success\n");
                 break;
+            case Widget::WID_TITLE:
+                // title takes "text"
+                if (!isset($args[2])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
 
+                $w->text = $args[2];
+                // Set width too
+                $w->width = $this->client->container->config->displayProps->width;
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_SCROLLER:
+                // Scroller takes "left top right bottom direction speed text"
+                if (!isset($args[8])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+
+                if (!is_numeric($args[2])
+                    || !is_numeric($args[3])
+                    || !is_numeric($args[4])
+                    || !is_numeric($args[5])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                // Direction must be m, v or h
+                if ($args[6] != 'm' || $args[6] != 'v' || $args[6] != 'h') {
+                    throw new ClientException($this->client->stream, 'Invalid direction');
+                }
+
+                $w->left = (int) $args[2];
+                $w->top = (int) $args[3];
+                $w->right = (int) $args[4];
+                $w->bottom = (int) $args[5];
+                $w->length = (int) $args[6];
+                $w->speed = (int) $args[7];
+                $w->text = $args[8];
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_FRAME:
+                // not doing frames
+                throw new ClientException($this->client->stream, 'Not implemented');
+                break;
+            case Widget::WID_NUM:
+                // Num takes "x num"
+                if (!isset($args[1])) {
+                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                }
+                if (!is_numeric($args[1]) || !is_numeric($args[2])) {
+                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                }
+
+                $w->x = (int) $args[1];
+                $w->y = (int) $args[2];
+
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            case Widget::WID_NONE:
+                throw new ClientException($this->client->stream, 'Widget has no type');
+                break;
         }
 
         return 0;
