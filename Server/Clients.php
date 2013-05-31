@@ -18,7 +18,10 @@ class Clients
 
     public function removeClient($client)
     {
-
+        $key = (string) $client->getStream();
+        if (isset($this->clientList[$key])) {
+            unset($this->clientList[$key]);
+        }
     }
 
     public function getFirst()

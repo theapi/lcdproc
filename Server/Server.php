@@ -153,9 +153,11 @@ class Server
 
     public function removeStream($stream)
     {
+        $client = $this->clients->findByStream($stream);
+        $this->clients->removeClient($client);
+
         $key = array_search($stream, $this->streams);
         fclose($this->streams[$key]);
-        unset($this->clients[$key]);
         unset($this->streams[$key]);
     }
 
