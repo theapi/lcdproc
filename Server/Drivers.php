@@ -138,12 +138,20 @@ class Drivers
 
     public function vbar($x, $y, $len, $promille, $pattern)
     {
-
+        foreach ($this->loadedDrivers as $driver) {
+            if (method_exists($driver, 'vbar')) {
+                $driver->vbar($x, $y, $len, $promille, $pattern);
+            }
+        }
     }
 
     public function hbar($x, $y, $len, $promille, $pattern)
     {
-
+        foreach ($this->loadedDrivers as $driver) {
+            if (method_exists($driver, 'hbar')) {
+                $driver->hbar($x, $y, $len, $promille, $pattern);
+            }
+        }
     }
 
     /**
@@ -185,12 +193,20 @@ class Drivers
      */
     public function icon($x, $y, $icon)
     {
-
+        foreach ($this->loadedDrivers as $driver) {
+            if (method_exists($driver, 'icon')) {
+                $driver->icon($x, $y, $icon);
+            }
+        }
     }
 
     public function cursor($x, $y, $state)
     {
-
+        foreach ($this->loadedDrivers as $driver) {
+            if (method_exists($driver, 'cursor')) {
+                $driver->cursor($x, $y, $state);
+            }
+        }
     }
 
     /**
