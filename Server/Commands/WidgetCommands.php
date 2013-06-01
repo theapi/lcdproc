@@ -238,7 +238,7 @@ class WidgetCommands
 
                 $w->text = $args[2];
                 // Set width too
-                $w->width = $this->client->container->config->displayProps->width;
+                $w->width = $this->client->container->drivers->displayProps->width;
 
                 Server::sendString($this->client->stream, "success\n");
                 break;

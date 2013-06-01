@@ -15,8 +15,8 @@ class Client
 
     public $stream;
     protected $messages = array();
-    public $backlight = Config::BACKLIGHT_OPEN;
-    protected $heartbeat;
+    public $backlight = Render::BACKLIGHT_OPEN;
+    public $heartbeat;
     protected $state;
     protected $name;
     protected $menu;

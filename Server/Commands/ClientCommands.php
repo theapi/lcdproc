@@ -36,10 +36,10 @@ class ClientCommands
         $this->client->setStateActive();
 
         $str = 'connect LCDproc 0.5dev protocol 0.3 lcd';
-        $str .= ' wid ' . $this->client->container->config->displayProps->width;
-        $str .= ' hgt ' . $this->client->container->config->displayProps->height;
-        $str .= ' cellwid ' . $this->client->container->config->displayProps->cellWidth;
-        $str .= ' cellhgt ' . $this->client->container->config->displayProps->cellHeight;
+        $str .= ' wid ' . $this->client->container->drivers->displayProps->width;
+        $str .= ' hgt ' . $this->client->container->drivers->displayProps->height;
+        $str .= ' cellwid ' . $this->client->container->drivers->displayProps->cellWidth;
+        $str .= ' cellhgt ' . $this->client->container->drivers->displayProps->cellHeight;
         $str .= "\n";
         Server::sendString($this->client->stream, $str);
     }

@@ -37,16 +37,15 @@ class Drivers
     const ICON_PREV	 = 0x207;	// should look like  |<
     const ICON_REC   = 0x208;	// should look like  ()
 
-    protected $container;
-    protected $config;
+    public $displayProps;
 
     protected $loadedDrivers = array();
-    protected $displayProps;
+    protected $container;
+
 
     public function __construct($container)
     {
         $this->container = $container;
-        $this->config = $container->config;
     }
 
     /**
@@ -71,7 +70,6 @@ class Drivers
             $this->displayProps->height = $driver->height();
             $this->displayProps->cellWidth = $driver->cellWidth();
             $this->displayProps->cellHeight = $driver->cellHeight();
-            $this->config->displayProps = $this->displayProps;
         }
 
         return 1;

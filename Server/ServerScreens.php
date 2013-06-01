@@ -47,7 +47,7 @@ class ServerScreens
         $this->screen->duration = 1;
 
         // Create all the widgets...
-        for ($i = 0; $i < $this->config->displayProps->height; $i++) {
+        for ($i = 0; $i < $this->drivers->displayProps->height; $i++) {
             $id = 'line' . ($i+1);
 
             try {
@@ -66,11 +66,11 @@ class ServerScreens
 
         // set parameters for server_screen and its widgets
         //TODO: auto rotate optional
-        $this->reset(Config::AUTOROTATE_ON, !$hasHelloMsg, !$hasHelloMsg);
+        $this->reset(Render::AUTOROTATE_ON, !$hasHelloMsg, !$hasHelloMsg);
 
         // set the widgets depending on the Hello option in config
         if ($hasHelloMsg) {
-            for ($i = 0; $i < $this->config->displayProps->height; $i++) {
+            for ($i = 0; $i < $this->drivers->displayProps->height; $i++) {
                 $id = 'line' . $i+1;
                 $w = $this->screen->findWidget($id);
                 if ($w) {
@@ -101,7 +101,7 @@ class ServerScreens
         */
 
         /*
-         for ($i = 0; $i < $this->config->displayProps->height; $i++) {
+         for ($i = 0; $i < $this->drivers->displayProps->height; $i++) {
         $id = 'line' . ($i+1);
         $w = $this->screen->findWidget($id);
         if ($w) {

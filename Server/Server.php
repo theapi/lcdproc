@@ -70,7 +70,7 @@ class Server
         // clients_init
         $this->clients = new Clients();
 
-        $this->render = new Render();
+        $this->render = new Render($this);
 
         // input_init
 

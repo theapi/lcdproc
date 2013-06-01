@@ -2,7 +2,7 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 use Theapi\Lcdproc\Server\Screen;
-use Theapi\Lcdproc\Server\Config;
+use Theapi\Lcdproc\Server\Render;
 
 /**
  * Implements handlers for the client commands concerning screens.
@@ -217,26 +217,26 @@ class ScreenCommands
 
                 // set the backlight status based on what the client has set
                 switch ($this->client->backlight) {
-                    case Config::BACKLIGHT_OPEN:
+                    case Render::BACKLIGHT_OPEN:
                         switch ($value) {
                             case 'on':
-                                $s->backlight = Config::BACKLIGHT_ON;
+                                $s->backlight = Render::BACKLIGHT_ON;
                                 break;
                             case 'off':
-                                $s->backlight = Config::BACKLIGHT_OFF;
+                                $s->backlight = Render::BACKLIGHT_OFF;
                                 break;
                             case 'toggle':
-                                if ($s->backlight == Config::BACKLIGHT_ON) {
-                                    $s->backlight = Config::BACKLIGHT_OFF;
+                                if ($s->backlight == Render::BACKLIGHT_ON) {
+                                    $s->backlight = Render::BACKLIGHT_OFF;
                                 } else {
-                                    $s->backlight = Config::BACKLIGHT_ON;
+                                    $s->backlight = Render::BACKLIGHT_ON;
                                 }
                                 break;
                             case 'blink':
-                                $s->backlight = Config::BACKLIGHT_BLINK;
+                                $s->backlight = Render::BACKLIGHT_BLINK;
                                 break;
                             case 'flash':
-                                $s->backlight = Config::BACKLIGHT_FLASH;
+                                $s->backlight = Render::BACKLIGHT_FLASH;
                                 break;
                             default:
                                 // Maybe its a colour
@@ -260,16 +260,16 @@ class ScreenCommands
 
                 switch ($value) {
                     case 'off':
-                        $s->cursor = Config::CURSOR_OFF;
+                        $s->cursor = Render::CURSOR_OFF;
                         break;
                     case 'on':
-                        $s->cursor = Config::CURSOR_ON;
+                        $s->cursor = Render::CURSOR_ON;
                         break;
                     case 'under':
-                        $s->cursor = Config::CURSOR_UNDER;
+                        $s->cursor = Render::CURSOR_UNDER;
                         break;
                     case 'block':
-                        $s->cursor = Config::CURSOR_BLOCK;
+                        $s->cursor = Render::CURSOR_BLOCK;
                         break;
                 }
                 Server::sendString($this->client->stream, "success\n");

@@ -2,7 +2,7 @@
 namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Client;
-use Theapi\Lcdproc\Server\Config;
+use Theapi\Lcdproc\Server\Render;
 
 /**
  * This stores all the screen definition-handling code. Functions here
@@ -30,18 +30,18 @@ class Screen
     public $name = null;
     public $priority = self::PRI_INFO;
     public $duration = 0;
-    public $backlight = Config::BACKLIGHT_OFF;
-    public $heartbeat = Config::HEARTBEAT_OFF;
+    public $backlight = Render::BACKLIGHT_OFF;
+    public $heartbeat = Render::HEARTBEAT_OFF;
     public $width;
     public $height;
     public $keys = null;
     public $client = null;
     public $timeout = -1; 	/*ignored unless greater than 0.*/
-    public $cursor = Config::CURSOR_OFF;
+    public $cursor = Render::CURSOR_OFF;
     public $cursor_x = 1;
     public $cursor_y = 1;
+    public $widgetlist = array();
 
-    protected $widgetlist = array();
     protected $config;
 
     /**
@@ -61,8 +61,8 @@ class Screen
         }
 
         $this->id = $id;
-        $this->width = $this->config->displayProps->width;
-        $this->height = $this->config->displayProps->height;
+        $this->width = $this->drivers->displayProps->width;
+        $this->height = $this->drivers->displayProps->height;
 
         // Client can be null for serverscreens and other client-less screens
 
