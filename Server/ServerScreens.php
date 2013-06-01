@@ -33,6 +33,8 @@ class ServerScreens
 
     protected $container;
 
+    protected $rotateServerScreen;
+
 
     public function __construct($container)
     {
@@ -57,15 +59,13 @@ class ServerScreens
                 return;
             }
 
-
             $this->screen->addWidget($w);
             $w->x = 1;
             $w->y = $i+1;
         }
 
         // set parameters for server_screen and its widgets
-        //TODO: auto rotate optional
-        $this->reset(Config::AUTOROTATE_ON, !$hasHelloMsg, !$hasHelloMsg);
+        $this->reset($this->rotateServerScreen, !$hasHelloMsg, !$hasHelloMsg);
 
         // set the widgets depending on the Hello option in config
         if ($hasHelloMsg) {
@@ -80,7 +80,6 @@ class ServerScreens
 
         // And enqueue the screen
         $this->container->screenList->add($this->screen);
-
     }
 
     public function reset($rotate, $heartbeat, $title)
@@ -128,6 +127,14 @@ class ServerScreens
         // bunch of stuff should be done here
 
 
+
+        // update statistics if we do not only want to show a blank screen
+        if ($this->rotateServerScreen != self::SERVERSCREEN_BLANK) {
+            $w = $this->screen->findWidget('line2');
+            $w->text = (string) microtime(true);
+        }
+
+        /*
         // tmp jump straight to render
         //TODO: not jump straight to render
         $w = $this->screen->findWidget('line1');
@@ -136,6 +143,6 @@ class ServerScreens
         $w->text = (string) microtime(true);
         $this->container->drivers->string($w->x, $w->y, $w->text);
         $this->container->drivers->flush();
-
+        */
     }
 }

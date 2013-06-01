@@ -32,6 +32,8 @@ class Render
     const TITLESPEED_MIN = 1;
     const TITLESPEED_MAX = 10;
 
+    const BUFSIZE = 1024; // larger than display width => large enough
+
     protected $container;
 
     protected $heartbeat = self::HEARTBEAT_OPEN;
@@ -223,10 +225,9 @@ class Render
                 && ($w->y <= $bottom - $top)) {
 
                 $w->x = min($w->x, $right - $left);
-                $length = min($right - $left - $w->x + 1, 0);
-                $str = substr($w->x, 0, $length);
+                $length = min( ($right - $left) - $w->x + 1, self::BUFSIZE);
+                $str = substr($w->text, 0, $length);
                 $this->container->drivers->string($w->x + $left, $w->y + $top, $str);
-
             }
         }
 
@@ -267,7 +268,7 @@ class Render
             if (($length <= $width) || ($delay == 0)) {
                 // copy test starting from the beginning
                 $length = min($length, $width);
-                $str = substr($w->x, 0, $length);
+                $str = substr($w->text, 0, $length);
                 // set x value for trailing fillers
                 $x = $length + 4;
             } else {
@@ -301,7 +302,7 @@ class Render
 
                 // copy test starting from offset
                 $length = min($length, $width);
-                $str = substr($w->x, $offset, $length);
+                $str = substr($w->text, $offset, $length);
 
                 // set x value for trailing fillers
                 $x = $visWidth - 2;

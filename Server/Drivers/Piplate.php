@@ -75,7 +75,7 @@ class Piplate extends Driver
     {
         // Reset to the blank screen array
         $this->out = $this->outBlank;
-        $this->flush();
+        //$this->flush();
     }
 
     /**
@@ -87,7 +87,7 @@ class Piplate extends Driver
         // as it was there just because lcdproc x & y start at 1
         $line1 = substr($this->out[1], 1);
         $line2 = substr($this->out[2], 1);
-var_dump("$line1\n$line2");
+//var_dump("$line1\n$line2");
         try {
             $this->write("$line1\n$line2");
             // read just to clear the memory
