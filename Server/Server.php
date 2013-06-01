@@ -2,6 +2,7 @@
 namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Log;
+use Theapi\Lcdproc\Server\Parse;
 use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\ScreenList;
 use Theapi\Lcdproc\Server\ServerScreens;
@@ -14,6 +15,7 @@ use Theapi\Lcdproc\Server\Client;
 // TODO: auto loader (composer)
 require_once 'Log.php';
 require_once 'Config.php';
+require_once 'Parse.php';
 require_once 'Client.php';
 require_once 'Clients.php';
 require_once 'Render.php';
@@ -167,10 +169,14 @@ class Server
 
     public function removeStream($stream)
     {
-        $client = $this->clients->findByStream($stream);
-        $this->clients->removeClient($client);
+        //$client = $this->clients->findByStream($stream);
+        //$this->clients->removeClient($client);
 
         $key = array_search($stream, $this->streams);
+
+        $this->log(LOG_DEBUG, print_r($stream, true));
+
+
         fclose($this->streams[$key]);
         unset($this->streams[$key]);
     }
@@ -185,7 +191,8 @@ class Server
             return;
         }
 
-        $args = explode(' ', trim($data));
+        //$args = explode(' ', trim($data));
+        $args = Parse::message($data);
         if (count($args) == 0) {
             // send error
             return;

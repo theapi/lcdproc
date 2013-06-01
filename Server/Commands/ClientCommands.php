@@ -84,7 +84,7 @@ class ClientCommands
             }
 
             $this->name = $value;
-            Server::sendString($this->client, "success\n");
+            Server::sendString($this->client->stream, "success\n");
         }
 
         return 0;
@@ -107,7 +107,7 @@ class ClientCommands
         // TODO input key stuff
 
 
-        Server::sendString($this->client, "success\n");
+        Server::sendString($this->client->stream, "success\n");
 
         return 0;
     }
