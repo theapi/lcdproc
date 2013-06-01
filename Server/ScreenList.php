@@ -191,10 +191,15 @@ class ScreenList
 
                 return;
             }
-            if ($id == $current->id) {
+            if ($current && $id == $current->id) {
                 $next = true;
             }
         }
+
+        // not found one, use the first
+        reset($this->screenList);
+        $screen = current($this->screenList);
+        $this->switchScreen($screen);
     }
 
     /**

@@ -105,6 +105,7 @@ class Client
                 try {
                     $this->$commandHandler->$method($args);
                 } catch (ClientException $e) {
+                    //var_dump($e->getMessage()); exit;
                     //var_dump($commandHandler, $method, $args); exit;
                     throw $e;
                 }

@@ -1,6 +1,7 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Client;
 use Theapi\Lcdproc\Server\Server;
 

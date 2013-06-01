@@ -271,7 +271,9 @@ class WidgetCommands
                 break;
             case Widget::WID_FRAME:
                 // not doing frames
-                throw new ClientException($this->client, 'Not implemented');
+                // remove the screen
+                $this->client->removeScreen($s);
+                throw new ClientException($this->client, 'Not implemented: widget type frame');
                 break;
             case Widget::WID_NUM:
                 // Num takes "x num"
