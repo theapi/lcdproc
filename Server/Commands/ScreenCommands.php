@@ -52,7 +52,7 @@ class ScreenCommands
         }
 
         $s = new Screen($this->client->container, $args[0]);
-        if ($s != null) {
+        if ($s == null) {
             throw new ClientException($this->client, 'failed to create screen');
         }
 
@@ -60,7 +60,7 @@ class ScreenCommands
         if ($err == 0) {
             Server::sendString($this->client->stream, "success\n");
         } else {
-            Server::sendString($this->client->stream, "failed to add screen\n");
+            throw new ClientException($this->client, 'failed to add screen');
         }
 
         return 0;

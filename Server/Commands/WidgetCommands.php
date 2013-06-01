@@ -54,7 +54,7 @@ class WidgetCommands
         $sid = $args[0];
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
-        if ($s != null) {
+        if ($s == null) {
             throw new ClientException($this->client, 'Invalid screen id');
         }
 
@@ -106,12 +106,12 @@ class WidgetCommands
         $sid = $args[0];
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
-        if ($s != null) {
+        if ($s == null) {
             throw new ClientException($this->client, 'Invalid screen id');
         }
 
         $w = $s->findWidget($wid);
-        if ($w != null) {
+        if ($w == null) {
             throw new ClientException($this->client, 'Invalid widget id');
         }
 
@@ -152,14 +152,14 @@ class WidgetCommands
         // Find screen
         $sid = $args[0];
         $s = $this->client->findScreen($sid);
-        if ($s != null) {
+        if ($s == null) {
             throw new ClientException($this->client, 'Unknown screen id');
         }
 
         // Find widget
         $wid = $args[1];
         $w = $s->findWidget($wid);
-        if ($w != null) {
+        if ($w == null) {
             throw new ClientException($this->client, 'Unknown widget id');
         }
 

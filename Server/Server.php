@@ -2,7 +2,6 @@
 namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Log;
-use Theapi\Lcdproc\Server\Parse;
 use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\ScreenList;
 use Theapi\Lcdproc\Server\ServerScreens;
@@ -78,7 +77,7 @@ class Server
         $this->drivers->loadDriver($driverName);
 
         // clients_init
-        $this->clients = new Clients();
+        $this->clients = new Clients($this);
 
         $this->render = new Render($this);
 
@@ -147,10 +146,27 @@ class Server
 
                     // add the connection to the array to be watched
                     $this->streams[] = $conn;
+
+                    // a new client
+                    $client = new Client($this, $conn);
+                    $this->clients->addClient($client);
+
                 } else {
-                    $this->handleInput($stream);
+                    $client = $this->clients->findByStream($stream);
+                    if (!$client instanceof Client) {
+                        $this->removeStream($stream);
+                    } else {
+                        // get the input from the clients
+                        $client->readFromSocket($stream);
+                    }
                 }
             }
+
+            // analyze input from network clients and process functions
+            $this->clients->parseAllMessages();
+
+            // handle key input from devices
+            $this->handleInput();
 
             // Time for rendering
             $this->timer++;
@@ -169,20 +185,18 @@ class Server
 
     public function removeStream($stream)
     {
-        //$client = $this->clients->findByStream($stream);
-        //$this->clients->removeClient($client);
-
         $key = array_search($stream, $this->streams);
 
-        $this->log(LOG_DEBUG, print_r($stream, true));
-
+        $this->log(LOG_DEBUG, 'removeStream:' . print_r($stream, true));
 
         fclose($this->streams[$key]);
         unset($this->streams[$key]);
     }
 
-    public function handleInput($stream)
+
+    public function handleInput()
     {
+        /*
         $data = fread($stream, 1024);
 
         if ($data === false || strlen($data) === 0) {
@@ -199,11 +213,7 @@ class Server
         }
 
         $client = $this->clients->findByStream($stream);
-        if (empty($client)) {
-            // a new client
-            $client = new Client($this, $stream);
-            $this->clients->addClient($client);
-        }
+
 
         $function = array_shift($args);
 
@@ -218,6 +228,7 @@ class Server
                     self::sendError($e->getStream(), $e->getMessage());
                 }
         }
+        */
 
     }
 

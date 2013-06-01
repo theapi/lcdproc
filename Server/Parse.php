@@ -1,6 +1,9 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Client;
+use Theapi\Lcdproc\Server\Server;
+
 /**
  * Handles input commands from clients, by splitting strings into tokens
  *
@@ -24,7 +27,7 @@ class Parse
     const ST_FINAL      = 3;
 
 
-    public static function message($str)
+    public static function message($str, Client $c)
     {
         // explode(' ', trim($str)); is not enough :(
 
@@ -79,29 +82,15 @@ class Parse
             $args[] = $arg;
         }
 
-// AHHHH! Multiple commands can come in one go. oops needs work.
-        var_dump($str, $args);
-        return $args;
-        /*
-        $pattern = '/(\w+)/';
-        preg_match($pattern, $str, $matches);
+        // Now find and call the appropriate function...
+        $function = array_shift($args);
+        try {
+            $c->command($function, $args);
+        } catch (ClientException $e) {
+            Server::sendError($e->getStream(), $e->getMessage());
+        }
 
-        var_dump($matches);
-        */
-
-        /*
-        $str = str_replace('{', '"', $str);
-        $str = str_replace('}', '"', $str);
-        //$quoted = explode('"', $str);
-
-        preg_match_all('/"(.*?)"/', $str, $matches);
-
-var_dump($matches);
-*/
-
-        //preg_replace('//', $replacement, $str);
-
-        return explode(' ', $str);
+        return 0;
     }
 
     public static function isWhitespace($x)

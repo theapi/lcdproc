@@ -44,7 +44,7 @@ class Widget
         if (!$id) {
             throw new ClientException($screen->client->stream, 'Need id string');
         }
-var_dump('widget id: ' . $id);
+
         $this->id = $id;
         $this->type = $type;
         $this->screen = $screen;

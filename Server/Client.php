@@ -12,12 +12,28 @@ use Theapi\Lcdproc\Server\Server;
 
 class Client
 {
+    /**
+     * Length of longest transmission allowed at once...
+     */
+    const MAXMSG = 8192;
+    /**
+     * Client did not yet send hello.
+     */
+    const STATE_NEW = 0;
+    /**
+     * Client sent hello, but not yet bye.
+     */
+    const STATE_ACTIVE = 1;
+    /**
+     * Client sent bye.
+     */
+    const STATE_GONE = 2;
 
     public $stream;
     protected $messages = array();
     public $backlight = Render::BACKLIGHT_OPEN;
     public $heartbeat;
-    protected $state;
+    public $state;
     protected $name;
     protected $menu;
     protected $screenList = array();
@@ -56,29 +72,21 @@ class Client
 
     );
 
-    /**
-     * Client did not yet send hello.
-     */
-    const STATE_NEW = 0;
-    /**
-     * Client sent hello, but not yet bye.
-     */
-    const STATE_ACTIVE = 1;
-    /**
-     * Client sent bye.
-     */
-    const STATE_GONE = 2;
-
     public function __construct($container, $stream)
     {
         $this->container = $container;
         $this->stream = $stream;
+
+        if (is_resource($stream)) {
+            stream_set_read_buffer($stream, self::MAXMSG);
+        }
+
         $this->state = self::STATE_NEW;
 
         $this->clientCommands = new ClientCommands($this);
         $this->serverCommands = new ServerCommands($this);
         $this->screenCommands = new ScreenCommands($this);
-        $this->widgetCommands = new ScreenCommands($this);
+        $this->widgetCommands = new WidgetCommands($this);
         $this->menuCommands   = new MenuCommands($this);
     }
 
@@ -94,9 +102,11 @@ class Client
             $commandHandler = $this->commands[$name][0];
             $method = $this->commands[$name][1];
             if (method_exists($this->$commandHandler, $method)) {
-                $error = $this->$commandHandler->$method($args);
-                if ($error) {
-                    throw new ClientException($this->stream, 'Function returned error ' . $method);
+                try {
+                    $this->$commandHandler->$method($args);
+                } catch (ClientException $e) {
+                    //var_dump($commandHandler, $method, $args); exit;
+                    throw $e;
                 }
             } else {
                 // oops there's a command mapping mixup
@@ -133,15 +143,19 @@ class Client
 
     public function destroy()
     {
-
+        foreach ($this->screenList as $screen) {
+            $this->removeScreen($screen);
+        }
     }
 
     /**
-     * Add and remove messages from the client's queue...
+     * Add  messages from to the client's queue...
      */
     public function addMessage($message)
     {
-
+        if (!empty($message)) {
+            $this->messages[] = $message;
+        }
     }
 
     /**
@@ -149,7 +163,7 @@ class Client
      */
     public function getMessage()
     {
-
+        return array_shift($this->messages);
     }
 
     public function findScreen($id)
@@ -190,5 +204,23 @@ class Client
     public function sceenCount()
     {
 
+    }
+
+    public function readFromSocket($stream)
+    {
+        $data = fread($stream, self::MAXMSG);
+
+        if ($data === false || strlen($data) === 0) {
+            $this->container->clients->removeClient($this);
+            $this->container->removeStream($stream);
+            return;
+        }
+
+        $messages = explode("\n", $data);
+        foreach ($messages as $message) {
+            $this->addMessage($message);
+        }
+
+        return 0;
     }
 }

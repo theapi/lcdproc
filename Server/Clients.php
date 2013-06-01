@@ -1,9 +1,19 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Parse;
+use Theapi\Lcdproc\Server\Client;
+
 class Clients
 {
     protected $clientList = array();
+    protected $container;
+
+
+    public function __construct($container)
+    {
+        $this->container = $container;
+    }
 
     public function shutdown()
     {
@@ -19,6 +29,10 @@ class Clients
     public function removeClient($client)
     {
         $key = (string) $client->getStream();
+        $this->container->log(LOG_DEBUG, 'removeClient:' . $key);
+
+        $client->destroy();
+
         if (isset($this->clientList[$key])) {
             unset($this->clientList[$key]);
         }
@@ -47,5 +61,21 @@ class Clients
         }
 
         return null;
+    }
+
+    public function parseAllMessages() {
+        foreach ($this->clientList as $c) {
+            if (!$c instanceof Client) {
+                continue;
+            }
+            // parse all its messages...
+            while ($str = $c->getMessage()) {
+                Parse::message($str, $c);
+                if ($c->state == Client::STATE_GONE) {
+                    $this->removeClient($c);
+                    $this->container->removeStream($c->stream);
+                }
+            }
+        }
     }
 }
