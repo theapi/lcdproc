@@ -1,7 +1,7 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
-
+use Theapi\Lcdproc\Server\Log;
 use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\ScreenList;
 use Theapi\Lcdproc\Server\ServerScreens;
@@ -12,6 +12,7 @@ use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
 // TODO: auto loader (composer)
+require_once 'Log.php';
 require_once 'Config.php';
 require_once 'Client.php';
 require_once 'Clients.php';
@@ -24,7 +25,10 @@ require_once 'Driver.php';
 require_once 'Drivers.php';
 require_once 'Drivers/Piplate.php';
 require_once 'Commands/ClientCommands.php';
+require_once 'Commands/MenuCommands.php';
+require_once 'Commands/ScreenCommands.php';
 require_once 'Commands/ServerCommands.php';
+require_once 'Commands/WidgetCommands.php';
 require_once 'Exception/ClientException.php';
 
 class Server
@@ -32,6 +36,8 @@ class Server
     // $this can be passed as a container,
     // so the initialised classes are available to be used
 
+    // The logger
+    public $log;
     // The config object
     public $config;
     // The render object
@@ -55,8 +61,10 @@ class Server
     protected $streams = array();
 
 
-    public function __construct($driverName = 'piplate')
+    public function __construct($driverName = 'piplate', $logLevel = LOG_ERR)
     {
+        $this->log = new Log($logLevel);
+
         // set_default_settings
         $this->config = new Config();
 
@@ -78,6 +86,11 @@ class Server
 
         // server_screen_init
         $this->serverScreen = new ServerScreens($this);
+    }
+
+    public function log($priority, $message)
+    {
+        $this->log->msg($priority, $message);
     }
 
     public function run($ip = '127.0.0.1', $port = 13666)
@@ -194,7 +207,7 @@ class Server
             default:
                 try {
                     $client->command($function, $args);
-                } catch (CLientException $e) {
+                } catch (ClientException $e) {
                     self::sendError($e->getStream(), $e->getMessage());
                 }
         }

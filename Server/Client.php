@@ -84,6 +84,7 @@ class Client
 
     public function command($name, $args)
     {
+
         // Got to say hello first
         if (!$this->isActive() && $name != 'hello') {
             throw new ClientException($this->stream, 'Invalid command ' . $name);

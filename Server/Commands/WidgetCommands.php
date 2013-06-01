@@ -2,6 +2,8 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 use Theapi\Lcdproc\Server\Widget;
+use Theapi\Lcdproc\Server\Server;
+use Theapi\Lcdproc\Server\Exception\ClientException;
 
 /**
  * Implements handlers for client commands concerning widgets.
@@ -18,9 +20,6 @@ use Theapi\Lcdproc\Server\Widget;
  * Refer to the COPYING file distributed with this package.
  *
  */
-
-use Theapi\Lcdproc\Server;
-use Theapi\Lcdproc\Server\Exception\ClientException;
 
 class WidgetCommands
 {
@@ -56,25 +55,25 @@ class WidgetCommands
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
         if ($s != null) {
-            throw new ClientException($this->client->stream, 'Invalid screen id');
+            throw new ClientException($this->client, 'Invalid screen id');
         }
 
         // Find widget type
         $wtype = Widget::typeNameToType($args[2]);
         if ($wtype == Widget::WID_NONE) {
-            throw new ClientException($this->client->stream, 'Invalid widget type');
+            throw new ClientException($this->client, 'Invalid widget type');
         }
 
         // Check for additional flags...
         if ($countArgs > 3) {
             // Not implementing frames (in options)...
-            throw new ClientException($this->client->stream, 'Frames not implemented');
+            throw new ClientException($this->client, 'Frames not implemented');
         }
 
         // Create the widget
         $w = new Widget($wid, $wtype, $s);
         if ($w == null) {
-            throw new ClientException($this->client->stream, 'Error adding widget');
+            throw new ClientException($this->client, 'Error adding widget');
         }
 
         // Add the widget to the screen
@@ -82,7 +81,7 @@ class WidgetCommands
         if ($err == 0) {
             Server::sendString($this->client->stream, "success\n");
         } else {
-            throw new ClientException($this->client->stream, 'Error adding widget');
+            throw new ClientException($this->client, 'Error adding widget');
         }
 
         return 0;
@@ -101,26 +100,26 @@ class WidgetCommands
         }
 
         if (count($args) != 2) {
-            throw new ClientException($this->client->stream, 'Usage: widget_del <screenid> <widgetid>');
+            throw new ClientException($this->client, 'Usage: widget_del <screenid> <widgetid>');
         }
 
         $sid = $args[0];
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
         if ($s != null) {
-            throw new ClientException($this->client->stream, 'Invalid screen id');
+            throw new ClientException($this->client, 'Invalid screen id');
         }
 
         $w = $s->findWidget($wid);
         if ($w != null) {
-            throw new ClientException($this->client->stream, 'Invalid widget id');
+            throw new ClientException($this->client, 'Invalid widget id');
         }
 
         $err = $s->removeWidget($w);
         if ($err == 0) {
             Server::sendString($this->client->stream, "success\n");
         } else {
-            throw new ClientException($this->client->stream, 'Error removing widget');
+            throw new ClientException($this->client, 'Error removing widget');
         }
 
         return 0;
@@ -154,24 +153,24 @@ class WidgetCommands
         $sid = $args[0];
         $s = $this->client->findScreen($sid);
         if ($s != null) {
-            throw new ClientException($this->client->stream, 'Unknown screen id');
+            throw new ClientException($this->client, 'Unknown screen id');
         }
 
         // Find widget
         $wid = $args[1];
         $w = $s->findWidget($wid);
         if ($w != null) {
-            throw new ClientException($this->client->stream, 'Unknown widget id');
+            throw new ClientException($this->client, 'Unknown widget id');
         }
 
         switch ($w->type) {
             case Widget::WID_STRING:
                 // String takes "x y text"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -182,10 +181,10 @@ class WidgetCommands
             case Widget::WID_HBAR:
                 // Hbar takes "x y length"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -198,10 +197,10 @@ class WidgetCommands
             case Widget::WID_VBAR:
                 // Vbar takes "x y length"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -214,17 +213,17 @@ class WidgetCommands
             case Widget::WID_ICON:
                 // Icon takes "x y icon"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
                 $w->y = (int) $args[3];
                 $icon = Widget::iconNameToIcon($args[4]);
                 if (!$icon) {
-                    throw new ClientException($this->client->stream, 'Invalid icon name');
+                    throw new ClientException($this->client, 'Invalid icon name');
                 }
                 $w->length = $icon;
 
@@ -233,7 +232,7 @@ class WidgetCommands
             case Widget::WID_TITLE:
                 // title takes "text"
                 if (!isset($args[2])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
 
                 $w->text = $args[2];
@@ -245,19 +244,19 @@ class WidgetCommands
             case Widget::WID_SCROLLER:
                 // Scroller takes "left top right bottom direction speed text"
                 if (!isset($args[8])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
 
                 if (!is_numeric($args[2])
                     || !is_numeric($args[3])
                     || !is_numeric($args[4])
                     || !is_numeric($args[5])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 // Direction must be m, v or h
                 if ($args[6] != 'm' || $args[6] != 'v' || $args[6] != 'h') {
-                    throw new ClientException($this->client->stream, 'Invalid direction');
+                    throw new ClientException($this->client, 'Invalid direction');
                 }
 
                 $w->left = (int) $args[2];
@@ -272,15 +271,15 @@ class WidgetCommands
                 break;
             case Widget::WID_FRAME:
                 // not doing frames
-                throw new ClientException($this->client->stream, 'Not implemented');
+                throw new ClientException($this->client, 'Not implemented');
                 break;
             case Widget::WID_NUM:
                 // Num takes "x num"
                 if (!isset($args[1])) {
-                    throw new ClientException($this->client->stream, 'Wrong number of arguments');
+                    throw new ClientException($this->client, 'Wrong number of arguments');
                 }
                 if (!is_numeric($args[1]) || !is_numeric($args[2])) {
-                    throw new ClientException($this->client->stream, 'Invalid coordinates');
+                    throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
                 $w->x = (int) $args[1];
@@ -289,7 +288,7 @@ class WidgetCommands
                 Server::sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_NONE:
-                throw new ClientException($this->client->stream, 'Widget has no type');
+                throw new ClientException($this->client, 'Widget has no type');
                 break;
         }
 

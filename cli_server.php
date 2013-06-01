@@ -1,6 +1,7 @@
 <?php
 use Theapi\Lcdproc\Server\Server;
 
+
 // All errors
 error_reporting(E_ALL);
 
@@ -12,5 +13,5 @@ ob_implicit_flush();
 
 require 'Server/Server.php';
 
-$server = new Server();
+$server = new Server(LOG_DEBUG);
 $server->run();

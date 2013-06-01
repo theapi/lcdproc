@@ -53,7 +53,7 @@ class ServerScreens
 
             try {
                 $w = new Widget($id, Widget::WID_STRING, $this->screen);
-            } catch (CLientException $e) {
+            } catch (ClientException $e) {
                 echo $e->getMessage();
                 // TODO: log rather than echo
                 return;

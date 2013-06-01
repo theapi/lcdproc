@@ -3,6 +3,8 @@ namespace Theapi\Lcdproc\Server\Commands;
 
 use Theapi\Lcdproc\Server\Screen;
 use Theapi\Lcdproc\Server\Render;
+use Theapi\Lcdproc\Server\Server;
+use Theapi\Lcdproc\Server\Exception\ClientException;
 
 /**
  * Implements handlers for the client commands concerning screens.
@@ -19,9 +21,6 @@ use Theapi\Lcdproc\Server\Render;
 * Refer to the COPYING file distributed with this package.
 *
 */
-
-use Theapi\Lcdproc\Server;
-use Theapi\Lcdproc\Server\Exception\ClientException;
 
 class ScreenCommands
 {
@@ -44,17 +43,17 @@ class ScreenCommands
         }
 
         if (count($args) != 1) {
-            throw new ClientException($this->client->stream, 'Usage: screen_add <screenid>');
+            throw new ClientException($this->client, 'Usage: screen_add <screenid>');
         }
 
         $s = $this->client->findScreen($args[0]);
         if ($s != null) {
-            throw new ClientException($this->client->stream, 'Screen already exists');
+            throw new ClientException($this->client, 'Screen already exists');
         }
 
         $s = new Screen($this->client->container, $args[0]);
         if ($s != null) {
-            throw new ClientException($this->client->stream, 'failed to create screen');
+            throw new ClientException($this->client, 'failed to create screen');
         }
 
         $err = $this->client->addScreen($s);
@@ -78,12 +77,12 @@ class ScreenCommands
         }
 
         if (count($args) != 1) {
-            throw new ClientException($this->client->stream, 'Usage: screen_del <screenid>');
+            throw new ClientException($this->client, 'Usage: screen_del <screenid>');
         }
 
         $s = $this->client->findScreen($args[0]);
         if ($s == null) {
-            throw new ClientException($this->client->stream, 'Unknown screen id');
+            throw new ClientException($this->client, 'Unknown screen id');
         }
 
         $err = $this->client->removeScreen($s);
@@ -129,12 +128,12 @@ class ScreenCommands
         }
 
         if (count($args) == 1) {
-            throw new ClientException($this->client->stream, 'What do you want to set?');
+            throw new ClientException($this->client, 'What do you want to set?');
         }
 
         $s = $this->client->findScreen($args[0]);
         if ($s == null) {
-            throw new ClientException($this->client->stream, 'Unknown screen id');
+            throw new ClientException($this->client, 'Unknown screen id');
         }
 
         // Handle the rest of the parameters
@@ -147,7 +146,7 @@ class ScreenCommands
             // Handle the "name" parameter
             case 'name':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-name requires a parameter');
+                    throw new ClientException($this->client, '-name requires a parameter');
                 } else {
                     $s->name = $value;
                     Server::sendString($this->client->stream, "success\n");
@@ -174,13 +173,13 @@ class ScreenCommands
                     $s->priority = $number;
                     Server::sendString($this->client->stream, "success\n");
                 } else {
-                    throw new ClientException($this->client->stream, '-priority requires a parameter');
+                    throw new ClientException($this->client, '-priority requires a parameter');
                 }
                 break;
             // Handle the "duration" parameter
             case 'duration':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-heartbeat requires a parameter');
+                    throw new ClientException($this->client, '-heartbeat requires a parameter');
                 }
                 $s->duration = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
@@ -188,7 +187,7 @@ class ScreenCommands
             // Handle the "wid" parameter
             case 'wid':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-wid requires a parameter');
+                    throw new ClientException($this->client, '-wid requires a parameter');
                 }
                 $s->width = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
@@ -196,7 +195,7 @@ class ScreenCommands
             // Handle the "hgt" parameter
             case 'hgt':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-hgt requires a parameter');
+                    throw new ClientException($this->client, '-hgt requires a parameter');
                 }
                 $s->height = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
@@ -204,7 +203,7 @@ class ScreenCommands
             // Handle the "timeout" parameter
             case 'timeout':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-timeout requires a parameter');
+                    throw new ClientException($this->client, '-timeout requires a parameter');
                 }
                 $s->timeout = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
@@ -212,7 +211,7 @@ class ScreenCommands
             // Handle the "backlight" parameter
             case 'backlight':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-backlight requires a parameter');
+                    throw new ClientException($this->client, '-backlight requires a parameter');
                 }
 
                 // set the backlight status based on what the client has set
@@ -255,7 +254,7 @@ class ScreenCommands
             // Handle the "cursor" parameter
             case 'cursor':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-cursor requires a parameter');
+                    throw new ClientException($this->client, '-cursor requires a parameter');
                 }
 
                 switch ($value) {
@@ -277,7 +276,7 @@ class ScreenCommands
             // Handle the "cursor_x" parameter
             case 'cursor_x':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-cursor_x requires a parameter');
+                    throw new ClientException($this->client, '-cursor_x requires a parameter');
                 }
                 $s->cursor_x = (int) $value;
                 Server::sendString($this->client->stream, "success\n");
@@ -285,7 +284,7 @@ class ScreenCommands
             // Handle the "cursor_y" parameter
             case 'cursor_y':
                 if (empty($value)) {
-                    throw new ClientException($this->client->stream, '-cursor_y requires a parameter');
+                    throw new ClientException($this->client, '-cursor_y requires a parameter');
                 }
                 $s->cursor_y = (int) $value;
                 Server::sendString($this->client->stream, "success\n");

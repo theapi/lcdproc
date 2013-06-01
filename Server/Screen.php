@@ -59,7 +59,7 @@ class Screen
 
         $this->client = $client;
         if (!$id) {
-            throw new ClientException($this->client->stream, 'Need id string');
+            throw new ClientException($this->client, 'Need id string');
         }
 
         $this->id = $id;

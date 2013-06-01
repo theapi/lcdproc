@@ -5,18 +5,20 @@ namespace Theapi\Lcdproc\Server\Exception;
 /**
  * Exception class for when a client makes a bad request.
  */
-class CLientException extends \Exception
+class ClientException extends \Exception
 {
 
-    protected $stream;
+    protected $client;
 
-    public function __construct($stream, $message = '', $code = 0, $previous = null)
+    public function __construct($client, $message = '', $code = 0, $previous = null)
     {
-        $this->stream = $stream;
+        $this->client = $client;
+
+        $client->container->log(LOG_ERR, $message);
     }
 
     public function getStream()
     {
-        return $this->stream;
+        return $this->client->stream;
     }
 }

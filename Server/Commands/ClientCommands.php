@@ -2,7 +2,7 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\Exception\ClientException;
 
@@ -71,7 +71,8 @@ class ClientCommands
 
         // NB: our arg count is one less than source as the function name has been extracted.
         if (count($args) != 2) {
-            throw new ClientException($this->client->stream, 'Usage: client_set -name <name>');
+            $this->client->container->log(LOG_DEBUG, print_r($args, true));
+            throw new ClientException($this->client, 'Usage: client_set -name <name>');
         }
 
         $key = trim($args[0], ' -');
@@ -79,11 +80,11 @@ class ClientCommands
 
         if (!empty($key) && !empty($value)) {
             if ($key != 'name') {
-                throw new ClientException($this->client->stream, "invalid parameter ($key)");
+                throw new ClientException($this->client, "invalid parameter ($key)");
             }
 
             $this->name = $value;
-            Server::sendString($this->client->stream, "success\n");
+            Server::sendString($this->client, "success\n");
         }
 
         return 0;
@@ -100,13 +101,13 @@ class ClientCommands
         }
 
         if (count($args) < 1) {
-            throw new ClientException($this->client->stream, 'Usage: client_add_key [-exclusively|-shared] {<key>}+');
+            throw new ClientException($this->client, 'Usage: client_add_key [-exclusively|-shared] {<key>}+');
         }
 
         // TODO input key stuff
 
 
-        Server::sendString($this->client->stream, "success\n");
+        Server::sendString($this->client, "success\n");
 
         return 0;
     }
@@ -122,7 +123,7 @@ class ClientCommands
         }
 
         if (count($args) < 1) {
-            throw new ClientException($this->client->stream, 'Usage: client_del_key {<key>}+');
+            throw new ClientException($this->client, 'Usage: client_del_key {<key>}+');
         }
 
         // TODO input key stuff
@@ -147,7 +148,7 @@ class ClientCommands
         }
 
         if (count($args) != 1) {
-            throw new ClientException($this->client->stream, 'Usage: backlight {on|off|toggle|blink|flash}');
+            throw new ClientException($this->client, 'Usage: backlight {on|off|toggle|blink|flash}');
         }
 
         $arg = trim($args[0]);

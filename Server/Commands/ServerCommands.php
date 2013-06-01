@@ -2,7 +2,7 @@
 namespace Theapi\Lcdproc\Server\Commands;
 
 
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Exception\ClientException;
 
 class ServerCommands
@@ -23,7 +23,7 @@ class ServerCommands
     public function output($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client->stream);
+            throw new ClientException($this->client);
         }
 
         // Lie :)
@@ -38,7 +38,7 @@ class ServerCommands
     public function sleep($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client->stream);
+            throw new ClientException($this->client);
         }
 
         Server::sendString($this->client->stream, "ignored (not fully implemented)\n");
@@ -50,7 +50,7 @@ class ServerCommands
     public function noop($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client->stream);
+            throw new ClientException($this->client);
         }
 
         Server::sendString($this->client->stream, "noop complete\n");

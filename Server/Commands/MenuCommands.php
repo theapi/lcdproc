@@ -19,7 +19,7 @@ namespace Theapi\Lcdproc\Server\Commands;
 *
 */
 
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Exception\ClientException;
 
 class MenuCommands
