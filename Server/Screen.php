@@ -42,6 +42,7 @@ class Screen
     public $cursor_y = 1;
     public $widgetlist = array();
 
+    protected $container;
     protected $config;
 
     /**
@@ -51,9 +52,10 @@ class Screen
      * @param string $id
      * @param Client $client
      */
-    public function __construct($config, $id, Client $client = null)
+    public function __construct($container, $id, Client $client = null)
     {
-        $this->config = $config;
+        $this->container = $container;
+        $this->config = $this->container->config;
 
         $this->client = $client;
         if (!$id) {
@@ -61,8 +63,8 @@ class Screen
         }
 
         $this->id = $id;
-        $this->width = $this->drivers->displayProps->width;
-        $this->height = $this->drivers->displayProps->height;
+        $this->width = $this->container->drivers->displayProps->width;
+        $this->height = $this->container->drivers->displayProps->height;
 
         // Client can be null for serverscreens and other client-less screens
 

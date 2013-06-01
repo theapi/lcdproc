@@ -29,7 +29,7 @@ class Config
 
     protected $screenDuration = 32;
     protected $titleSpeed = Render::TITLESPEED_MAX;
-    protected $autoRotate = Render::AUTOROTATE_ON;
+    protected $autoRotate = self::AUTOROTATE_ON;
 
     public function __get($name)
     {

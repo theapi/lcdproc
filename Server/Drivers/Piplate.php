@@ -87,7 +87,7 @@ class Piplate extends Driver
         // as it was there just because lcdproc x & y start at 1
         $line1 = substr($this->out[1], 1);
         $line2 = substr($this->out[2], 1);
-
+var_dump("$line1\n$line2");
         try {
             $this->write("$line1\n$line2");
             // read just to clear the memory
@@ -144,6 +144,14 @@ class Piplate extends Driver
     public function num($x, $num)
     {
         // Mmm, big numbers in 2 lines with ascii...
+
+        // not so big for now
+        if ($num == 10) {
+          $chr = ':';
+        } else {
+          $chr = $num;
+        }
+        $this->chr($x, 1, $chr);
     }
 
     /**

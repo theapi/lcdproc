@@ -36,8 +36,8 @@ class Render
 
     protected $heartbeat = self::HEARTBEAT_OPEN;
     protected $backlight = self::BACKLIGHT_OPEN;
-    protected $titlespeed = self::BACKLIGHT_OPEN;
-    protected $outputState = self::BACKLIGHT_OPEN;
+    protected $titleSpeed = 1;
+    protected $outputState = 0;
 
     // If no heartbeat setting has been set at all
     protected $heartbeatFallback = self::HEARTBEAT_ON;
@@ -69,7 +69,7 @@ class Render
      * @param $timer  A value increased with every call.
      * @return  -1 on error, 0 on success.
      */
-    public static function screen($s, $timer)
+    public function screen($s, $timer)
     {
         if (!$s instanceof Screen) {
             return -1;
@@ -143,7 +143,7 @@ class Render
      * @param int $fspeed  speed of scrolling...
      * @param int $timer   current timer tick
      */
-    public static function frame($list, $left, $top, $right, $bottom, $fwid, $fhgt, $fscroll, $fspeed, $timer)
+    public function frame($list, $left, $top, $right, $bottom, $fwid, $fhgt, $fscroll, $fspeed, $timer)
     {
         // Scrolling offset for the frame...
         $fy = 0;
@@ -169,9 +169,6 @@ class Render
             }
         }
         // Frames don't scroll horizontally
-
-        // reset widget list
-        rest($list);
 
         // loop over all widgets
         foreach ($list as $w) {
@@ -216,14 +213,14 @@ class Render
         return 0;
     }
 
-    public static function string($w, $left, $top, $right, $bottom, $fy)
+    public function string($w, $left, $top, $right, $bottom, $fy)
     {
         if ($w instanceof Widget) {
             if ($w->text != null
                 && $w->x > 0
                 && $w->y > 0
                 && $w->y >$fy
-                && ($w->y <= $bottom - $top) {
+                && ($w->y <= $bottom - $top)) {
 
                 $w->x = min($w->x, $right - $left);
                 $length = min($right - $left - $w->x + 1, 0);
@@ -236,33 +233,125 @@ class Render
         return 0;
     }
 
-    public static function hbar($w, $left, $top, $right, $bottom, $fy)
+    public function hbar($w, $left, $top, $right, $bottom, $fy)
     {
 
     }
 
-    public static function vbar($w, $left, $top, $right, $bottom, $fy)
+    public function vbar($w, $left, $top, $right, $bottom, $fy)
     {
 
     }
 
-    public static function title($w, $left, $top, $right, $bottom, $timer)
+    public function title($w, $left, $top, $right, $bottom, $timer)
+    {
+        if (!$w instanceof Widget) {
+            return;
+        }
+
+        $visWidth = $right - $left;
+        if ($w->text != null && $visWidth >= 8) {
+            $length = strlen($w->text);
+            $width = $visWidth - 6;
+            // calculate delay from titlespeed: <=0 -> 0, [1 - infty] -> [10 - 1]
+            if ($this->titleSpeed <= self::TITLESPEED_NO) {
+                $delay = self::TITLESPEED_NO;
+            } else {
+                $delay = max(self::TITLESPEED_MIN, self::TITLESPEED_MAX - $this->titleSpeed);
+            }
+
+            // display leading fillers
+            $this->container->drivers->icon($w->x + $left, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
+            $this->container->drivers->icon($w->x + $left + 1, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
+
+            if (($length <= $width) || ($delay == 0)) {
+                // copy test starting from the beginning
+                $length = min($length, $width);
+                $str = substr($w->x, 0, $length);
+                // set x value for trailing fillers
+                $x = $length + 4;
+            } else {
+                // Scroll the title, if it doesn't fit...
+                $offset = $this->container->timer;
+
+                // if the delay is "too large" increase cycle length
+                if (($delay != 0) && ($delay < $length / ($length - $width))) {
+                    $offset = $offset / delay;
+                }
+
+                // reverse direction every length ticks
+                $reverse = ($offset / $length) & 1;
+
+                // restrict offset to cycle length
+                $offset = $offset % delay;
+                $offset = max($offset, 0);
+
+                // if the delay is "low enough" slow down as requested
+                if (($delay != 0) && ($delay >= $length / ($length - $width))) {
+                    $offset = $offset / delay;
+                }
+
+                // restrict offset to the max. allowed offset: length - width
+                $offset = min($offset, $length - $width);
+
+                // scroll backward by mirroring offset at max. offset
+                if ($reverse) {
+                    $offset = ($length - $width) - $offset;
+                }
+
+                // copy test starting from offset
+                $length = min($length, $width);
+                $str = substr($w->x, $offset, $length);
+
+                // set x value for trailing fillers
+                $x = $visWidth - 2;
+            }
+
+            // display text
+            $this->container->drivers->string($w->x + 3 + $left, $w->y + $top, $str);
+
+            // display trailing fillers
+            for ( ; $x < $visWidth; $x++) {
+                $this->container->drivers->icon($w->x + $x + $left, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
+            }
+        }
+
+        return 0;
+    }
+
+    public function scroller($w, $left, $top, $right, $bottom, $timer)
     {
 
     }
 
-    public static function scroller($w, $left, $top, $right, $bottom, $timer)
+    public function num($w, $left, $top, $right, $bottom)
     {
+        // NOTE: y=10 means COLON (:)
+        if (!$w instanceof Widget) {
+            return -1;
+        }
+
+        if ( ($w->x > 0) && ($w->y >= 0) && ($w->y <= 10) ) {
+            $this->container->drivers->num($w->x + $left, $w->y);
+        }
 
     }
 
-    public static function num($w, $left, $top, $right, $bottom)
+    public function msg($text, $expire)
     {
+        if (strlen($text) > 15 || $expire <= 0) {
+            return -1;
+        }
 
-    }
+        // Still a message active?
+        if ($this->serverMsgExpire > 0) {
+            $this->serverMsgText = '';
+        }
 
-    public static function msg($text, $expire)
-    {
+        // Store new message
+        $this->serverMsgText = $text . '| ';
+        $this->serverMsgExpire = $expire;
 
+        return 0;
     }
 }

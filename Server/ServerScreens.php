@@ -37,17 +37,16 @@ class ServerScreens
     public function __construct($container)
     {
         $this->container = $container;
-        $this->config = $this->container->config;
 
-        $hasHelloMsg = empty($this->config->helloMsg) ? false : true;
+        $hasHelloMsg = empty($this->container->config->helloMsg) ? false : true;
 
         // Create the screen
-        $this->screen = new Screen($this->config, "_server_screen", null);
+        $this->screen = new Screen($this->container, "_server_screen", null);
         $this->screen->name = "Server screen";
         $this->screen->duration = 1;
 
         // Create all the widgets...
-        for ($i = 0; $i < $this->drivers->displayProps->height; $i++) {
+        for ($i = 0; $i < $this->container->drivers->displayProps->height; $i++) {
             $id = 'line' . ($i+1);
 
             try {
@@ -66,15 +65,15 @@ class ServerScreens
 
         // set parameters for server_screen and its widgets
         //TODO: auto rotate optional
-        $this->reset(Render::AUTOROTATE_ON, !$hasHelloMsg, !$hasHelloMsg);
+        $this->reset(Config::AUTOROTATE_ON, !$hasHelloMsg, !$hasHelloMsg);
 
         // set the widgets depending on the Hello option in config
         if ($hasHelloMsg) {
-            for ($i = 0; $i < $this->drivers->displayProps->height; $i++) {
+            for ($i = 0; $i < $this->container->drivers->displayProps->height; $i++) {
                 $id = 'line' . $i+1;
                 $w = $this->screen->findWidget($id);
                 if ($w) {
-                    $w->text = $this->config->helloMsg[$i];
+                    $w->text = $this->container->config->helloMsg[$i];
                 }
             }
         }

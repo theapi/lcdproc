@@ -52,7 +52,7 @@ class ScreenCommands
             throw new ClientException($this->client->stream, 'Screen already exists');
         }
 
-        $s = new Screen($this->client->config, $args[0]);
+        $s = new Screen($this->client->container, $args[0]);
         if ($s != null) {
             throw new ClientException($this->client->stream, 'failed to create screen');
         }

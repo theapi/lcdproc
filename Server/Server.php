@@ -145,7 +145,7 @@ class Server
                 $this->serverScreen->update();
             }
 
-            $this->render->screen($screen, $this->timer);
+            //$this->render->screen($screen, $this->timer);
 
         } while (1);
 
