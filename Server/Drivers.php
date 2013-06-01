@@ -11,18 +11,42 @@ use Theapi\Lcdproc\Server\Drivers\Piplate;
 class Drivers
 {
 
-    //TODO: get the python scrpt to accept these utf-8 chars
-    const ICON_HEART_OPEN   = '♡'; // "\xE2\x99\xA1";
-    const ICON_HEART_FILLED = "\xE2\x9D\xA4"; //'❤'; //0x108; //'❤'; // "\xE2\x9D\xA4";
+    // Icons below are one character wide
+    const ICON_BLOCK_FILLED	 = 0x100;
+    const ICON_HEART_OPEN    = 0x108;
+    const ICON_HEART_FILLED  = 0x109;
+    const ICON_ARROW_UP      = 0x110;
+    const ICON_ARROW_DOWN    = 0x111;
+    const ICON_ARROW_LEFT    = 0x112;
+    const ICON_ARROW_RIGHT   = 0x113;
+    const ICON_CHECKBOX_OFF  = 0x120;
+    const ICON_CHECKBOX_ON   = 0x121;
+    const ICON_CHECKBOX_GRAY = 0x122;
+    const ICON_SELECTOR_AT_LEFT	  = 0x128;
+    const ICON_SELECTOR_AT_RIGHT	= 0x129;
+    const ICON_ELLIPSIS      = 0x130;
 
+    // Icons below are two characters wide
+    const ICON_STOP	 = 0x200;	// should look like  []
+    const ICON_PAUSE = 0x201;	// should look like  ||
+    const ICON_PLAY  = 0x202;	// should look like  >
+    const ICON_PLAYR = 0x203;	// should llok like  <
+    const ICON_FF    = 0x204;	// should look like  >>
+    const ICON_FR	   = 0x205;	// should look like  <<
+    const ICON_NEXT	 = 0x206;	// should look like  >|
+    const ICON_PREV	 = 0x207;	// should look like  |<
+    const ICON_REC   = 0x208;	// should look like  ()
+
+    protected $container;
     protected $config;
 
     protected $loadedDrivers = array();
     protected $displayProps;
 
-    public function __construct($config)
+    public function __construct($container)
     {
-        $this->config = $config;
+        $this->container = $container;
+        $this->config = $container->config;
     }
 
     /**
@@ -37,7 +61,7 @@ class Drivers
     {
         // Kinda just gonna have the one driver
         // so don't bother with logic...
-        $driver = new Piplate();
+        $driver = new Piplate($this->container);
         $this->loadedDrivers[] = $driver;
 
         // if driver does output

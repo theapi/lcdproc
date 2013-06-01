@@ -8,7 +8,7 @@ use Theapi\Lcdproc\Server\Commands\ScreenCommands;
 use Theapi\Lcdproc\Server\Commands\WidgetCommands;
 use Theapi\Lcdproc\Server\Commands\MenuCommands;
 use Theapi\Lcdproc\Server\Config;
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 
 class Client
 {

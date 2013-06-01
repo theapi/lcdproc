@@ -6,17 +6,26 @@ namespace Theapi\Lcdproc\Server;
  * send to the LCD.
  */
 
-use Theapi\Lcdproc\Server;
-use Theapi\Lcdproc\Screen;
+use Theapi\Lcdproc\Server\Server;
+use Theapi\Lcdproc\Server\Screen;
 
 class Render
 {
 
+    const HEARTBEAT_OFF  = 0;
+    const HEARTBEAT_ON   = 1;
+    const HEARTBEAT_OPEN = 2;
+
     const BACKLIGHT_OFF	  = 0;
     const BACKLIGHT_ON	  =	1;
     const BACKLIGHT_OPEN	=	2;
-    const BACKLIGHT_BLINK	=	100;
-    const BACKLIGHT_FLASH	=	200;
+    const BACKLIGHT_BLINK	=	0x100;
+    const BACKLIGHT_FLASH	=	0x200;
+
+    const CURSOR_OFF        = 0;
+    const CURSOR_DEFAULT_ON = 1;
+    const CURSOR_BLOCK      = 4;
+    const CURSOR_UNDER      = 5;
 
     /**
      * Renders a screen. The following actions are taken in order:

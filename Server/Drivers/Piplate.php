@@ -1,35 +1,45 @@
 <?php
 namespace Theapi\Lcdproc\Server\Drivers;
 
-class Piplate
-{
+use Theapi\Lcdproc\Server\Driver as Driver;
 
-    protected $width = 16;
-    protected $height = 2;
-    protected $cellWidth = 5;
-    protected $cellHeight = 5;
+// TODO: move the outputing code to the python script at the other end of the socket
+// as it has functions for chr, string, scroll, cursor etc.
+class Piplate extends Driver
+{
 
     protected $debug = 0;
 
-    protected $disabled = true; // so I can test without the Pi on
+    protected $disabled = false; // so I can test without the Pi on
 
-    // Two rows of 16 spaces
-    protected $outBlank = array('                ', '                ');
+    // Two rows of 16(7) spaces (column 0 gets stripped later leaving 16)
+    //  $outBlank[1] & $outBlank[2]
+    // index starting at one because that's what lcdproc expects
+    protected $outBlank = array(
+        '1' => '                 ',
+        '2' => '                 ',
+    );
     protected $out = array();
     protected $fp;
 
     /**
      * Initialize the driver.
      */
-    public function __construct()
+    public function __construct($container)
     {
-        // connect to the socket that the python script is listening on
+        parent::__construct($container);
 
-        $this->server = '192.168.0.11';
+        $this->server = '192.168.0.11'; // TODO: make pi server configurable
         $this->port = 8888;
 
+        // Set dimensions
+        $this->width = 16;
+        $this->height = 2;
+        $this->cellWidth = 5;
+        $this->cellHeight = 5;
 
         if (!$this->disabled) {
+            // connect to the socket that the python script is listening on
             $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
 
             if (!$this->fp) {
@@ -50,29 +60,12 @@ class Piplate
 
     }
 
-    public function doesOutput()
-    {
+    public function doesOutput() {
         return true;
     }
 
-    public function width()
-    {
-        return $this->width;
-    }
-
-    public function height()
-    {
-        return $this->height;
-    }
-
-    public function cellWidth()
-    {
-        return $this->cellWidth;
-    }
-
-    public function cellHeight()
-    {
-        return $this->cellHeight;
+    public function doesInput() {
+        return false; // not yet
     }
 
     /**
@@ -90,10 +83,13 @@ class Piplate
      */
     public function flush()
     {
-        $string = join("\n", $this->out);
+        // remove the first column
+        // as it was there just because lcdproc x & y start at 1
+        $line1 = substr($this->out[1], 1);
+        $line2 = substr($this->out[2], 1);
 
         try {
-            $this->write($string);
+            $this->write("$line1\n$line2");
             // read just to clear the memory
             $this->read();
         } catch (\Exception $e) {
@@ -119,10 +115,6 @@ class Piplate
      */
     public function string($x, $y, $string)
     {
-        // Our positions start with 0 not 1
-        $x--;
-        $y--;
-
         $len = strlen($string);
         for ($i =0; $i < $len; $i++) {
             $pos = $x + $i;
@@ -133,6 +125,8 @@ class Piplate
     /**
      * Print a character on the screen at position (x,y).
      *
+     * NB: ACSII only :(
+     *
      * @param x        Horizontal character position (column).
      * @param y        Vertical character position (row).
      * @param chr   String that gets written.
@@ -142,16 +136,6 @@ class Piplate
         $this->out[$y][$x] = $chr;
     }
 
-    public function vbar($x, $y, $len, $promille, $pattern)
-    {
-
-    }
-
-    public function hbar($x, $y, $len, $promille, $pattern)
-    {
-
-    }
-
     /**
      * Write a big number.
      * @param x        Horizontal character position (column).
@@ -159,32 +143,7 @@ class Piplate
      */
     public function num($x, $num)
     {
-
-    }
-
-    /**
-     * Perform heartbeat.
-     * @param state    Heartbeat state.
-     */
-    public function heartbeat($state)
-    {
-
-    }
-
-    /**
-     * Write icon.
-     * @param x        Horizontal character position (column).
-     * @param y        Vertical character position (row).
-     * @param icon     synbolic value representing the icon.
-     */
-    public function icon($x, $y, $icon)
-    {
-
-    }
-
-    public function cursor($x, $y, $state)
-    {
-
+        // Mmm, big numbers in 2 lines with ascii...
     }
 
     /**

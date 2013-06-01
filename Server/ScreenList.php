@@ -1,7 +1,7 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Screen;
 
 /**

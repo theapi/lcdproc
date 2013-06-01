@@ -19,10 +19,10 @@ use Theapi\Lcdproc\Server\Drivers;
 
 /* This file is part of phpLCDd, the php lcdproc server.
  *
-* This file is released under the GNU General Public License.
-* Refer to the COPYING file distributed with this package.
-*
-*/
+ * This file is released under the GNU General Public License.
+ * Refer to the COPYING file distributed with this package.
+ *
+ */
 
 class ServerScreens
 {
@@ -89,7 +89,7 @@ class ServerScreens
         // naughty hard coded for now
         $w = $this->screen->findWidget('line1');
         if ($w) {
-            $w->text = Drivers::ICON_HEART_FILLED . ' PHP LCDproc';
+            $w->text = 'PHP LCDproc';
             $w->x = 3; // Just testing
         }
 

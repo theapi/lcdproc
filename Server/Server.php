@@ -1,5 +1,5 @@
 <?php
-namespace Theapi\Lcdproc;
+namespace Theapi\Lcdproc\Server;
 
 
 use Theapi\Lcdproc\Server\Render;
@@ -20,6 +20,7 @@ require_once 'ScreenList.php';
 require_once 'Screen.php';
 require_once 'ServerScreens.php';
 require_once 'Widget.php';
+require_once 'Driver.php';
 require_once 'Drivers.php';
 require_once 'Drivers/Piplate.php';
 require_once 'Commands/ClientCommands.php';
@@ -63,7 +64,7 @@ class Server
         $this->screenList = new ScreenList($this);
 
         // init_drivers
-        $this->drivers = new Drivers($this->config);
+        $this->drivers = new Drivers($this);
         $this->drivers->loadDriver($driverName);
 
         // clients_init

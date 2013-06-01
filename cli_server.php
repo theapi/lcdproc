@@ -1,5 +1,5 @@
 <?php
-use Theapi\Lcdproc\Server;
+use Theapi\Lcdproc\Server\Server;
 
 // All errors
 error_reporting(E_ALL);
