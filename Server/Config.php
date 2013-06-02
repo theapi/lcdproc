@@ -27,7 +27,7 @@ class Config
     protected $backlight = Render::BACKLIGHT_OFF;
     protected $heartbeat = Render::HEARTBEAT_OFF;
 
-    protected $screenDuration = 32;
+    protected $duration = 32;
     protected $titleSpeed = Render::TITLESPEED_MAX;
     protected $autoRotate = self::AUTOROTATE_ON;
 

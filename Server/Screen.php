@@ -29,7 +29,7 @@ class Screen
 
     public $name = null;
     public $priority = self::PRI_INFO;
-    public $duration = Server::RENDER_FREQ;
+    public $duration = 32;
     public $backlight = Render::BACKLIGHT_OFF;
     public $heartbeat = Render::HEARTBEAT_OFF;
     public $width;
@@ -63,6 +63,7 @@ class Screen
         }
 
         $this->id = $id;
+        //$this->duration = $this->config->duration;
         $this->width = $this->container->drivers->displayProps->width;
         $this->height = $this->container->drivers->displayProps->height;
 
