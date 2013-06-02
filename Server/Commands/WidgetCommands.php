@@ -272,10 +272,35 @@ class WidgetCommands
                 Server::sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_FRAME:
-                // not doing frames
-                // remove the screen
-                $this->client->removeScreen($s);
-                throw new ClientException($this->client, 'Not implemented: widget type frame');
+                // Frame takes "left top right bottom wid hgt direction speed"
+                if (!isset($args[9])) {
+                    throw new ClientException($this->client, 'Wrong number of arguments');
+                }
+
+                if (!is_numeric($args[2])
+                    || !is_numeric($args[3])
+                    || !is_numeric($args[4])
+                    || !is_numeric($args[5])
+                    || !is_numeric($args[6])
+                    || !is_numeric($args[7])) {
+                    throw new ClientException($this->client, 'Invalid coordinates');
+                }
+
+                // Direction must be v or h
+                if ($args[8] != 'h' && $args[8] != 'v') {
+                    throw new ClientException($this->client, 'Invalid direction');
+                }
+
+                $w->left = (int) $args[2];
+                $w->top = (int) $args[3];
+                $w->right = (int) $args[4];
+                $w->bottom = (int) $args[5];
+                $w->width = (int) $args[6];
+                $w->height = (int) $args[7];
+                $w->length = $args[8];
+                $w->speed = $args[9];
+                Server::sendString($this->client->stream, "success\n");
+
                 break;
             case Widget::WID_NUM:
                 // Num takes "x num"

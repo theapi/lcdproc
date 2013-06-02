@@ -199,6 +199,27 @@ class Render
                 case Widget::WID_SCROLLER:
                     $this->scroller($w, $left, $top, $right, $bottom, $timer);
                     break;
+                case Widget::WID_FRAME:
+                    $newLeft = $left + $w->left - 1;
+                    $newTop = $top + $w->top - 1;
+                    $newRight = min($left + $w->right, $right);
+                    $newBottom = min($top + $w->bottom, $bottom);
+                    // Render only if it's visible...
+                    if (($newLeft < $right) && ($newTop < $bottom)) {
+                        $this->frame(
+                            $w->frameScreen->widgetlist,
+                            $newLeft,
+                            $newTop,
+                            $newRight,
+                            $newBottom,
+                            $w->width,
+                            $w->height,
+                            $w->length,
+                            $w->speed,
+                            $timer
+                        );
+                    }
+                    break;
                 case Widget::WID_NUM:
                     // NOTE: y=10 means COLON (:)
                     if (($w->x > 0) && ($w->y >= 0) && ($w->y <= 10)) {

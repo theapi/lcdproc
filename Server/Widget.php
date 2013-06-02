@@ -59,6 +59,14 @@ class Widget
         $this->length = 1;
         $this->speed = 1;
         $this->text = null;
+
+        if ($this->type == self::WID_FRAME) {
+            // create a screen for the frame widget
+            $frameName = 'frame_' . $id;
+            $this->frameScreen = new Screen($screen->client->container, $frameName, $screen->client);
+        }
+
+        return $this;
     }
 
     /**
@@ -66,7 +74,14 @@ class Widget
      */
     public function destroy()
     {
-        // Just unset in the screen. No need to worry about memory like c does.
+        // No need to worry about memory like c does.
+
+        // Free subscreen of frame widget too
+        if ($this->type == self::WID_FRAME) {
+            $this->frameScreen->destroy();
+        }
+
+        return 0;
     }
 
     /**
