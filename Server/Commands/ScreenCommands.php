@@ -30,6 +30,7 @@ class ScreenCommands
     public function __construct($client)
     {
         $this->client = $client;
+        $this->container = $this->client->container;
     }
 
 
@@ -178,12 +179,31 @@ class ScreenCommands
                 break;
             // Handle the "duration" parameter
             case 'duration':
+                $number = (int) $value;
+                if (empty($value) || $number < 1) {
+                    throw new ClientException($this->client, '-duration requires a parameter');
+                }
+                $this->container->log(LOG_DEBUG, "screen_set: duration=$number");
+                $s->duration = $number;
+                Server::sendString($this->client->stream, "success\n");
+                break;
+            // Handle the "heartbeat" parameter
+            case 'heartbeat':
                 if (empty($value)) {
                     throw new ClientException($this->client, '-heartbeat requires a parameter');
                 }
-                $s->duration = (int) $value;
+                switch ($value) {
+                    case 'on':
+                        $s->heartbeat = Render::HEARTBEAT_ON;
+                        break;
+                    case 'off':
+                        $s->heartbeat = Render::HEARTBEAT_OFF;
+                        break;
+                    case 'open':
+                        $s->heartbeat = Render::HEARTBEAT_OPEN;
+                        break;
+                }
                 Server::sendString($this->client->stream, "success\n");
-                break;
             // Handle the "wid" parameter
             case 'wid':
                 if (empty($value)) {

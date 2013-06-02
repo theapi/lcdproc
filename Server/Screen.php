@@ -29,7 +29,7 @@ class Screen
 
     public $name = null;
     public $priority = self::PRI_INFO;
-    public $duration = 0;
+    public $duration = Server::RENDER_FREQ;
     public $backlight = Render::BACKLIGHT_OFF;
     public $heartbeat = Render::HEARTBEAT_OFF;
     public $width;

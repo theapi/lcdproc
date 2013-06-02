@@ -50,9 +50,11 @@ class ScreenList
     {
         $this->screenList[$screen->id] = $screen;
 
+        /*
         if (empty($this->currentId)) {
             $this->currentId = $screen->id;
         }
+        */
     }
 
     /**
@@ -88,23 +90,42 @@ class ScreenList
         reset($this->screenList);
         $f = current($this->screenList);
 
+        // Check whether there is an active screen
         $s = $this->current();
         if (empty($s)) {
-            // nothing to do
+            // We have no active screen yet.
+            // Try to switch to the first screen in the list...
+            $s = $f;
+            if (empty($s)) {
+                // There was no screen in the list
+                return;
+            }
+            $this->switchScreen($s);
             return;
+        } else {
+            // There already was an active screen.
+            // Check to see if it has an expiry time. If so, decrease it
+            // and then check to see if it has expired.
+            // Remove the screen if expired.
+
+            if ($s->timeout != -1) {
+                --$s->timeout;
+                $this->container->log(LOG_DEBUG, "Active screen [$s->id] has $s->timeout");
+                if ($s->timeout <= 0) {
+                    // Expired, we can destroy it
+                    $this->container->log(LOG_DEBUG, "Removing expired screen [$s->id]");
+                    $s->destroy();
+                }
+            }
+
+
         }
-
-        // There already was an active screen.
-        // Check to see if it has an expiry time. If so, decrease it
-        // and then check to see if it has expired.
-        // Remove the screen  if expired.
-        // TODO ...
-
 
         // OK, current situation examined. We can now see if we need to switch.
         // Is there a screen of a higher priority class than the current one ?
         if ($f->priority > $s->priority) {
             // Yes, switch to that screen, job done
+            $this->container->log(LOG_DEBUG, "High priority screen [$f->id] selected");
             $this->switchScreen($f);
         }
 

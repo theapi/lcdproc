@@ -34,6 +34,15 @@ require_once 'Exception/ClientException.php';
 
 class Server
 {
+
+    // We want 8 frames per second
+    const RENDER_FREQ = 8;
+    // And 32 times per second processing of messages and keypresses.
+    const PROCESS_FREQ = 32;
+    // Allow the rendering strokes to lag behind this many frames.
+    // More lag will not be corrected, but will cause slow-down.
+    const MAX_RENDER_LAG_FRAMES = 6;
+
     // $this can be passed as a container,
     // so the initialised classes are available to be used
 
@@ -111,72 +120,106 @@ class Server
     public function doMainLoop()
     {
 
-        /*
-         $renderFreq = 2; // Complete guess for now
 
+        // Allow the rendering strokes to lag behind this many frames.
+        // More lag will not be corrected, but will cause slow-down.
+        $timeUnit = (1e6 / self::RENDER_FREQ);
         $processLag = 0;
         $renderLag = 0;
 
-        // Microtime as a float
-        $time = microtime(true);
-        */
+        // Get initial time
+        $t = gettimeofday();
+
 
         do {
 
-            /*
-             $lastTime = $time;
-            $time = microtime(true);
-            $timeDiff = $time - $lastTime;
-            */
 
-            $read = $this->streams;
-            $write = $error = null;
+            // Get current time
+            $lastTime = $t;
+            $t = gettimeofday();
+            $timeDiff = $t['sec'] - $lastTime['sec'];
 
-            // sock_poll_clients (with a little blocking)
-            $numChanged = stream_select($read, $write, $except, 0, 500000);
-            if ($numChanged === false) {
-                // Mmm a problem
-                break;
+            if ( (($timeDiff + 1) > (PHP_INT_MAX / 1e6)) || ($timeDiff < 0) ) {
+                // We're going to overflow the calculation - probably been to sleep, fudge the values
+                $timeDiff = 0;
+                $processLag = 1;
+                $renderLag = $timeUnit;
+            } else {
+                $timeDiff *= 1e6; // 1,000,000
+                $timeDiff += $t['usec'] - $lastTime['usec'];
             }
+            $processLag += $timeDiff;
 
-            foreach ($read as $stream) {          //var_dump(stream_socket_get_name($stream, 1));
-                if ($stream === $this->socket) {
-                    // New client connection
-                    $conn = stream_socket_accept($this->socket);
+            if ($processLag > 0) {
+                // setup arrays for stream_select()
+                $read = $this->streams;
+                $write = $error = null;
 
-                    // add the connection to the array to be watched
-                    $this->streams[] = $conn;
+                // sock_poll_clients (with a little blocking)
+                $numChanged = stream_select($read, $write, $except, 0, 200000);
+                if ($numChanged === false) {
+                    // Mmm a problem
+                    break;
+                }
 
-                    // a new client
-                    $client = new Client($this, $conn);
-                    $this->clients->addClient($client);
+                foreach ($read as $stream) {
+                    if ($stream === $this->socket) {
+                        // New client connection
+                        $conn = stream_socket_accept($this->socket);
 
-                } else {
-                    $client = $this->clients->findByStream($stream);
-                    if (!$client instanceof Client) {
-                        $this->removeStream($stream);
+                        // add the connection to the array to be watched
+                        $this->streams[] = $conn;
+
+                        // a new client
+                        $client = new Client($this, $conn);
+                        $this->clients->addClient($client);
+
                     } else {
-                        // get the input from the clients
-                        $client->readFromSocket($stream);
+                        $client = $this->clients->findByStream($stream);
+                        if (!$client instanceof Client) {
+                            $this->removeStream($stream);
+                        } else {
+                            // get the input from the clients
+                            $client->readFromSocket($stream);
+                        }
                     }
                 }
+                // We've done the job...
+                $processLag = 0 - (1e6 / self::PROCESS_FREQ);
+
+
+                // analyze input from network clients and process functions
+                $this->clients->parseAllMessages();
+
+                // handle key input from devices
+                $this->handleInput();
             }
 
-            // analyze input from network clients and process functions
-            $this->clients->parseAllMessages();
+            $renderLag += $timeDiff;
+            if ($renderLag > 0) {
+                // Time for a rendering stroke
+                $this->timer++;
+                $this->screenList->process();
+                $s = $this->screenList->current();
+                if ($s->id == '_server_screen') {
+                    $this->serverScreen->update();
+                }
 
-            // handle key input from devices
-            $this->handleInput();
+                $this->render->screen($s, $this->timer);
 
-            // Time for rendering
-            $this->timer++;
-            $this->screenList->process();
-            $screen = $this->screenList->current();
-            if ($screen->id == '_server_screen') {
-                $this->serverScreen->update();
+                // We've done the job...
+                if ($renderLag > (1e6 / self::RENDER_FREQ) * self::MAX_RENDER_LAG_FRAMES) {
+                    // Cause rendering slowdown because too much lag
+                    $renderLag = (1e6 / self::RENDER_FREQ) * self::MAX_RENDER_LAG_FRAMES;
+                }
+                $renderLag -= (1e6 / self::RENDER_FREQ);
             }
 
-            $this->render->screen($screen, $this->timer);
+            // Sleep just as long as needed
+            $sleeptime = min(0 - $processLag, 0 - $renderLag);
+            if ($sleeptime > 0) {
+        			usleep($sleeptime);
+        		}
 
         } while (1);
 

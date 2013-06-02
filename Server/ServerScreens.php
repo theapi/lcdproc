@@ -1,6 +1,7 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Screen;
 use Theapi\Lcdproc\Server\Widget;
 use Theapi\Lcdproc\Server\Clients;
@@ -45,7 +46,7 @@ class ServerScreens
         // Create the screen
         $this->screen = new Screen($this->container, "_server_screen", null);
         $this->screen->name = "Server screen";
-        $this->screen->duration = 1;
+        $this->screen->duration = Server::RENDER_FREQ;
 
         // Create all the widgets...
         for ($i = 0; $i < $this->container->drivers->displayProps->height; $i++) {
