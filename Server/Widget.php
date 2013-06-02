@@ -127,9 +127,13 @@ class Widget
     /**
      * Find subordinate widgets of a widget by name.
      */
-    public function searchSubs($type)
+    public function searchSubs($id)
     {
+        if ($this->type == self::WID_FRAME) {
+            return $this->screen->findWidget($this->frameScreen, $id);
+        }
 
+        return null;
     }
 
     /**
