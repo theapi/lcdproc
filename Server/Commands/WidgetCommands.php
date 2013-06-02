@@ -154,7 +154,6 @@ class WidgetCommands
         $sid = $args[0];
         $s = $this->client->findScreen($sid);
         if ($s == null) {
-            //$this->container->log(LOG_DEBUG, print_r(array_keys($this->client->screenList),1));
             throw new ClientException($this->client, 'Unknown screen id:' . $sid);
         }
 

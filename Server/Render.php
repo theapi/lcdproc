@@ -17,6 +17,21 @@ class Render
     const HEARTBEAT_ON   = 1;
     const HEARTBEAT_OPEN = 2;
 
+    // Patterns for hbar / vbar, mostly (if not all) UNIMPLEMENTED
+    const BAR_POS = 0x001; /* default
+				 Promilles allowed: 0 to 1000
+				 The zero-point is at the left or bottom */
+    const BAR_NEG = 0x002; /* the bar grows in negative direction
+				 Promilles allowed: -1000 to 0
+				 The zero-point is at the left or top */
+    const BAR_POS_AND_NEG = 0x003; /* the bars can grow in both directions
+				 Promilles allowed: -1000 to 1000
+				 The zero-point is in the center */
+    const BAR_PATTERN_FILLED  = 0x000; /* default */
+    const BAR_PATTERN_OPEN    = 0x010;
+    const BAR_PATTERN_STRIPED = 0x020;
+    const BAR_WITH_PERCENTAGE = 0x100;
+
     const BACKLIGHT_OFF	  = 0;
     const BACKLIGHT_ON	  =	1;
     const BACKLIGHT_OPEN	=	2;
@@ -53,6 +68,7 @@ class Render
     public function __construct($container)
     {
         $this->container = $container;
+        $this->displayProps = $this->container->drivers->displayProps;
     }
 
     /**
@@ -91,8 +107,8 @@ class Render
             $s->widgetlist,
             0,
             0,
-            $this->container->drivers->displayProps->width,
-            $this->container->drivers->displayProps->height,
+            $this->displayProps->width,
+            $this->displayProps->height,
             $s->width,
             $s->height,
             'v',
@@ -175,9 +191,8 @@ class Render
         // loop over all widgets
         foreach ($list as $w) {
             if (!$w instanceof Widget) {
-                //TODO: better error reporting than var_dump
-              var_dump($w);
-              continue;
+                $this->container->log(LOG_DEBUG, print_r($w, true));
+                continue;
             }
 
             switch ($w->type) {
@@ -257,12 +272,53 @@ class Render
 
     public function hbar($w, $left, $top, $right, $bottom, $fy)
     {
+        if (!$w instanceof Widget) {
+            return;
+        }
 
+        if (($w->x > 0) && ($w->y > 0) && ($w->y > $fy) && ($w->y <= $bottom - $top)) {
+            if ($w->length > 0) {
+                $fullLen = $this->displayProps->width - $w->x - $left + 1;
+                $promille = 1000;
+
+                if (($w->length / $this->displayProps->cellWidth) < $right - $left - $w->x + 1) {
+                    $promille = 1000 * $w->length / ($this->displayProps->cellWidth * $fullLen);
+                }
+
+                $this->container->drivers->hbar(
+                    $w->x + $left,
+                    $w->y + $top,
+                    $fullLen,
+                    $promille,
+                    self::BAR_PATTERN_FILLED
+                );
+            }
+        }
+
+        return 0;
     }
 
     public function vbar($w, $left, $top, $right, $bottom, $fy)
     {
+        if (!$w instanceof Widget) {
+            return;
+        }
 
+        if (($w->x > 0) && ($w->y > 0)) {
+            if ($w->length > 0) {
+                $fullLen = $this->displayProps->length;
+                $promille = 1000 * $w->length / ($this->displayProps->cellHeight * $fullLen);
+                $this->container->drivers->vbar(
+                    $w->x + left,
+                    $w->y + top,
+                    $fullLen,
+                    $promille,
+                    self::BAR_PATTERN_FILLED
+                );
+            }
+        }
+
+        return 0;
     }
 
     public function title($w, $left, $top, $right, $bottom, $timer)
