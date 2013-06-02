@@ -70,7 +70,7 @@ class Clients
             }
             // parse all its messages...
             while ($str = $c->getMessage()) {
-                $this->container->log(LOG_DEBUG, $str);
+                $this->container->log(LOG_DEBUG, '> ' . $str);
                 Parse::message($str, $c);
                 if ($c->state == Client::STATE_GONE) {
                     $this->removeClient($c);

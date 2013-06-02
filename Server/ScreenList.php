@@ -155,8 +155,10 @@ class ScreenList
 
         if (isset($current)) {
             $c = $current->client;
-            if (isset($c)) {
+
+            if ($c) {
                 // Tell the client we're not listening any more...
+                $this->container->log(LOG_DEBUG, 'ignore: ' . $current->id);
                 $str = 'ignore ' . $current->id . "\n";
                 Server::sendString($c->stream, $str);
             } else {
@@ -166,6 +168,7 @@ class ScreenList
 
         $c = $s->client;
         if (isset($c)) {
+            $this->container->log(LOG_DEBUG, "listen [$s->id]");
             // Tell the client we're paying attention...
             $str = 'listen ' . $s->id . "\n";
             Server::sendString($c->stream, $str);

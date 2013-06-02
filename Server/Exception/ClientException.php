@@ -24,6 +24,9 @@ class ClientException extends \Exception
 
     public function getStream()
     {
-        return $this->client->stream;
+        if ($this->client instanceof Client) {
+            return $this->client->stream;
+        }
+        return null;
     }
 }

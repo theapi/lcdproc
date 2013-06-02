@@ -275,15 +275,9 @@ class Server
 
     }
 
-    public function fnDebug($stream)
-    {
-        $key = array_search($stream, $this->streams);
-        var_dump($stream, $key, $this->clients[$key]);
-    }
-
     public static function sendString($stream, $message)
     {
-        if (stream_get_meta_data($stream)) {
+        if (is_resource($stream)) {
             fwrite($stream, $message);
         }
     }
@@ -291,8 +285,9 @@ class Server
 
     public static function sendError($stream, $message)
     {
-        if (stream_get_meta_data($stream)) {
+        if (is_resource($stream)) {
             fwrite($stream, 'huh? ' . $message . "\n");
+
         }
     }
 }

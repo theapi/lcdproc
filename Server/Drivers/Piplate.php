@@ -43,7 +43,7 @@ class Piplate extends Driver
             $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
 
             if (!$this->fp) {
-                throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno, 0);
+                throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
             }
         }
 

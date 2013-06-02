@@ -36,7 +36,7 @@ class Client
     public $state;
     protected $name;
     protected $menu;
-    protected $screenList = array();
+    public $screenList = array();
 
     // Set the mapping of lcdproc commands to our methods
     protected $commands = array(

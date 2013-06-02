@@ -52,7 +52,7 @@ class ScreenCommands
             throw new ClientException($this->client, 'Screen already exists');
         }
 
-        $s = new Screen($this->client->container, $args[0]);
+        $s = new Screen($this->client->container, $args[0], $this->client);
         if ($s == null) {
             throw new ClientException($this->client, 'failed to create screen');
         }
@@ -132,9 +132,10 @@ class ScreenCommands
             throw new ClientException($this->client, 'What do you want to set?');
         }
 
+
         $s = $this->client->findScreen($args[0]);
         if ($s == null) {
-            throw new ClientException($this->client, 'Unknown screen id');
+            throw new ClientException($this->client, 'Unknown screen id:' . $args[0]);
         }
 
         // Handle the rest of the parameters

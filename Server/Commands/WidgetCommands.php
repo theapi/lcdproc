@@ -29,6 +29,7 @@ class WidgetCommands
     public function __construct($client)
     {
         $this->client = $client;
+        $this->container = $this->client->container;
     }
 
 
@@ -44,9 +45,9 @@ class WidgetCommands
         }
 
         $countArgs = count($args);
-        if ($countArgs < 3 || $countArgs > 5) {
+        if ( ($countArgs < 3) || ($countArgs > 5) ) {
             throw new ClientException(
-                $this->client->stream,
+                $this->client,
                 'Usage: widget_add <screenid> <widgetid> <widgettype> [-in <id>]'
             );
         }
@@ -153,7 +154,8 @@ class WidgetCommands
         $sid = $args[0];
         $s = $this->client->findScreen($sid);
         if ($s == null) {
-            throw new ClientException($this->client, 'Unknown screen id');
+            //$this->container->log(LOG_DEBUG, print_r(array_keys($this->client->screenList),1));
+            throw new ClientException($this->client, 'Unknown screen id:' . $sid);
         }
 
         // Find widget
