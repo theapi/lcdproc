@@ -277,19 +277,19 @@ class Render
 
                 // if the delay is "too large" increase cycle length
                 if (($delay != 0) && ($delay < $length / ($length - $width))) {
-                    $offset = $offset / delay;
+                    $offset = $offset / $delay;
                 }
 
                 // reverse direction every length ticks
                 $reverse = ($offset / $length) & 1;
 
                 // restrict offset to cycle length
-                $offset = $offset % delay;
+                $offset = $offset % $delay;
                 $offset = max($offset, 0);
 
                 // if the delay is "low enough" slow down as requested
                 if (($delay != 0) && ($delay >= $length / ($length - $width))) {
-                    $offset = $offset / delay;
+                    $offset = $offset / $delay;
                 }
 
                 // restrict offset to the max. allowed offset: length - width

@@ -277,15 +277,15 @@ class WidgetCommands
                 break;
             case Widget::WID_NUM:
                 // Num takes "x num"
-                if (!isset($args[1])) {
+                if (!isset($args[3])) {
                     throw new ClientException($this->client, 'Wrong number of arguments');
                 }
-                if (!is_numeric($args[1]) || !is_numeric($args[2])) {
+                if (!is_numeric($args[2]) || !is_numeric($args[2])) {
                     throw new ClientException($this->client, 'Invalid coordinates');
                 }
 
-                $w->x = (int) $args[1];
-                $w->y = (int) $args[2];
+                $w->x = (int) $args[2];
+                $w->y = (int) $args[3];
 
                 Server::sendString($this->client->stream, "success\n");
                 break;
