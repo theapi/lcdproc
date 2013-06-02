@@ -25,7 +25,7 @@ class Log
 
     public function msg($priority, $message)
     {
-        if ($priority >= $this->level) {
+        if ($this->level >= $priority)  {
             echo self::getPriorityString($priority) . ': ' . $message . "\n";
 
             //TODO: option to log to syslog

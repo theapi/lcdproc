@@ -13,5 +13,5 @@ ob_implicit_flush();
 
 require 'Server/Server.php';
 
-$server = new Server(LOG_DEBUG);
+$server = new Server();
 $server->run();
