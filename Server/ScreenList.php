@@ -148,7 +148,7 @@ class ScreenList
     public function switchScreen(Screen $s)
     {
         $current = $this->current();
-        if ($current == $s) {
+        if (($current instanceof Screen) && ($current->id == $s->id)) {
             // Nothing to be done
             return;
         }
