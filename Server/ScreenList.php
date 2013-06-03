@@ -62,11 +62,12 @@ class ScreenList
      */
     public function remove($screen)
     {
-        $current_screen = $this->current();
+        $current = $this->current();
 
-        if ($screen == $current_screen) {
+        if (($current instanceof Screen) && ($current->id == $screen->id)) {
             $this->gotoNext();
-            if ($screen == $current_screen) {
+            $current = $this->current();
+            if (($current instanceof Screen) && ($current->id == $screen->id)) {
                 // Hmm, no other screen had same priority
                 unset($this->screenList[$screen->id]);
 
