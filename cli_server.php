@@ -13,5 +13,15 @@ ob_implicit_flush();
 
 require 'Server/Server.php';
 
-$server = new Server('piplate', LOG_DEBUG);
-$server->run();
+$host = '127.0.0.1';
+$port = 13666;
+$driver = 'piplate';
+$verbosity = LOG_ERR;
+
+if (is_file('config.php')) {
+    // use a local file to override the default settings
+    include 'config.php';
+}
+
+$server = new Server($driver, $verbosity);
+$server->run($host, $port);
