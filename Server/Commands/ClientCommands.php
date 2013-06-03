@@ -14,6 +14,7 @@ class ClientCommands
     public function __construct($client)
     {
         $this->client = $client;
+        $this->container = $this->client->container;
     }
 
     /**
@@ -21,7 +22,7 @@ class ClientCommands
      */
     public function test($args)
     {
-        Server::sendString($this->client->stream, print_r($args, true));
+        $this->container->sendString($this->client->stream, print_r($args, true));
 
         return 0;
     }
@@ -41,7 +42,7 @@ class ClientCommands
         $str .= ' cellwid ' . $this->client->container->drivers->displayProps->cellWidth;
         $str .= ' cellhgt ' . $this->client->container->drivers->displayProps->cellHeight;
         $str .= "\n";
-        Server::sendString($this->client->stream, $str);
+        $this->container->sendString($this->client->stream, $str);
     }
 
     /**
@@ -84,7 +85,7 @@ class ClientCommands
             }
 
             $this->name = $value;
-            Server::sendString($this->client->stream, "success\n");
+            $this->container->sendString($this->client->stream, "success\n");
         }
 
         return 0;
@@ -107,7 +108,7 @@ class ClientCommands
         // TODO input key stuff
 
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -129,7 +130,7 @@ class ClientCommands
         // TODO input key stuff
 
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -179,7 +180,7 @@ class ClientCommands
         }
 
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -194,7 +195,7 @@ class ClientCommands
         }
 
         $info = $this->client->container->drivers->getInfo();
-        Server::sendString($this->client->stream, "$info\n");
+        $this->container->sendString($this->client->stream, "$info\n");
 
         return 0;
     }

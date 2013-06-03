@@ -3,6 +3,7 @@ namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Client;
 use Theapi\Lcdproc\Server\Render;
+use Theapi\Lcdproc\Server\Widget;
 
 /**
  * This stores all the screen definition-handling code. Functions here
@@ -114,8 +115,17 @@ class Screen
     public function findWidget($id)
     {
         if (isset($this->widgetlist[$id])) {
-            // not doing 'Search subscreens recursively' for now
             return $this->widgetlist[$id];
+        }
+
+        // Search subscreens recursively
+        foreach ($this->widgetlist as $w) {
+            if ($w->type == Widget::WID_FRAME) {
+                $w = $w->searchSubs($id);
+                if ($w) {
+                    return $w;
+                }
+            }
         }
 
         return null;

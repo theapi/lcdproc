@@ -13,6 +13,7 @@ class ServerCommands
     public function __construct($client)
     {
         $this->client = $client;
+        $this->container = $this->client->container;
     }
 
     /**
@@ -27,7 +28,7 @@ class ServerCommands
         }
 
         // Lie :)
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
     }
 
     /**
@@ -41,7 +42,7 @@ class ServerCommands
             throw new ClientException($this->client);
         }
 
-        Server::sendString($this->client->stream, "ignored (not fully implemented)\n");
+        $this->container->sendString($this->client->stream, "ignored (not fully implemented)\n");
     }
 
     /**
@@ -53,6 +54,6 @@ class ServerCommands
             throw new ClientException($this->client);
         }
 
-        Server::sendString($this->client->stream, "noop complete\n");
+        $this->container->sendString($this->client->stream, "noop complete\n");
     }
 }

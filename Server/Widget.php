@@ -130,7 +130,7 @@ class Widget
     public function searchSubs($id)
     {
         if ($this->type == self::WID_FRAME) {
-            return $this->screen->findWidget($this->frameScreen, $id);
+            return $this->frameScreen->findWidget($id);
         }
 
         return null;

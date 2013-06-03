@@ -13,5 +13,5 @@ ob_implicit_flush();
 
 require 'Server/Server.php';
 
-$server = new Server();
+$server = new Server('piplate', LOG_DEBUG);
 $server->run();

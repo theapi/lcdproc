@@ -161,7 +161,7 @@ class ScreenList
                 // Tell the client we're not listening any more...
                 $this->container->log(LOG_DEBUG, 'ignore: ' . $current->id);
                 $str = 'ignore ' . $current->id . "\n";
-                Server::sendString($c->stream, $str);
+                $this->container->sendString($c->stream, $str);
             } else {
                 // It's a server screen, no need to inform it.
             }
@@ -172,7 +172,7 @@ class ScreenList
             $this->container->log(LOG_DEBUG, "listen [$s->id]");
             // Tell the client we're paying attention...
             $str = 'listen ' . $s->id . "\n";
-            Server::sendString($c->stream, $str);
+            $this->container->sendString($c->stream, $str);
         } else {
             // It's a server screen, no need to inform it.
         }

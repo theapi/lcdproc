@@ -30,6 +30,7 @@ class MenuCommands
     public function __construct($client)
     {
         $this->client = $client;
+        $this->container = $this->client->container;
     }
 
 
@@ -66,7 +67,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -88,7 +89,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -187,7 +188,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -210,7 +211,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }
@@ -263,7 +264,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        Server::sendString($this->client->stream, "success\n");
+        $this->container->sendString($this->client->stream, "success\n");
 
         return 0;
     }

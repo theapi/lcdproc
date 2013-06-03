@@ -67,8 +67,21 @@ class WidgetCommands
 
         // Check for additional flags...
         if ($countArgs > 3) {
-            // Not implementing frames (in options)...
-            throw new ClientException($this->client, 'Frames not implemented');
+            // ignore leading '-' in options: we allow both forms
+            if (trim($args[3], ' -') == 'in') {
+                if (empty($args[4])) {
+                    throw new ClientException($this->client, 'Specify a frame to place widget in');
+                }
+
+                // Now we replace $s with the framescreen.
+                // This way it will not be plaed in the normal screen
+                // but in the framescreen.
+                $frame = $s->findWidget($args[4]);
+                if (empty($frame)) {
+                    throw new ClientException($this->client, 'Error finding frame');
+                }
+                $s = $frame->frameScreen;
+            }
         }
 
         // Create the widget
@@ -80,7 +93,7 @@ class WidgetCommands
         // Add the widget to the screen
         $err = $s->addWidget($w);
         if ($err == 0) {
-            Server::sendString($this->client->stream, "success\n");
+            $this->container->sendString($this->client->stream, "success\n");
         } else {
             throw new ClientException($this->client, 'Error adding widget');
         }
@@ -118,7 +131,7 @@ class WidgetCommands
 
         $err = $s->removeWidget($w);
         if ($err == 0) {
-            Server::sendString($this->client->stream, "success\n");
+            $this->container->sendString($this->client->stream, "success\n");
         } else {
             throw new ClientException($this->client, 'Error removing widget');
         }
@@ -161,7 +174,7 @@ class WidgetCommands
         $wid = $args[1];
         $w = $s->findWidget($wid);
         if ($w == null) {
-            throw new ClientException($this->client, 'Unknown widget id');
+            throw new ClientException($this->client, 'Unknown widget id:' . $wid);
         }
 
         switch ($w->type) {
@@ -177,7 +190,7 @@ class WidgetCommands
                 $w->x = (int) $args[2];
                 $w->y = (int) $args[3];
                 $w->text = $args[4];
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_HBAR:
                 // Hbar takes "x y length"
@@ -193,7 +206,7 @@ class WidgetCommands
                 // This is the length in pixels
                 $w->length = (int) $args[4];
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_VBAR:
                 // Vbar takes "x y length"
@@ -209,7 +222,7 @@ class WidgetCommands
                 // This is the length in pixels
                 $w->length = (int) $args[4];
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_ICON:
                 // Icon takes "x y icon"
@@ -228,7 +241,7 @@ class WidgetCommands
                 }
                 $w->length = $icon;
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_TITLE:
                 // title takes "text"
@@ -240,7 +253,7 @@ class WidgetCommands
                 // Set width too
                 $w->width = $this->client->container->drivers->displayProps->width;
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_SCROLLER:
                 // Scroller takes "left top right bottom direction speed text"
@@ -268,7 +281,7 @@ class WidgetCommands
                 $w->speed = (int) $args[7];
                 $w->text = $args[8];
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_FRAME:
                 // Frame takes "left top right bottom wid hgt direction speed"
@@ -298,7 +311,7 @@ class WidgetCommands
                 $w->height = (int) $args[7];
                 $w->length = $args[8];
                 $w->speed = $args[9];
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
 
                 break;
             case Widget::WID_NUM:
@@ -313,7 +326,7 @@ class WidgetCommands
                 $w->x = (int) $args[2];
                 $w->y = (int) $args[3];
 
-                Server::sendString($this->client->stream, "success\n");
+                $this->container->sendString($this->client->stream, "success\n");
                 break;
             case Widget::WID_NONE:
                 throw new ClientException($this->client, 'Widget has no type');

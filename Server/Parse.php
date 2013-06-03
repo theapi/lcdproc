@@ -88,7 +88,7 @@ class Parse
         try {
             $c->command($function, $args);
         } catch (ClientException $e) {
-            Server::sendError($e->getStream(), $e->getMessage());
+            $c->container->sendError($e->getStream(), $e->getMessage());
         }
 
         return 0;

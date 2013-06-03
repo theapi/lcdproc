@@ -239,55 +239,44 @@ class Server
 
     public function handleInput()
     {
-        /*
-        $data = fread($stream, 1024);
 
-        if ($data === false || strlen($data) === 0) {
-            $this->removeStream($stream);
-            // connection closed
-            return;
-        }
+    }
 
-        //$args = explode(' ', trim($data));
-        $args = Parse::message($data);
-        if (count($args) == 0) {
-            // send error
-            return;
-        }
-
-        $client = $this->clients->findByStream($stream);
-
-
-        $function = array_shift($args);
-
-        switch ($function) {
-            case 'debug': // not part of the spec
-                $this->fnDebug($stream);
-                break;
-            default:
-                try {
-                    $client->command($function, $args);
-                } catch (ClientException $e) {
-                    self::sendError($e->getStream(), $e->getMessage());
+    public function sendString($stream, $message)
+    {
+        if (is_resource($stream)) {
+            if (!@fwrite($stream, $message)) {
+                // has the stream gone
+                $info = stream_get_meta_data($stream);
+                if ($info['eof'] == true) {
+                    // gone
+                    $client = $this->clients->findByStream($stream);
+                    if ($client instanceof Client) {
+                        $client->destroy();
+                    } else {
+                       $this->removeStream($stream);
+                    }
                 }
-        }
-        */
-
-    }
-
-    public static function sendString($stream, $message)
-    {
-        if (is_resource($stream)) {
-            fwrite($stream, $message);
+            }
         }
     }
 
-
-    public static function sendError($stream, $message)
+    public function sendError($stream, $message)
     {
         if (is_resource($stream)) {
-            fwrite($stream, 'huh? ' . $message . "\n");
-
+            if (!@fwrite($stream, 'huh? ' . $message . "\n")) {
+                // has the stream gone
+                $info = stream_get_meta_data($stream);
+                if ($info['eof'] == true) {
+                    // gone
+                    $client = $this->clients->findByStream($stream);
+                    if ($client instanceof Client) {
+                        $client->destroy();
+                    } else {
+                       $this->removeStream($stream);
+                    }
+                }
+            }
         }
     }
 }
