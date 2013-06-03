@@ -22,7 +22,7 @@ class ClientCommands
      */
     public function test($args)
     {
-        $this->container->sendString($this->client->stream, print_r($args, true));
+        $this->client->sendString(print_r($args, true));
 
         return 0;
     }
@@ -42,7 +42,7 @@ class ClientCommands
         $str .= ' cellwid ' . $this->client->container->drivers->displayProps->cellWidth;
         $str .= ' cellhgt ' . $this->client->container->drivers->displayProps->cellHeight;
         $str .= "\n";
-        $this->container->sendString($this->client->stream, $str);
+        $this->client->sendString($str);
     }
 
     /**
@@ -85,7 +85,7 @@ class ClientCommands
             }
 
             $this->name = $value;
-            $this->container->sendString($this->client->stream, "success\n");
+            $this->client->sendString("success\n");
         }
 
         return 0;
@@ -108,7 +108,7 @@ class ClientCommands
         // TODO input key stuff
 
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -130,7 +130,7 @@ class ClientCommands
         // TODO input key stuff
 
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -180,7 +180,7 @@ class ClientCommands
         }
 
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -195,7 +195,7 @@ class ClientCommands
         }
 
         $info = $this->client->container->drivers->getInfo();
-        $this->container->sendString($this->client->stream, "$info\n");
+        $this->client->sendString("$info\n");
 
         return 0;
     }

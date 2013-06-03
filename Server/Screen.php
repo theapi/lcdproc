@@ -80,7 +80,14 @@ class Screen
     {
         //menuscreen_remove_screen(s);
 
-        $this->client->container->screenList->remove($this);
+        $this->container->screenList->remove($this);
+
+        // Destroy subscreens recursively
+        foreach ($this->widgetlist as $w) {
+            if ($w->type == Widget::WID_FRAME) {
+                $w->destroy();
+            }
+        }
 
         // detroy widgets
         $this->widgetlist = array();

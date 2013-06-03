@@ -59,7 +59,7 @@ class ScreenCommands
 
         $err = $this->client->addScreen($s);
         if ($err == 0) {
-            $this->container->sendString($this->client->stream, "success\n");
+            $this->client->sendString("success\n");
         } else {
             throw new ClientException($this->client, 'failed to add screen');
         }
@@ -88,9 +88,9 @@ class ScreenCommands
 
         $err = $this->client->removeScreen($s);
         if ($err == 0) {
-            $this->container->sendString($this->client->stream, "success\n");
+            $this->client->sendString("success\n");
         } else {
-            $this->container->sendString($this->client->stream, "failed to remove screen\n");
+            $this->client->sendString("failed to remove screen\n");
         }
 
         $s->destroy();
@@ -151,7 +151,7 @@ class ScreenCommands
                     throw new ClientException($this->client, '-name requires a parameter');
                 } else {
                     $s->name = $value;
-                    $this->container->sendString($this->client->stream, "success\n");
+                    $this->client->sendString("success\n");
                 }
                 break;
             // Handle the "priority" parameter
@@ -173,7 +173,7 @@ class ScreenCommands
                 }
                 if ($number >= 0) {
                     $s->priority = $number;
-                    $this->container->sendString($this->client->stream, "success\n");
+                    $this->client->sendString("success\n");
                 } else {
                     throw new ClientException($this->client, '-priority requires a parameter');
                 }
@@ -186,7 +186,7 @@ class ScreenCommands
                 }
                 $this->container->log(LOG_DEBUG, "screen_set: duration=$number");
                 $s->duration = $number;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "heartbeat" parameter
             case 'heartbeat':
@@ -204,14 +204,14 @@ class ScreenCommands
                         $s->heartbeat = Render::HEARTBEAT_OPEN;
                         break;
                 }
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
             // Handle the "wid" parameter
             case 'wid':
                 if (empty($value)) {
                     throw new ClientException($this->client, '-wid requires a parameter');
                 }
                 $s->width = (int) $value;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "hgt" parameter
             case 'hgt':
@@ -219,7 +219,7 @@ class ScreenCommands
                     throw new ClientException($this->client, '-hgt requires a parameter');
                 }
                 $s->height = (int) $value;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "timeout" parameter
             case 'timeout':
@@ -227,7 +227,7 @@ class ScreenCommands
                     throw new ClientException($this->client, '-timeout requires a parameter');
                 }
                 $s->timeout = (int) $value;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "backlight" parameter
             case 'backlight':
@@ -270,7 +270,7 @@ class ScreenCommands
                         break;
                 }
 
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "cursor" parameter
             case 'cursor':
@@ -292,7 +292,7 @@ class ScreenCommands
                         $s->cursor = Render::CURSOR_BLOCK;
                         break;
                 }
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "cursor_x" parameter
             case 'cursor_x':
@@ -300,7 +300,7 @@ class ScreenCommands
                     throw new ClientException($this->client, '-cursor_x requires a parameter');
                 }
                 $s->cursor_x = (int) $value;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
             // Handle the "cursor_y" parameter
             case 'cursor_y':
@@ -308,7 +308,7 @@ class ScreenCommands
                     throw new ClientException($this->client, '-cursor_y requires a parameter');
                 }
                 $s->cursor_y = (int) $value;
-                $this->container->sendString($this->client->stream, "success\n");
+                $this->client->sendString("success\n");
                 break;
         }
 
@@ -329,7 +329,7 @@ class ScreenCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -348,7 +348,7 @@ class ScreenCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }

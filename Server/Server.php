@@ -112,7 +112,8 @@ class Server
         if (!$this->socket) {
             throw new \Exception('Unable to create ' . $this->ip . ':' . $this->port, $errno);
         }
-        $this->streams[] = $this->socket;
+        $key = (int) $this->socket;
+        $this->streams[$key] = $this->socket;
 
         $this->doMainLoop();
     }
@@ -168,7 +169,8 @@ class Server
                         $conn = stream_socket_accept($this->socket);
 
                         // add the connection to the array to be watched
-                        $this->streams[] = $conn;
+                        $key = (int) $conn;
+                        $this->streams[$key] = $conn;
 
                         // a new client
                         $client = new Client($this, $conn);
@@ -180,7 +182,7 @@ class Server
                             $this->removeStream($stream);
                         } else {
                             // get the input from the clients
-                            $client->readFromSocket($stream);
+                            $client->readFromSocket();
                         }
                     }
                 }
@@ -228,12 +230,14 @@ class Server
 
     public function removeStream($stream)
     {
-        $key = array_search($stream, $this->streams);
+        $key = (int) $stream;
 
-        $this->log(LOG_DEBUG, 'removeStream:' . print_r($stream, true));
+        $this->log(LOG_DEBUG, 'removeStream:' . $key);
 
-        fclose($this->streams[$key]);
-        unset($this->streams[$key]);
+        if (isset($this->streams[$key])) {
+            fclose($this->streams[$key]);
+            unset($this->streams[$key]);
+        }
     }
 
 
@@ -242,41 +246,40 @@ class Server
 
     }
 
+    /*
     public function sendString($stream, $message)
     {
-        if (is_resource($stream)) {
-            if (!@fwrite($stream, $message)) {
-                // has the stream gone
-                $info = stream_get_meta_data($stream);
-                if ($info['eof'] == true) {
-                    // gone
-                    $client = $this->clients->findByStream($stream);
-                    if ($client instanceof Client) {
-                        $client->destroy();
-                    } else {
-                       $this->removeStream($stream);
-                    }
-                }
-            }
+        if (!fwrite($stream, $message)) {
+            $this->handleNoFwrite($stream);
+        }
+    }
+    */
+
+    /*
+    public function sendError($stream, $message)
+    {
+        if (!@fwrite($stream, 'huh? ' . $message . "\n")) {
+            $this->handleNoFwrite($stream);
         }
     }
 
-    public function sendError($stream, $message)
+    private function handleNoFwrite($stream)
     {
-        if (is_resource($stream)) {
-            if (!@fwrite($stream, 'huh? ' . $message . "\n")) {
-                // has the stream gone
-                $info = stream_get_meta_data($stream);
-                if ($info['eof'] == true) {
-                    // gone
-                    $client = $this->clients->findByStream($stream);
-                    if ($client instanceof Client) {
-                        $client->destroy();
-                    } else {
-                       $this->removeStream($stream);
-                    }
+        if (!is_resource($stream)) {
+            //err?
+            return;
+        } else {
+            $info = stream_get_meta_data($stream);
+            if ($info['eof'] == true) {
+                // gone
+                $client = $this->clients->findByStream($stream);
+                if ($client instanceof Client) {
+                    $client->destroy();
+                } else {
+                   $this->removeStream($stream);
                 }
             }
         }
     }
+    */
 }

@@ -67,7 +67,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -89,7 +89,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -188,7 +188,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -211,7 +211,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }
@@ -264,7 +264,7 @@ class MenuCommands
 
         //TODO: functionality
 
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
 
         return 0;
     }

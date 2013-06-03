@@ -18,15 +18,7 @@ class ClientException extends \Exception
 
         $this->client = $client;
         if ($this->client instanceof Client) {
-          $client->container->log(LOG_ERR, $message);
+            $client->container->log(LOG_ERR, $message);
         }
-    }
-
-    public function getStream()
-    {
-        if ($this->client instanceof Client) {
-            return $this->client->stream;
-        }
-        return null;
     }
 }

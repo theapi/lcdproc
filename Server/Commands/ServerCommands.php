@@ -28,7 +28,7 @@ class ServerCommands
         }
 
         // Lie :)
-        $this->container->sendString($this->client->stream, "success\n");
+        $this->client->sendString("success\n");
     }
 
     /**
@@ -42,7 +42,7 @@ class ServerCommands
             throw new ClientException($this->client);
         }
 
-        $this->container->sendString($this->client->stream, "ignored (not fully implemented)\n");
+        $this->client->sendString("success\n");
     }
 
     /**
@@ -54,6 +54,6 @@ class ServerCommands
             throw new ClientException($this->client);
         }
 
-        $this->container->sendString($this->client->stream, "noop complete\n");
+        $this->client->sendString("success\n");
     }
 }

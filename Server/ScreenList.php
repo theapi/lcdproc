@@ -49,12 +49,6 @@ class ScreenList
     public function add($screen)
     {
         $this->screenList[$screen->id] = $screen;
-
-        /*
-        if (empty($this->currentId)) {
-            $this->currentId = $screen->id;
-        }
-        */
     }
 
     /**
@@ -62,6 +56,9 @@ class ScreenList
      */
     public function remove($screen)
     {
+        $this->container->log(LOG_DEBUG, 'removeScreen:' . $screen->id);
+        unset($this->screenList[$screen->id]);
+
         $current = $this->current();
 
         if (($current instanceof Screen) && ($current->id == $screen->id)) {
@@ -75,9 +72,8 @@ class ScreenList
                 $this->gotoNext();
 
             }
-        } else {
-            unset($this->screenList[$screen->id]);
         }
+
     }
 
     /**
@@ -161,7 +157,7 @@ class ScreenList
                 // Tell the client we're not listening any more...
                 $this->container->log(LOG_DEBUG, 'ignore: ' . $current->id);
                 $str = 'ignore ' . $current->id . "\n";
-                $this->container->sendString($c->stream, $str);
+                $c->sendString($str);
             } else {
                 // It's a server screen, no need to inform it.
             }
@@ -172,7 +168,7 @@ class ScreenList
             $this->container->log(LOG_DEBUG, "listen [$s->id]");
             // Tell the client we're paying attention...
             $str = 'listen ' . $s->id . "\n";
-            $this->container->sendString($c->stream, $str);
+            $c->sendString($str);
         } else {
             // It's a server screen, no need to inform it.
         }

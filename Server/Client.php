@@ -144,9 +144,24 @@ class Client
 
     public function destroy()
     {
+        $this->container->log(LOG_DEBUG, 'destroy client:' . (int) $this->stream);
+
+        // Close the socket
+        $this->container->removeStream($this->stream);
+
+        // Eat messages
+        $this->messages = null;
+
+        // Clean up the screenlist...
         foreach ($this->screenList as $screen) {
-            $this->removeScreen($screen);
+            $screen->destroy();
         }
+        $this->screenList = null;
+
+        // Free client's other data
+        $this->state = self::STATE_GONE;
+
+        return 0;
     }
 
     /**
@@ -207,13 +222,13 @@ class Client
 
     }
 
-    public function readFromSocket($stream)
+    public function readFromSocket()
     {
-        $data = fread($stream, self::MAXMSG);
+        $data = fread($this->stream, self::MAXMSG);
 
         if ($data === false || strlen($data) === 0) {
             $this->container->clients->removeClient($this);
-            $this->container->removeStream($stream);
+            //$this->container->removeStream($this->stream);
             return;
         }
 
@@ -223,5 +238,23 @@ class Client
         }
 
         return 0;
+    }
+
+    public function sendString($str)
+    {
+        if (!fwrite($this->stream, $str)) {
+            //$this->container->removeStream($this->stream);
+            //$this->stream = null;
+            $this->container->clients->removeClient($this);
+        }
+    }
+
+    public function sendError($str)
+    {
+        if (!@fwrite($this->stream, 'huh? ' . $message . "\n")) {
+            //$this->container->removeStream($this->stream);
+            //$this->stream = null;
+            $this->container->clients->removeClient($this);
+        }
     }
 }

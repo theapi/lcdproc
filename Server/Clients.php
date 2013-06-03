@@ -22,13 +22,13 @@ class Clients
 
     public function addClient($client)
     {
-        $key = (string) $client->getStream();
+        $key = (int) $client->getStream();
         $this->clientList[$key] = $client;
     }
 
     public function removeClient($client)
     {
-        $key = (string) $client->getStream();
+        $key = (int) $client->getStream();
         $this->container->log(LOG_DEBUG, 'removeClient:' . $key);
 
         $client->destroy();
@@ -55,7 +55,7 @@ class Clients
 
     public function findByStream($stream)
     {
-        $key = (string) $stream;
+        $key = (int) $stream;
         if (isset($this->clientList[$key])) {
             return $this->clientList[$key];
         }
