@@ -7,17 +7,29 @@ from time import sleep
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 
 
-#Function to broadcast chat messages to all connected clients
-def broadcast_data (sock, message):
-    #print message
-    lcd.clear()
-    lcd.message(message)
+#Function to received data
+def handle_data (sock, message):
     
+    # Find which function is wanted
+    if message[:8] == 'message:':
+        lcd.clear()
+        lcd.message(message[8:])
+
+    elif message[:10] == 'backlight:':
+        backlight = message[10:].strip()
+        print backlight
+        if backlight == '0':
+            #print "   backlight: OFF"
+            lcd.backlight(lcd.OFF)
+        elif backlight == '1':
+            #print "   backlight: ON"
+            lcd.backlight(lcd.ON)
+
     try:
         sock.send("ok\n")
     except :
         # broken socket connection may be, chat client pressed ctrl+c for example
-        socket.close()
+        sock.close()
         CONNECTION_LIST.remove(socket)
 
 def goodbye():
@@ -73,7 +85,7 @@ if __name__ == "__main__":
                 CONNECTION_LIST.append(sockfd)
                 print "Client (%s, %s) connected" % addr
                  
-                broadcast_data(sockfd, "%s:\n%s" % addr)
+                #broadcast_data(sockfd, "%s:\n%s" % addr)
              
             #Some incoming message from a client
             else:
@@ -84,7 +96,7 @@ if __name__ == "__main__":
                     data = sock.recv(RECV_BUFFER)
                     if data:
                         #data = data.decode("utf-8")
-                        broadcast_data(sock, data)                
+                        handle_data(sock, data)                
                  
                 except:
                     print "Client (%s, %s) is offline" % addr

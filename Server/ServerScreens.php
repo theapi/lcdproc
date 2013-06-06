@@ -89,7 +89,7 @@ class ServerScreens
         $w = $this->screen->findWidget('line1');
         if ($w) {
             $w->text = 'PHP LCDproc';
-            $w->x = 3; // Just testing
+            $w->x = 3;
         }
 
         /*

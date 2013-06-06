@@ -2,6 +2,7 @@
 namespace Theapi\Lcdproc\Server\Drivers;
 
 use Theapi\Lcdproc\Server\Driver as Driver;
+use Theapi\Lcdproc\Server\Render;
 
 // TODO: move the outputing code to the python script at the other end of the socket
 // as it has functions for chr, string, scroll, cursor etc.
@@ -21,6 +22,7 @@ class Piplate extends Driver
     );
     protected $out = array();
     protected $fp;
+    protected $backlightState;
 
     /**
      * Initialize the driver.
@@ -75,7 +77,9 @@ class Piplate extends Driver
     {
         // Reset to the blank screen array
         $this->out = $this->outBlank;
-        //$this->flush();
+
+        // no need to call clear on the python end as the whole
+        // screen gets rendered
     }
 
     /**
@@ -87,9 +91,9 @@ class Piplate extends Driver
         // as it was there just because lcdproc x & y start at 1
         $line1 = substr($this->out[1], 1);
         $line2 = substr($this->out[2], 1);
-//var_dump("$line1\n$line2");
         try {
-            $this->write("$line1\n$line2");
+            // prepend the message with "message:"
+            $this->write("message:$line1\n$line2");
             // read just to clear the memory
             $this->read();
         } catch (\Exception $e) {
@@ -161,7 +165,12 @@ class Piplate extends Driver
      */
     public function backlight($state)
     {
-
+        if ($this->backlightState !== $state) {
+            $this->backlightState = $state;
+            $this->write("backlight:$state");
+            // read just to clear the memory
+            $this->read();
+        }
     }
 
     /**
