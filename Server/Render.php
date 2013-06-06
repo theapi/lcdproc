@@ -52,7 +52,7 @@ class Render
     protected $container;
 
     protected $heartbeat = self::HEARTBEAT_OPEN;
-    protected $backlight = self::BACKLIGHT_OPEN;
+    protected $backlight;
     protected $titleSpeed = 1;
     protected $outputState = 0;
 
@@ -69,6 +69,7 @@ class Render
     {
         $this->container = $container;
         $this->displayProps = $this->container->drivers->displayProps;
+        $this->backlight = $this->container->config->backlight;
     }
 
     /**
@@ -97,7 +98,55 @@ class Render
         $this->container->drivers->clear();
 
         // 2. Set up the backlight
-        // TODO: backlight
+
+        // TODO: handle colours!
+
+        /*
+         * 2.1:
+         * First we find out who has set the backlight:
+         *   a) the screen,
+         *   b) the client, or
+         *   c) the server core
+         * with the latter taking precedence over the earlier. If the
+         * backlight is not set on/off then use the fallback (set it ON).
+        */
+        if ($this->backlight != Render::BACKLIGHT_OPEN) {
+            // from the config
+            $tmpState = $this->backlight;
+        } elseif (($s->client != null) && ($s->client->backlight != Render::BACKLIGHT_OPEN)) {
+            $tmpState = $s->client->backlight;
+        } elseif ($s->backlight != Render::BACKLIGHT_OPEN) {
+            $tmpState = $s->backlight;
+        } else {
+            $tmpState = $this->backlightFallback;
+        }
+
+        /*
+         * 2.2:
+         * If one of the backlight options (FLASH or BLINK) has been set turn
+         * it on/off based on a timed algorithm.
+         */
+        // NOTE: dirty stripping of other options...
+        if ($tmpState & Render::BACKLIGHT_FLASH) {
+            // Backlight flash: check timer and flip backlight as appropriate
+            if ( ($tmpState & Render::BACKLIGHT_ON) ^ (($this->container->timer & 7) == 7) ) {
+                $state = Render::BACKLIGHT_ON;
+            } else {
+                $state = Render::BACKLIGHT_OFF;
+            }
+            $this->container->drivers->backlight($state);
+        } elseif ($tmpState & Render::BACKLIGHT_BLINK) {
+            // Backlight blink: check timer and flip backlight as appropriate
+            if ( ($tmpState & Render::BACKLIGHT_ON) ^ (($this->container->timer & 14) == 14) ) {
+                $state = Render::BACKLIGHT_ON;
+            } else {
+                $state = Render::BACKLIGHT_OFF;
+            }
+            $this->container->drivers->backlight($state);
+        } else {
+            // Simple: Only send lowest bit then...
+            $this->container->drivers->backlight($tmpState & Render::BACKLIGHT_ON);
+        }
 
         // 3. Output ports from LCD - outputs depend on the current screen
         $this->container->drivers->output($this->outputState);
