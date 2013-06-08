@@ -2,6 +2,7 @@
 namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Render;
+use Theapi\Lcdproc\Server\ServerScreens;
 
 /**
  * Confiuration
@@ -21,7 +22,7 @@ class Config
     const AUTOROTATE_ON = 1;
 
 
-    protected $serverScreenOn = true;
+    protected $serverScreen = SERVERSCREEN_ON;
     protected $helloMsg =  array('Welcome to', 'PHP LCDproc');
 
     protected $backlight = Render::BACKLIGHT_OPEN;

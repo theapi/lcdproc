@@ -41,6 +41,12 @@ class ServerScreens
     {
         $this->container = $container;
 
+        $this->rotateServerScreen = $this->container->config->serverScreen;
+        if ($this->rotateServerScreen == SERVERSCREEN_OFF) {
+            // no server screen thanks
+            return;
+        }
+
         $hasHelloMsg = empty($this->container->config->helloMsg) ? false : true;
 
         // Create the screen
