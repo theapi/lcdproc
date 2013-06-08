@@ -17,11 +17,18 @@ $host = '127.0.0.1';
 $port = 13666;
 $driver = 'piplate';
 $verbosity = LOG_ERR;
+$serverScreen = 1;
 
 if (is_file('config.php')) {
     // use a local file to override the default settings
     include 'config.php';
 }
 
-$server = new Server($driver, $verbosity);
+$server = new Server(
+    array(
+        'driver' => $driver,
+        'verbosity' => $verbosity,
+        'serverScreen' => $serverScreen,
+    )
+);
 $server->run($host, $port);

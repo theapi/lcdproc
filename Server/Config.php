@@ -22,7 +22,7 @@ class Config
     const AUTOROTATE_ON = 1;
 
 
-    protected $serverScreen = SERVERSCREEN_ON;
+    protected $serverScreen = ServerScreens::SERVERSCREEN_ON;
     protected $helloMsg =  array('Welcome to', 'PHP LCDproc');
 
     protected $backlight = Render::BACKLIGHT_OPEN;
@@ -31,6 +31,13 @@ class Config
     protected $duration = 32;
     protected $titleSpeed = Render::TITLESPEED_MAX;
     protected $autoRotate = self::AUTOROTATE_ON;
+
+    public function __construct($config = array())
+    {
+        foreach ($config as $k => $v) {
+            $this->$k = $v;
+        }
+    }
 
     public function __get($name)
     {

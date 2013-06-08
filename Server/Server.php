@@ -71,19 +71,27 @@ class Server
     protected $streams = array();
 
 
-    public function __construct($driverName = 'piplate', $logLevel = LOG_ERR)
+    public function __construct($config = array())
     {
-        $this->log = new Log($logLevel);
+
+        $defaultOpts = array(
+            'driver' => 'piplate',
+            'verbosity' => LOG_ERR,
+            'serverScreen' => 1,
+        );
+        $opts = array_merge($defaultOpts, $config);
+
+        $this->log = new Log($opts['verbosity']);
 
         // set_default_settings
-        $this->config = new Config();
+        $this->config = new Config($opts);
 
         // screenlist_init
         $this->screenList = new ScreenList($this);
 
         // init_drivers
         $this->drivers = new Drivers($this);
-        $this->drivers->loadDriver($driverName);
+        $this->drivers->loadDriver($opts['driver']);
 
         // clients_init
         $this->clients = new Clients($this);
@@ -203,11 +211,13 @@ class Server
                 $this->timer++;
                 $this->screenList->process();
                 $s = $this->screenList->current();
-                if ($s->id == '_server_screen') {
-                    $this->serverScreen->update();
-                }
+                if ($s) {
+                    if ($s->id == '_server_screen') {
+                        $this->serverScreen->update();
+                    }
 
-                $this->render->screen($s, $this->timer);
+                    $this->render->screen($s, $this->timer);
+                }
 
                 // We've done the job...
                 if ($renderLag > (1e6 / self::RENDER_FREQ) * self::MAX_RENDER_LAG_FRAMES) {

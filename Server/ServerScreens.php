@@ -42,7 +42,7 @@ class ServerScreens
         $this->container = $container;
 
         $this->rotateServerScreen = $this->container->config->serverScreen;
-        if ($this->rotateServerScreen == SERVERSCREEN_OFF) {
+        if ($this->rotateServerScreen == self::SERVERSCREEN_OFF) {
             // no server screen thanks
             return;
         }
