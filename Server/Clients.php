@@ -32,6 +32,7 @@ class Clients
         $this->container->log(LOG_DEBUG, 'removeClient:' . $key);
 
         $client->destroy();
+        $client = null;
 
         if (isset($this->clientList[$key])) {
             unset($this->clientList[$key]);
@@ -74,7 +75,6 @@ class Clients
                 Parse::message($str, $c);
                 if ($c->state == Client::STATE_GONE) {
                     $this->removeClient($c);
-                    $this->container->removeStream($c->stream);
                 }
             }
         }

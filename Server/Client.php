@@ -93,20 +93,16 @@ class Client
     public function command($name, $args)
     {
 
-        // Got to say hello first
-        if (!$this->isActive() && $name != 'hello') {
-            throw new ClientException($this->stream, 'Invalid command ' . $name);
-        }
-
         if (isset($this->commands[$name])) {
             $commandHandler = $this->commands[$name][0];
             $method = $this->commands[$name][1];
             if (method_exists($this->$commandHandler, $method)) {
                 try {
-                    $this->$commandHandler->$method($args);
+                    $err = $this->$commandHandler->$method($args);
+                    if ($err) {
+                        throw new ClientException($this, 'Function returned error: ' . $method);
+                    }
                 } catch (ClientException $e) {
-                    //var_dump($e->getMessage()); exit;
-                    //var_dump($commandHandler, $method, $args); exit;
                     throw $e;
                 }
             } else {
@@ -114,7 +110,7 @@ class Client
                 // TODO: exceptions for coding errors
             }
         } else {
-            throw new ClientException($this->stream, 'Invalid command ' . $name);
+            throw new ClientException($this, 'Invalid command ' . $name);
         }
     }
 
@@ -228,7 +224,6 @@ class Client
 
         if ($data === false || strlen($data) === 0) {
             $this->container->clients->removeClient($this);
-            //$this->container->removeStream($this->stream);
             return;
         }
 
@@ -242,18 +237,16 @@ class Client
 
     public function sendString($str)
     {
+        $this->container->log(LOG_DEBUG, '< ' . (int) $this->stream . ': ' . $str);
         if (!fwrite($this->stream, $str)) {
-            //$this->container->removeStream($this->stream);
-            //$this->stream = null;
             $this->container->clients->removeClient($this);
         }
     }
 
     public function sendError($str)
     {
+        $this->container->log(LOG_DEBUG, '< ' . (int) $this->stream . ': ' . $str);
         if (!@fwrite($this->stream, 'huh? ' . $message . "\n")) {
-            //$this->container->removeStream($this->stream);
-            //$this->stream = null;
             $this->container->clients->removeClient($this);
         }
     }

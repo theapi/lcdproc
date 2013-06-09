@@ -95,7 +95,7 @@ class Drivers
     {
         foreach ($this->loadedDrivers as $driver) {
             if (method_exists($driver, 'getInfo')) {
-                $driver->getInfo();
+                return $driver->getInfo();
             }
         }
     }
