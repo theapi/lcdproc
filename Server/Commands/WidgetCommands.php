@@ -257,8 +257,12 @@ class WidgetCommands
                 break;
             case Widget::WID_SCROLLER:
                 // Scroller takes "left top right bottom direction speed text"
-                if (!isset($args[8])) {
+                if (!isset($args[7])) {
                     throw new ClientException($this->client, 'Wrong number of arguments');
+                }
+
+                if (!isset($args[8])) {
+                    $args[8] = '';
                 }
 
                 if (!is_numeric($args[2])
@@ -269,7 +273,7 @@ class WidgetCommands
                 }
 
                 // Direction must be m, v or h
-                if ($args[6] != 'm' || $args[6] != 'v' || $args[6] != 'h') {
+                if ($args[6] != 'm' && $args[6] != 'v' && $args[6] != 'h') {
                     throw new ClientException($this->client, 'Invalid direction');
                 }
 
