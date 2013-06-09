@@ -17,8 +17,5 @@ class ClientException extends \Exception
         parent::__construct($message, $code, $previous);
 
         $this->client = $client;
-        if ($this->client instanceof Client) {
-            $client->container->log(LOG_ERR, $message);
-        }
     }
 }

@@ -51,7 +51,7 @@ class Parse
                 // not in a quote
                 if (self::isWhitespace($ch)) {
                     // an argument boundary
-                    if (!empty($arg)) {
+                    if ($arg !== '') {
                         $args[] = $arg;
                     }
                     $arg = '';
@@ -67,7 +67,7 @@ class Parse
                if (self::isClosingQuote($ch, $quote)) {
                     // end of a quote
                     // an argument boundary
-                    if (!empty($arg)) {
+                    if ($arg !== '') {
                         $args[] = $arg;
                     }
                     $arg = '';
@@ -79,7 +79,7 @@ class Parse
             }
         }
         // the ultimate argument boundary
-        if (!empty($arg)) {
+        if ($arg !== '') {
             $args[] = $arg;
         }
 

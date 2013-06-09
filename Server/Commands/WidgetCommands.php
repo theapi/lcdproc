@@ -158,7 +158,7 @@ class WidgetCommands
         // could be wrong...?
         if (count($args) < 3) {
             throw new ClientException(
-                $this->client->stream,
+                $this->client,
                 'Usage: widget_set <screenid> <widgetid> <widget-SPECIFIC-data>'
             );
         }

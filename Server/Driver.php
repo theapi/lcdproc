@@ -3,6 +3,7 @@ namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\Drivers;
+use Theapi\Lcdproc\Server\Widget;
 
 /**
  * This is the the base driver class.
@@ -125,9 +126,9 @@ abstract class Driver
         }
 
         if ($this->container->timer & 5) {
-            $icon = Drivers::ICON_BLOCK_FILLED;
+            $icon = Widget::ICON_BLOCK_FILLED;
         } else {
-            $icon = Drivers::ICON_BLOCK_OPEN;
+            $icon = Widget::ICON_BLOCK_OPEN;
         }
 
         $this->icon($this->width, 1, $icon);
@@ -147,78 +148,78 @@ abstract class Driver
         }
 
         switch ($icon) {
-          case Drivers::ICON_BLOCK_FILLED:
+          case Widget::ICON_BLOCK_FILLED:
               $ch1 = '#';
               break;
-          case Drivers::ICON_HEART_OPEN:
+          case Widget::ICON_HEART_OPEN:
               $ch1 = '-';
               break;
-          case Drivers::ICON_HEART_FILLED:
+          case Widget::ICON_HEART_FILLED:
               $ch1 = '#';
               break;
-          case Drivers::ICON_ARROW_UP:
+          case Widget::ICON_ARROW_UP:
               $ch1 = '^';
               break;
-          case Drivers::ICON_ARROW_DOWN:
+          case Widget::ICON_ARROW_DOWN:
               $ch1 = 'v';
               break;
-          case Drivers::ICON_ARROW_LEFT:
+          case Widget::ICON_ARROW_LEFT:
               $ch1 = '<';
               break;
-          case Drivers::ICON_ARROW_RIGHT:
+          case Widget::ICON_ARROW_RIGHT:
               $ch1 = '>';
               break;
-          case Drivers::ICON_CHECKBOX_OFF:
+          case Widget::ICON_CHECKBOX_OFF:
               $ch1 = 'N';
               break;
-          case Drivers::ICON_CHECKBOX_ON:
+          case Widget::ICON_CHECKBOX_ON:
               $ch1 = 'Y';
               break;
-          case Drivers::ICON_CHECKBOX_GRAY:
+          case Widget::ICON_CHECKBOX_GRAY:
               $ch1 = 'o';
               break;
-          case Drivers::ICON_SELECTOR_AT_LEFT:
+          case Widget::ICON_SELECTOR_AT_LEFT:
               $ch1 = '>';
               break;
-          case Drivers::ICON_SELECTOR_AT_RIGHT:
+          case Widget::ICON_SELECTOR_AT_RIGHT:
               $ch1 = '<';
               break;
-          case Drivers::ICON_ELLIPSIS:
+          case Widget::ICON_ELLIPSIS:
               $ch1 = '_';
               break;
-          case Drivers::ICON_STOP:
+          case Widget::ICON_STOP:
               $ch1 = '[';
               $ch2 = ']';
               break;
-          case Drivers::ICON_PAUSE:
+          case Widget::ICON_PAUSE:
               $ch1 = '|';
               $ch2 = '|';
               break;
-          case Drivers::ICON_PLAY:
+          case Widget::ICON_PLAY:
               $ch1 = '>';
               $ch2 = ' ';
               break;
-          case Drivers::ICON_PLAYR:
+          case Widget::ICON_PLAYR:
               $ch1 = '<';
               $ch2 = ' ';
               break;
-          case Drivers::ICON_FF:
+          case Widget::ICON_FF:
               $ch1 = '>';
               $ch2 = '>';
               break;
-          case Drivers::ICON_FR:
+          case Widget::ICON_FR:
               $ch1 = '<';
               $ch2 = '<';
               break;
-          case Drivers::ICON_NEXT:
+          case Widget::ICON_NEXT:
               $ch1 = '>';
               $ch2 = '|';
               break;
-          case Drivers::ICON_PREV:
+          case Widget::ICON_PREV:
               $ch1 = '|';
               $ch2 = '<';
               break;
-          case Drivers::ICON_REC:
+          case Widget::ICON_REC:
               $ch1 = '(';
               $ch2 = ')';
               break;
@@ -248,7 +249,7 @@ abstract class Driver
             case Render::CURSOR_BLOCK:
             case Render::CURSOR_DEFAULT_ON:
                 if ($this->container->timer & 2) {
-                    $this->icon($x, $y, Drivers::ICON_BLOCK_FILLED);
+                    $this->icon($x, $y, Widget::ICON_BLOCK_FILLED);
                 }
                 break;
             case Render::CURSOR_UNDER:

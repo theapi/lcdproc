@@ -245,7 +245,7 @@ class Client
 
     public function sendError($str)
     {
-        $this->container->log(LOG_DEBUG, '< ' . (int) $this->stream . ': ' . $str);
+        $this->container->log(LOG_DEBUG, '< ' . (int) $this->stream . ':huh? ' . $str);
         if (!@fwrite($this->stream, 'huh? ' . $message . "\n")) {
             $this->container->clients->removeClient($this);
         }

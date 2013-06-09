@@ -388,8 +388,8 @@ class Render
             }
 
             // display leading fillers
-            $this->container->drivers->icon($w->x + $left, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
-            $this->container->drivers->icon($w->x + $left + 1, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
+            $this->container->drivers->icon($w->x + $left, $w->y + $top, Widget::ICON_BLOCK_FILLED);
+            $this->container->drivers->icon($w->x + $left + 1, $w->y + $top, Widget::ICON_BLOCK_FILLED);
 
             if (($length <= $width) || ($delay == 0)) {
                 // copy test starting from the beginning
