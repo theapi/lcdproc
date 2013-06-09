@@ -141,8 +141,8 @@ class ScreenCommands
         // Handle the rest of the parameters
 
         // ignore leading '-' in options: we allow both forms
-        $key = trim($args[0], ' -');
-        $value = trim($args[1]);
+        $key = trim($args[1], ' -');
+        $value = trim($args[2]);
 
         switch ($key) {
             // Handle the "name" parameter
@@ -310,6 +310,9 @@ class ScreenCommands
                 $s->cursor_y = (int) $value;
                 $this->client->sendString("success\n");
                 break;
+            default:
+                // unknown set
+                throw new ClientException($this->client, 'unkonwn screen set');
         }
 
         return 0;

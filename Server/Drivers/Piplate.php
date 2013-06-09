@@ -11,7 +11,7 @@ class Piplate extends Driver
 
     protected $debug = 0;
 
-    protected $disabled = false; // so I can test without the Pi on
+    protected $disabled = true; // so I can test without the Pi on
 
     // Two rows of 16(7) spaces (column 0 gets stripped later leaving 16)
     //  $outBlank[1] & $outBlank[2]

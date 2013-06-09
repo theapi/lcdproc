@@ -152,7 +152,7 @@ class Client
         foreach ($this->screenList as $screen) {
             $screen->destroy();
         }
-        $this->screenList = null;
+        $this->screenList = array();
 
         // Free client's other data
         $this->state = self::STATE_GONE;
