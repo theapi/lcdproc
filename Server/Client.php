@@ -150,7 +150,7 @@ class Client
         $this->container->removeStream($this->stream);
 
         // Eat messages
-        $this->messages = null;
+        $this->messages = array();
 
         // Clean up the screenlist...
         foreach ($this->screenList as $screen) {
