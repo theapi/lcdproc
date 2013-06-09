@@ -8,8 +8,8 @@ DAEMON=/home/pi/repos/piplate_lcdproc_server/cli_server.php
 NAME="phpLCDd"
 DESC="phpLCDd"
 
-nohup python $LCD > /dev/null 2>&1 & 
+python $LCD > /dev/null 2>&1 & 
 sleep 1
-nohup php -f $DAEMON > /dev/null 2>&1 &
+php -f $DAEMON > /dev/null 2>&1 &
 
 exit 0
