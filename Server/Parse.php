@@ -67,9 +67,7 @@ class Parse
                if (self::isClosingQuote($ch, $quote)) {
                     // end of a quote
                     // an argument boundary
-                    if ($arg !== '') {
-                        $args[] = $arg;
-                    }
+                    $args[] = $arg;
                     $arg = '';
                     $quote = null;
                 } else {
