@@ -25,6 +25,7 @@ require_once 'Widget.php';
 require_once 'Driver.php';
 require_once 'Drivers.php';
 require_once 'Drivers/Piplate.php';
+require_once 'Drivers/Ncurses.php';
 require_once 'Commands/ClientCommands.php';
 require_once 'Commands/MenuCommands.php';
 require_once 'Commands/ScreenCommands.php';

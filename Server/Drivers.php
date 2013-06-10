@@ -1,6 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Drivers\Ncurses;
+
 use Theapi\Lcdproc\Server\Drivers\Piplate;
 
 /**
@@ -32,9 +34,10 @@ class Drivers
      */
     public function loadDriver($name = 'piplate')
     {
-        // Kinda just gonna have the one driver
-        // so don't bother with logic...
+        // TODO: logic to load correct driver
         $driver = new Piplate($this->container);
+        //$driver = new Ncurses($this->container);
+
         $this->loadedDrivers[] = $driver;
 
         // if driver does output
