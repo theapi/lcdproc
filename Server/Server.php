@@ -255,41 +255,4 @@ class Server
     {
 
     }
-
-    /*
-    public function sendString($stream, $message)
-    {
-        if (!fwrite($stream, $message)) {
-            $this->handleNoFwrite($stream);
-        }
-    }
-    */
-
-    /*
-    public function sendError($stream, $message)
-    {
-        if (!@fwrite($stream, 'huh? ' . $message . "\n")) {
-            $this->handleNoFwrite($stream);
-        }
-    }
-
-    private function handleNoFwrite($stream)
-    {
-        if (!is_resource($stream)) {
-            //err?
-            return;
-        } else {
-            $info = stream_get_meta_data($stream);
-            if ($info['eof'] == true) {
-                // gone
-                $client = $this->clients->findByStream($stream);
-                if ($client instanceof Client) {
-                    $client->destroy();
-                } else {
-                   $this->removeStream($stream);
-                }
-            }
-        }
-    }
-    */
 }
