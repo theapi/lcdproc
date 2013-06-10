@@ -476,6 +476,7 @@ class Render
                     } else {
                         $offset = 0;
                     }
+
                     if ($offset <= $length) {
                         $room = $screenWidth - ($length - $offset);
                         $str = substr($w->text, $offset, $screenWidth);
@@ -484,6 +485,42 @@ class Render
                         if ($room > 0) {
                             $str .= substr($w->text, 0, $room);
                         }
+                    } else {
+                       $str = '';
+                    }
+                    $this->container->drivers->string($w->left, $w->top, $str);
+                }
+                break;
+            case 'h':
+                $length = strlen($w->text) + 1;
+                if ($length <= $screenWidth) {
+                    // it fits within the box, just render it
+                    $this->container->drivers->string($w->left, $w->top, $w->text);
+                } else {
+                    $effLength = $length - $screenWidth;
+                    $necessaryTimeUnits = 0;
+                    if ($w->speed > 0) {
+                        $necessaryTimeUnits = $effLength - $w->speed;
+                        if ((($this->container->timer / $necessaryTimeUnits) % 2) == 0) {
+                            // wiggle one way
+                            $offset = ($this->container->timer % ($effLength * $w->speed)) / $w->speed;
+                        } else {
+                            // wiggle the other
+                            $offset = ((($this->container->timer % ($effLength * $w->speed)) - ($effLength * $w->speed) + 1) / $w->speed) * -1;
+                        }
+                    } elseif ($w->speed < 0) {
+                        $necessaryTimeUnits = $effLength / ($w->speed * -1);
+                        if ((($this->container->timer / $necessaryTimeUnits) % 2) == 0) {
+                            $offset = ($this->container->timer % ($effLength / ($w->speed * -1))) * $w->speed * -1;
+                        } else {
+                            $offset = ((($this->container->timer % ($effLength / ($w->speed * -1))) * $w->speed * -1) - $effLength + 1) * -1;
+                        }
+                    } else {
+                        $offset = 0;
+                    }
+
+                    if ($offset <= $length) {
+                        $str = substr($w->text, $offset, $screenWidth);
                     } else {
                        $str = '';
                     }
