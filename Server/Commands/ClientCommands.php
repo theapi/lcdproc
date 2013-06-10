@@ -73,7 +73,7 @@ class ClientCommands
         // NB: our arg count is one less than source as the function name has been extracted.
         if (count($args) != 2) {
             $this->client->container->log(LOG_DEBUG, print_r($args, true));
-            throw new ClientException($this->client, 'Usage: client_set -name <name>');
+            throw new ClientException('Usage: client_set -name <name>');
         }
 
         $key = trim($args[0], ' -');
@@ -81,7 +81,7 @@ class ClientCommands
 
         if (!empty($key) && !empty($value)) {
             if ($key != 'name') {
-                throw new ClientException($this->client, "invalid parameter ($key)");
+                throw new ClientException("invalid parameter ($key)");
             }
 
             $this->name = $value;
@@ -102,7 +102,7 @@ class ClientCommands
         }
 
         if (count($args) < 1) {
-            throw new ClientException($this->client, 'Usage: client_add_key [-exclusively|-shared] {<key>}+');
+            throw new ClientException('Usage: client_add_key [-exclusively|-shared] {<key>}+');
         }
 
         // TODO input key stuff
@@ -124,7 +124,7 @@ class ClientCommands
         }
 
         if (count($args) < 1) {
-            throw new ClientException($this->client, 'Usage: client_del_key {<key>}+');
+            throw new ClientException('Usage: client_del_key {<key>}+');
         }
 
         // TODO input key stuff
@@ -149,7 +149,7 @@ class ClientCommands
         }
 
         if (count($args) != 1) {
-            throw new ClientException($this->client, 'Usage: backlight {on|off|toggle|blink|flash}');
+            throw new ClientException('Usage: backlight {on|off|toggle|blink|flash}');
         }
 
         $arg = trim($args[0]);

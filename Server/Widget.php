@@ -68,7 +68,7 @@ class Widget
     public function __construct($id, $type, Screen $screen)
     {
         if (!$id) {
-            throw new ClientException($screen->client->stream, 'Need id string');
+            throw new ClientException('Need id string');
         }
 
         $this->id = $id;

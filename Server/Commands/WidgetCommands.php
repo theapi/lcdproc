@@ -56,13 +56,13 @@ class WidgetCommands
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
         if ($s == null) {
-            throw new ClientException($this->client, 'Invalid screen id');
+            throw new ClientException('Invalid screen id');
         }
 
         // Find widget type
         $wtype = Widget::typeNameToType($args[2]);
         if ($wtype == Widget::WID_NONE) {
-            throw new ClientException($this->client, 'Invalid widget type');
+            throw new ClientException('Invalid widget type');
         }
 
         // Check for additional flags...
@@ -70,7 +70,7 @@ class WidgetCommands
             // ignore leading '-' in options: we allow both forms
             if (trim($args[3], ' -') == 'in') {
                 if (empty($args[4])) {
-                    throw new ClientException($this->client, 'Specify a frame to place widget in');
+                    throw new ClientException('Specify a frame to place widget in');
                 }
 
                 // Now we replace $s with the framescreen.
@@ -78,7 +78,7 @@ class WidgetCommands
                 // but in the framescreen.
                 $frame = $s->findWidget($args[4]);
                 if (empty($frame)) {
-                    throw new ClientException($this->client, 'Error finding frame');
+                    throw new ClientException('Error finding frame');
                 }
                 $s = $frame->frameScreen;
             }
@@ -87,7 +87,7 @@ class WidgetCommands
         // Create the widget
         $w = new Widget($wid, $wtype, $s);
         if ($w == null) {
-            throw new ClientException($this->client, 'Error adding widget');
+            throw new ClientException('Error adding widget');
         }
 
         // Add the widget to the screen
@@ -95,7 +95,7 @@ class WidgetCommands
         if ($err == 0) {
             $this->client->sendString("success\n");
         } else {
-            throw new ClientException($this->client, 'Error adding widget');
+            throw new ClientException('Error adding widget');
         }
 
         return 0;
@@ -114,26 +114,26 @@ class WidgetCommands
         }
 
         if (count($args) != 2) {
-            throw new ClientException($this->client, 'Usage: widget_del <screenid> <widgetid>');
+            throw new ClientException('Usage: widget_del <screenid> <widgetid>');
         }
 
         $sid = $args[0];
         $wid = $args[1];
         $s = $this->client->findScreen($sid);
         if ($s == null) {
-            throw new ClientException($this->client, 'Invalid screen id');
+            throw new ClientException('Invalid screen id');
         }
 
         $w = $s->findWidget($wid);
         if ($w == null) {
-            throw new ClientException($this->client, 'Invalid widget id');
+            throw new ClientException('Invalid widget id');
         }
 
         $err = $s->removeWidget($w);
         if ($err == 0) {
             $this->client->sendString("success\n");
         } else {
-            throw new ClientException($this->client, 'Error removing widget');
+            throw new ClientException('Error removing widget');
         }
 
         return 0;
@@ -157,34 +157,31 @@ class WidgetCommands
         // different number - plus, if the argument count is wrong, what ELSE
         // could be wrong...?
         if (count($args) < 3) {
-            throw new ClientException(
-                $this->client,
-                'Usage: widget_set <screenid> <widgetid> <widget-SPECIFIC-data>'
-            );
+            throw new ClientException('Usage: widget_set <screenid> <widgetid> <widget-SPECIFIC-data>');
         }
 
         // Find screen
         $sid = $args[0];
         $s = $this->client->findScreen($sid);
         if ($s == null) {
-            throw new ClientException($this->client, 'Unknown screen id:' . $sid);
+            throw new ClientException('Unknown screen id:' . $sid);
         }
 
         // Find widget
         $wid = $args[1];
         $w = $s->findWidget($wid);
         if ($w == null) {
-            throw new ClientException($this->client, 'Unknown widget id:' . $wid);
+            throw new ClientException('Unknown widget id:' . $wid);
         }
 
         switch ($w->type) {
             case Widget::WID_STRING:
                 // String takes "x y text"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -195,10 +192,10 @@ class WidgetCommands
             case Widget::WID_HBAR:
                 // Hbar takes "x y length"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -211,10 +208,10 @@ class WidgetCommands
             case Widget::WID_VBAR:
                 // Vbar takes "x y length"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -227,17 +224,17 @@ class WidgetCommands
             case Widget::WID_ICON:
                 // Icon takes "x y icon"
                 if (!isset($args[4])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[3])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
                 $w->y = (int) $args[3];
                 $icon = Widget::iconNameToIcon($args[4]);
                 if (!$icon) {
-                    throw new ClientException($this->client, 'Invalid icon name');
+                    throw new ClientException('Invalid icon name');
                 }
                 $w->length = $icon;
 
@@ -246,7 +243,7 @@ class WidgetCommands
             case Widget::WID_TITLE:
                 // title takes "text"
                 if (!isset($args[2])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
 
                 $w->text = $args[2];
@@ -258,7 +255,7 @@ class WidgetCommands
             case Widget::WID_SCROLLER:
                 // Scroller takes "left top right bottom direction speed text"
                 if (!isset($args[7])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
 
                 if (!isset($args[8])) {
@@ -269,12 +266,12 @@ class WidgetCommands
                     || !is_numeric($args[3])
                     || !is_numeric($args[4])
                     || !is_numeric($args[5])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 // Direction must be m, v or h
                 if ($args[6] != 'm' && $args[6] != 'v' && $args[6] != 'h') {
-                    throw new ClientException($this->client, 'Invalid direction');
+                    throw new ClientException('Invalid direction');
                 }
 
                 $w->left = (int) $args[2];
@@ -290,7 +287,7 @@ class WidgetCommands
             case Widget::WID_FRAME:
                 // Frame takes "left top right bottom wid hgt direction speed"
                 if (!isset($args[9])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
 
                 if (!is_numeric($args[2])
@@ -299,12 +296,12 @@ class WidgetCommands
                     || !is_numeric($args[5])
                     || !is_numeric($args[6])
                     || !is_numeric($args[7])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 // Direction must be v or h
                 if ($args[8] != 'h' && $args[8] != 'v') {
-                    throw new ClientException($this->client, 'Invalid direction');
+                    throw new ClientException('Invalid direction');
                 }
 
                 $w->left = (int) $args[2];
@@ -321,10 +318,10 @@ class WidgetCommands
             case Widget::WID_NUM:
                 // Num takes "x num"
                 if (!isset($args[3])) {
-                    throw new ClientException($this->client, 'Wrong number of arguments');
+                    throw new ClientException('Wrong number of arguments');
                 }
                 if (!is_numeric($args[2]) || !is_numeric($args[2])) {
-                    throw new ClientException($this->client, 'Invalid coordinates');
+                    throw new ClientException('Invalid coordinates');
                 }
 
                 $w->x = (int) $args[2];
@@ -333,7 +330,7 @@ class WidgetCommands
                 $this->client->sendString("success\n");
                 break;
             case Widget::WID_NONE:
-                throw new ClientException($this->client, 'Widget has no type');
+                throw new ClientException('Widget has no type');
                 break;
         }
 

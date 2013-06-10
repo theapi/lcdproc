@@ -24,7 +24,7 @@ class ServerCommands
     public function output($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client);
+            throw new ClientException();
         }
 
         // Lie :)
@@ -39,7 +39,7 @@ class ServerCommands
     public function sleep($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client);
+            throw new ClientException();
         }
 
         $this->client->sendString("success\n");
@@ -51,7 +51,7 @@ class ServerCommands
     public function noop($args)
     {
         if (!$this->client->isActive()) {
-            throw new ClientException($this->client);
+            throw new ClientException();
         }
 
         $this->client->sendString("success\n");

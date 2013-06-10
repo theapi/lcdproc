@@ -100,7 +100,7 @@ class Client
                 try {
                     $err = $this->$commandHandler->$method($args);
                     if ($err) {
-                        throw new ClientException($this, 'Function returned error: ' . $method);
+                        throw new ClientException('Function returned error: ' . $method);
                     }
                 } catch (ClientException $e) {
                     throw $e;
@@ -110,7 +110,7 @@ class Client
                 // TODO: exceptions for coding errors
             }
         } else {
-            throw new ClientException($this, 'Invalid command ' . $name);
+            throw new ClientException('Invalid command ' . $name);
         }
     }
 
