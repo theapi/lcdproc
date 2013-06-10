@@ -448,6 +448,49 @@ class Render
 
     public function scroller($w, $left, $top, $right, $bottom, $timer)
     {
+        if (!$w instanceof Widget) {
+            return;
+        }
+
+        if (($w->text != null) && ($w->right >= $w->left)) {
+            $str =
+            $screenWidth = abs($w->right - $w->left + 1);
+            $screenWidth = min($screenWidth, strlen($w->text)-1);
+        }
+
+        switch ($w->length) { // actually, direction...
+            case 'm': // Marquee
+                $length = strlen($w->text);
+                if ($length <= $screenWidth) {
+                    // it fits within the box, just render it
+                    $this->container->drivers->string($w->left, $w->top, $w->text);
+                } else {
+                    $necessaryTimeUnits = 0;
+
+                    if ($w->speed > 0) {
+                        $necessaryTimeUnits = $length * $w->speed;
+                        $offset = ($this->container->timer % $necessaryTimeUnits) / $w->speed;
+                    } elseif ($w->speed < 0) {
+                        $necessaryTimeUnits = $length / ($w->speed * -1);
+                        $offset = ($this->container->timer % $necessaryTimeUnits) * $w->speed * -1;
+                    } else {
+                        $offset = 0;
+                    }
+                    if ($offset <= $length) {
+                        $room = $screenWidth - ($length - $offset);
+                        $str = substr($w->text, $offset, $screenWidth);
+
+                        // if there's more room, restart at the beginning
+                        if ($room > 0) {
+                            $str .= substr($w->text, 0, $room);
+                        }
+                    } else {
+                       $str = '';
+                    }
+                    $this->container->drivers->string($w->left, $w->top, $str);
+                }
+                break;
+        }
 
     }
 
