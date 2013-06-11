@@ -60,8 +60,11 @@ class Ncurses extends Driver
         ncurses_init();
         ncurses_curs_set(0);
         ncurses_start_color();
+        ncurses_init_pair(1, NCURSES_COLOR_WHITE, NCURSES_COLOR_BLACK); // backlight off
+        ncurses_init_pair(2, NCURSES_COLOR_BLACK, NCURSES_COLOR_WHITE); // backlight on
         $this->screen = ncurses_newwin( $this->height +2, $this->width+2, 0, 0);
         ncurses_wborder($this->screen, 0, 0, 0, 0, 0, 0, 0, 0);
+        ncurses_wcolor_set($this->screen, 1);
         ncurses_wrefresh($this->screen);
 
 
@@ -171,7 +174,14 @@ class Ncurses extends Driver
     {
         if ($this->backlightState !== $state) {
             $this->backlightState = $state;
-
+            if ($state == 1) {
+                // on
+                ncurses_wcolor_set($this->screen, 2);
+            } else {
+                // off
+                ncurses_wcolor_set($this->screen, 1);
+            }
+            $this->flush();
         }
     }
 
