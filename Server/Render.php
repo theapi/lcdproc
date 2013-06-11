@@ -439,7 +439,7 @@ class Render
 
             // display trailing fillers
             for ( ; $x < $visWidth; $x++) {
-                $this->container->drivers->icon($w->x + $x + $left, $w->y + $top, Drivers::ICON_BLOCK_FILLED);
+                $this->container->drivers->icon($w->x + $x + $left, $w->y + $top, Widget::ICON_BLOCK_FILLED);
             }
         }
 
