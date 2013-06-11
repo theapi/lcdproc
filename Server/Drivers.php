@@ -1,10 +1,6 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
-use Theapi\Lcdproc\Server\Drivers\Ncurses;
-
-use Theapi\Lcdproc\Server\Drivers\Piplate;
-
 /**
  * Manage the lists of loaded drivers and perform actions on all drivers.
  */
@@ -25,22 +21,26 @@ class Drivers
     }
 
     /**
-     * Load driver based on no logic at all :)
-     * @param name  Driver section name.
+     * Load driver
+     * @param name  Driver class name.
      * @retval  <0  error.
      * @retval   0  OK, driver is an input driver only.
      * @retval   1  OK, driver is an output driver.
      * @retval   2  OK, driver is an output driver that needs to run in the foreground.
      */
-    public function loadDriver($name = 'piplate')
+    public function loadDriver($name = 'Piplate')
     {
-        // TODO: logic to load correct driver
-        $driver = new Piplate($this->container);
-        //$driver = new Ncurses($this->container);
+        // load the driver, add the namespace so it can be found
+        $fullClass = 'Theapi\Lcdproc\Server\Drivers\\' . $name;
+        if (!class_exists($fullClass)) {
+            throw new \Exception('Undefined driver: ' . $name);
+        }
+        $driver = new $fullClass($this->container);
 
+        // Add driver to list
         $this->loadedDrivers[] = $driver;
 
-        // if driver does output
+        // If first driver, store display properties
         if ($driver->doesOutput() && empty($this->displayProps)) {
             $this->displayProps = new \stdClass();
             $this->displayProps->width = $driver->width();

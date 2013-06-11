@@ -67,6 +67,14 @@ class Ncurses extends Driver
 
     }
 
+    /**
+     * Close the driver (do necessary clean-up).
+     */
+    public function close()
+    {
+        ncurses_end();
+    }
+
     public function doesOutput() {
         return true;
     }

@@ -76,7 +76,7 @@ class Server
     {
 
         $defaultOpts = array(
-            'driver' => 'piplate',
+            'driver' => 'Piplate',
             'verbosity' => LOG_ERR,
             'serverScreen' => 1,
         );
