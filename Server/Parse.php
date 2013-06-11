@@ -40,6 +40,12 @@ class Parse
         $args = array();
         $arg = '';
         $str = trim($str);
+
+        // the original c source expands \n \r \t
+        // but I'm not...
+        $str = str_replace(array("\n", "\r"), '', $str);
+        $str = str_replace(array("\t", "\r"), '  ', $str);
+
         $length = strlen($str);
         for ($i = 0; $i < $length; $i++) {
             $ch = $str[$i]; //echo $ch . ':';
