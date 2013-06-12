@@ -15,7 +15,7 @@ require 'Server/Server.php';
 
 $host = '127.0.0.1';
 $port = 13666;
-$driver = 'piplate';
+$driver = 'Piplate';
 $verbosity = LOG_ERR;
 $serverScreen = 1;
 

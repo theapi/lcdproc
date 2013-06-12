@@ -347,7 +347,7 @@ class Render
         return 0;
     }
 
-    public function vbar($w, $left, $top, $right, $bottom, $fy)
+    public function vbar($w, $left, $top, $right, $bottom)
     {
         if (!$w instanceof Widget) {
             return;
@@ -355,11 +355,11 @@ class Render
 
         if (($w->x > 0) && ($w->y > 0)) {
             if ($w->length > 0) {
-                $fullLen = $this->displayProps->length;
+                $fullLen = $this->displayProps->height;
                 $promille = 1000 * $w->length / ($this->displayProps->cellHeight * $fullLen);
                 $this->container->drivers->vbar(
-                    $w->x + left,
-                    $w->y + top,
+                    $w->x + $left,
+                    $w->y + $top,
                     $fullLen,
                     $promille,
                     self::BAR_PATTERN_FILLED
