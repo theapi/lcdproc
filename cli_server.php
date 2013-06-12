@@ -1,6 +1,7 @@
 <?php
 use Theapi\Lcdproc\Server\Server;
 
+require __DIR__ . '/vendor/autoload.php';
 
 // All errors
 error_reporting(E_ALL);
@@ -11,7 +12,7 @@ set_time_limit(0);
 // Turn on implicit output flushing
 ob_implicit_flush();
 
-require 'Server/Server.php';
+//require 'Server/Server.php';
 
 $host = '127.0.0.1';
 $port = 13666;

@@ -11,28 +11,6 @@ use Theapi\Lcdproc\Server\Drivers;
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 
-// TODO: auto loader (composer)
-require_once 'Log.php';
-require_once 'Config.php';
-require_once 'Parse.php';
-require_once 'Client.php';
-require_once 'Clients.php';
-require_once 'Render.php';
-require_once 'ScreenList.php';
-require_once 'Screen.php';
-require_once 'ServerScreens.php';
-require_once 'Widget.php';
-require_once 'Driver.php';
-require_once 'Drivers.php';
-require_once 'Drivers/Piplate.php';
-require_once 'Drivers/Ncurses.php';
-require_once 'Commands/ClientCommands.php';
-require_once 'Commands/MenuCommands.php';
-require_once 'Commands/ScreenCommands.php';
-require_once 'Commands/ServerCommands.php';
-require_once 'Commands/WidgetCommands.php';
-require_once 'Exception/ClientException.php';
-
 class Server
 {
 

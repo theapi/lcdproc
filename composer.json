@@ -1,0 +1,23 @@
+{
+    "name": "theapi/phplcdproc",
+    "description": "PHP port of lcdproc",
+    "keywords":     ["lcd", "lcdproc", "Symfony2"],
+    "homepage":     "https://github.com/theapi/piplate_lcdproc_server",
+    "license": "GPL",
+    "authors":      [
+        {
+            "name": "Peter Clarke"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.3.0",
+        "cboden/Ratchet": "0.2.*"
+    },
+    
+    "autoload": {
+        "psr-0": { "Theapi\\Lcdproc": "" }
+    },
+    "target-dir": "Theapi/Lcdproc"
+    
+}

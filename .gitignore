@@ -3,3 +3,7 @@
 .settings/
 .pydevproject
 config.php
+
+composer.lock
+vendor/
+
