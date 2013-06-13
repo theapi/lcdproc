@@ -32,9 +32,7 @@ class WebSocket extends Driver
         parent::__construct($container);
 
         $this->server = 'localhost'; // TODO: make websocket server configurable
-        $this->port = 8080; // TODO: make websocket port configurable
-
-
+        $this->port = 8081; // TODO: make websocket port configurable
 
 
         // Set dimensions
@@ -44,9 +42,11 @@ class WebSocket extends Driver
         $this->cellHeight = 5;
 
         if (!$this->disabled) {
-            $this->ws = new Client(); // AHHHHH! no working php client, need another way. Do I really want ZeroMq just for this??
-            if ($this->ws->connect($this->server, $this->port, '')) {
-                $container->log(LOG_INFO, 'Connected to websocket at '. $this->server);
+            // connect to the socket that the websocket server is listening on without the websocket protocol
+            $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+
+            if (!$this->fp) {
+                throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
             }
         }
 
@@ -189,17 +189,53 @@ class WebSocket extends Driver
     }
 
 
-    public function write($buf)
+    public function read()
     {
-        $this->container->log(LOG_DEBUG, 'write > '. $buf);
-
         if ($this->disabled) {
             return;
         }
 
-        if (!$this->ws->sendData($buf)) {
-            throw new \Exception('Failed to send to websocket');
+        if (!$this->fp) {
+            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
         }
+
+        $line = fgets($this->fp);
+
+        if ($this->debug > 2) {
+            $info = stream_get_meta_data($this->fp);
+            echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
+        }
+
+        if ($this->debug > 1) {
+            echo " < $line\n";
+        }
+
+        return $line;
+    }
+
+    public function write($buf)
+    {
+        if ($this->disabled) {
+            return;
+        }
+
+        if (!$this->fp) {
+            throw new \Exception('No connection to ' . $this->server . ':' . $this->port, 0);
+        }
+
+        $info = stream_get_meta_data($this->fp);
+        $alive = !$info['eof'] && !$info['timed_out'];
+        if (!$alive) {
+            throw new \Exception('Lost connection to ' . $this->server . ':' . $this->port, 0);
+        }
+
+        if ($this->debug > 1) {
+            foreach (explode("\n", $buf) as $line) {
+                echo " > $line\n";
+            }
+        }
+        @fwrite($this->fp, "$buf\n");
+
     }
 
     public function disconnect()
