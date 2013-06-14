@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>  
 <title>Websocket example</title>
+
+
+<style>
+#lcd{  
+    border:1px solid grey;  
+    width:16ex; 
+}  
+</style>
 </head>
 <body>
 
-<script type="text/javascript">
 
+
+<script type="text/javascript">
+/*
 var conn = new WebSocket('ws://localhost:8080');
 conn.onopen = function(e) {
     console.log("Connection established!");
@@ -16,8 +26,54 @@ conn.onopen = function(e) {
 conn.onmessage = function(e) {
     console.log(e.data);
 };
+*/
 
+$(document).ready(function() {  
+	  
+	  if ("WebSocket" in window) {  
+  
+	      //The user has WebSockets  
+	  
+	      connect();  
+	  
+	      function connect(){  
+	          var socket;  
+	          var host = "ws://localhost:8080";  
+	  
+	          try{  
+	              var socket = new WebSocket(host);  
+	  
+	              message('Socket Status: ' + socket.readyState);  
+	  
+
+	              socket.onmessage = function(msg) {  
+	            	   if (msg.data.indexOf('message:') == 0) {
+	                    message(msg.data.replace('message:', ''));  
+	                 }
+	              }  
+
+	          } catch(exception) {  
+	             message(exception);  
+	          }  
+
+	          function message(msg){  
+	            $('#lcd').html('<pre>' + msg + '</pre>');  
+	          }   
+	  
+	      } 
+	  
+	  }  
+	  
+});  
 </script>
 
+
+  
+<h1>WebSocket Lcdproc</h1>  
+
+<div id="lcd"></div>
+
+
+ 
 </body>
 </html>
