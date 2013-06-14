@@ -5,7 +5,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
 
-class Browser implements MessageComponentInterface {
+class Server implements MessageComponentInterface {
     protected $clients;
 
     public function __construct() {

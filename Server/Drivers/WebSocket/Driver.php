@@ -1,11 +1,11 @@
 <?php
-namespace Theapi\Lcdproc\Server\Drivers;
+namespace Theapi\Lcdproc\Server\Drivers\WebSocket;
 
 
-use Theapi\Lcdproc\Server\Driver as Driver;
+use Theapi\Lcdproc\Server\Driver as BaseDriver;
 use Theapi\Lcdproc\Server\Render;
 
-class WebSocket extends Driver
+class Driver extends BaseDriver
 {
 
     protected $debug = 0;
