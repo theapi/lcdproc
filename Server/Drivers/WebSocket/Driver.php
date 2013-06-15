@@ -23,6 +23,8 @@ class Driver extends BaseDriver
     protected $fp;
     protected $backlightState;
 
+    protected $lastOut; // Remember what was last sent so as not to repeat messages
+
 
     /**
      * Initialize the driver.
@@ -81,7 +83,7 @@ class Driver extends BaseDriver
         // Reset to the blank screen array
         $this->out = $this->outBlank;
 
-        // no need to call clear on the python end as the whole
+        // no need to call clear as the whole
         // screen gets rendered
     }
 
@@ -95,8 +97,13 @@ class Driver extends BaseDriver
         $line1 = substr($this->out[1], 1);
         $line2 = substr($this->out[2], 1);
         try {
-            // prepend the message with "message:"
-            $this->write("message:$line1\n$line2");
+            $msg = "$line1\n$line2";
+            if ($msg != $this->lastOut) {
+                $this->lastOut = $msg;
+                $this->write($msg);
+            }
+            // Reset to the blank screen array
+            $this->out = $this->outBlank;
         } catch (\Exception $e) {
             if ($e->getCode() == 0) {
                 // no connection
@@ -107,8 +114,7 @@ class Driver extends BaseDriver
             }
         }
 
-        // Reset to the blank screen array
-        $this->out = $this->outBlank;
+
     }
 
     /**

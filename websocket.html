@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>  
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script> 
 <title>Websocket example</title>
 
 
 <style>
 #lcd{  
     border:1px solid grey;  
-    width:16ex; 
+    width:16ex;
+    height:4ex; 
 }  
+pre {
+margin: 0px;
+}
 </style>
 </head>
 <body>
@@ -39,6 +43,7 @@ $(document).ready(function() {
 	      function connect(){  
 	          var socket;  
 	          var host = "ws://localhost:8080";  
+	          var backlight = '0';
 	  
 	          try{  
 	              var socket = new WebSocket(host);  
@@ -47,17 +52,29 @@ $(document).ready(function() {
 	  
 
 	              socket.onmessage = function(msg) {  
-	            	   if (msg.data.indexOf('message:') == 0) {
-	                    message(msg.data.replace('message:', ''));  
+	            	   $.trim(msg.data);
+	            	   if (msg.data.indexOf('backlight:') == 0) {
+	            		   backlight = msg.data.replace('backlight:', '');  
+	            		   console.log(backlight);
+	            		   if (backlight == 0) {
+	            			   // off
+	            			   $('#lcd').css('background-color', '#FFF');
+	            		   } else {
+	            			   // on
+	                     $('#lcd').css('background-color', 'yellow');
+	            		   }
+	                 } else {
+	                	 message(msg.data);  
 	                 }
 	              }  
 
 	          } catch(exception) {  
-	             message(exception);  
+	             //message(exception);  
 	          }  
 
-	          function message(msg){  
-	            $('#lcd').html('<pre>' + msg + '</pre>');  
+	          function message(str){  
+	            $('#lcd').html('<pre>' + str + '</pre>');  
+	            //console.log(str);
 	          }   
 	  
 	      } 

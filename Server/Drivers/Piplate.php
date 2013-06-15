@@ -24,6 +24,8 @@ class Piplate extends Driver
     protected $fp;
     protected $backlightState;
 
+    protected $lastOut; // Remember what was last sent so as not to repeat messages
+
     /**
      * Initialize the driver.
      */
@@ -92,8 +94,16 @@ class Piplate extends Driver
         $line1 = substr($this->out[1], 1);
         $line2 = substr($this->out[2], 1);
         try {
+
             // prepend the message with "message:"
-            $this->write("message:$line1\n$line2");
+            $msg = "message:$line1\n$line2";
+            if ($msg != $this->lastOut) {
+                $this->lastOut = $msg;
+                $this->write($msg);
+            }
+            // Reset to the blank screen array
+            $this->out = $this->outBlank;
+
             // read just to clear the memory
             $this->read();
         } catch (\Exception $e) {
