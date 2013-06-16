@@ -100,12 +100,13 @@ class Piplate extends Driver
             if ($msg != $this->lastOut) {
                 $this->lastOut = $msg;
                 $this->write($msg);
+                // read just to clear the memory
+                $this->read();
             }
+
             // Reset to the blank screen array
             $this->out = $this->outBlank;
 
-            // read just to clear the memory
-            $this->read();
         } catch (\Exception $e) {
             if ($e->getCode() == 0) {
                 // no connection
@@ -116,8 +117,6 @@ class Piplate extends Driver
             }
         }
 
-        // Reset to the blank screen array
-        $this->out = $this->outBlank;
     }
 
     /**

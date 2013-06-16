@@ -30,6 +30,7 @@ class Drivers
      */
     public function loadDriver($name = 'Piplate')
     {
+
         // load the driver, add the namespace so it can be found
         $fullClass = 'Theapi\Lcdproc\Server\Drivers\\' . $name;
         if (!class_exists($fullClass)) {

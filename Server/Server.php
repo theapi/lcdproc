@@ -70,7 +70,14 @@ class Server
 
         // init_drivers
         $this->drivers = new Drivers($this);
-        $this->drivers->loadDriver($opts['driver']);
+        if (is_array($opts['driver'])) {
+            // multiple drivers
+            foreach ($opts['driver'] as $driver) {
+                $this->drivers->loadDriver($driver);
+            }
+        } else {
+            $this->drivers->loadDriver($opts['driver']);
+        }
 
         // clients_init
         $this->clients = new Clients($this);

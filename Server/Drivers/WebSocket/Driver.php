@@ -101,6 +101,8 @@ class Driver extends BaseDriver
             if ($msg != $this->lastOut) {
                 $this->lastOut = $msg;
                 $this->write($msg);
+                // read just to clear the memory
+                //$this->read();
             }
             // Reset to the blank screen array
             $this->out = $this->outBlank;
