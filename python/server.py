@@ -17,7 +17,7 @@ def handle_data (sock, message):
 
     elif message[:10] == 'backlight:':
         backlight = message[10:].strip()
-        print backlight
+        # print backlight
         if backlight == '0':
             #print "   backlight: OFF"
             lcd.backlight(lcd.OFF)

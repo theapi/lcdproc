@@ -55,7 +55,7 @@ $(document).ready(function() {
 	            	   $.trim(msg.data);
 	            	   if (msg.data.indexOf('backlight:') == 0) {
 	            		   backlight = msg.data.replace('backlight:', '');  
-	            		   console.log(backlight);
+	            		   //console.log(backlight);
 	            		   if (backlight == 0) {
 	            			   // off
 	            			   $('#lcd').css('background-color', '#FFF');
