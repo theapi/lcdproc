@@ -453,9 +453,8 @@ class Render
         }
 
         if (($w->text != null) && ($w->right >= $w->left)) {
-            $str =
             $screenWidth = abs($w->right - $w->left + 1);
-            $screenWidth = min($screenWidth, strlen($w->text)-1);
+            //$screenWidth = min($screenWidth, strlen($w->text)-1);
         }
 
         switch ($w->length) { // actually, direction...
