@@ -26,7 +26,7 @@ class Config
     protected $helloMsg =  array('Welcome to', 'PHP LCDproc');
 
     protected $backlight = Render::BACKLIGHT_OPEN;
-    protected $heartbeat = Render::HEARTBEAT_OFF;
+    protected $heartbeat = Render::HEARTBEAT_OPEN;
 
     protected $duration = 32;
     protected $titleSpeed = Render::TITLESPEED_MAX;

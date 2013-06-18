@@ -65,7 +65,7 @@ abstract class Driver
     public function vbar($x, $y, $len, $promille, $pattern)
     {
         // if the driver does not support output, do nothing
-        if (method_exists($this, 'chr')) {
+        if (!method_exists($this, 'chr')) {
             return;
         }
 
@@ -87,7 +87,7 @@ abstract class Driver
     public function hbar($x, $y, $len, $promille, $pattern)
     {
         // if the driver does not support output, do nothing
-        if (method_exists($this, 'chr')) {
+        if (!method_exists($this, 'chr')) {
             return;
         }
 
@@ -126,9 +126,9 @@ abstract class Driver
         }
 
         if ($this->container->timer & 5) {
-            $icon = Widget::ICON_BLOCK_FILLED;
+            $icon = Widget::ICON_HEART_FILLED;
         } else {
-            $icon = Widget::ICON_BLOCK_OPEN;
+            $icon = Widget::ICON_HEART_OPEN;
         }
 
         $this->icon($this->width, 1, $icon);
@@ -143,7 +143,7 @@ abstract class Driver
     public function icon($x, $y, $icon)
     {
         // if the driver does not support output, do nothing
-        if (method_exists($this, 'chr')) {
+        if (!method_exists($this, 'chr')) {
             return;
         }
 
@@ -241,7 +241,7 @@ abstract class Driver
     public function cursor($x, $y, $state)
     {
         // if the driver does not support output, do nothing
-        if (method_exists($this, 'chr')) {
+        if (!method_exists($this, 'chr')) {
             return;
         }
 

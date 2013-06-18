@@ -3,6 +3,7 @@ namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Screen;
+use Theapi\Lcdproc\Server\Render;
 use Theapi\Lcdproc\Server\Widget;
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Drivers;
@@ -53,6 +54,7 @@ class ServerScreens
         $this->screen = new Screen($this->container, "_server_screen", null);
         $this->screen->name = "Server screen";
         $this->screen->duration = Server::RENDER_FREQ;
+        $this->screen->heartbeat = Render::HEARTBEAT_ON;
 
         // Create all the widgets...
         for ($i = 0; $i < $this->container->drivers->displayProps->height; $i++) {
@@ -138,7 +140,8 @@ class ServerScreens
         // update statistics if we do not only want to show a blank screen
         if ($this->rotateServerScreen != self::SERVERSCREEN_BLANK) {
             $w = $this->screen->findWidget('line2');
-            $w->text = (string) microtime(true);
+            //$w->text = (string) microtime(true);
+            $w->text = date('Y/m/d H:i');
         }
 
         /*
