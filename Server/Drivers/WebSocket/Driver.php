@@ -43,19 +43,49 @@ class Driver extends BaseDriver
         $this->cellWidth = 5;
         $this->cellHeight = 5;
 
-        if (!$this->disabled) {
-            // connect to the socket that the websocket server is listening on without the websocket protocol
-            $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
-
-            if (!$this->fp) {
-                throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
-            }
-        }
-
         // Setup the array of spaces
         $this->out = $this->outBlank;
 
+        try {
+            $this->connect();
+        } catch (\Exception $e) {
+            // Allow the driver to exist is an unconnected state
+            // so it can be connected later with the "connect" command
+            $this->container->log(LOG_ERR, $e->getMessage());
+        }
 
+    }
+
+    /**
+     * Try to make the socket connect.
+     * Disable this driver if the connection fails
+     *
+     * The driver can be reconnected later by the server command "connect"
+     *
+     * @throws \Exception
+     */
+    public function connect()
+    {
+
+        if ($this->fp) {
+            if (get_resource_type($this->fp) != 'stream') {
+                $this->fp = null;
+            } else {
+                // already connected
+                return;
+            }
+        }
+
+        $this->container->log(LOG_DEBUG, 'WebSocket connect()');
+
+        // connect to the socket that the websocket script is listening on
+        $this->fp = @stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+
+        if (!$this->fp) {
+            $this->disabled = true;
+            throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
+        }
+        $this->disabled = false;
     }
 
     /**

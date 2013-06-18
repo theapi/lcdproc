@@ -11,7 +11,7 @@ class Piplate extends Driver
 
     protected $debug = 0;
 
-    protected $disabled = false; // so I can test without the Pi on
+    protected $disabled = false;
 
     // Two rows of 16(7) spaces (column 0 gets stripped later leaving 16)
     //  $outBlank[1] & $outBlank[2]
@@ -42,17 +42,49 @@ class Piplate extends Driver
         $this->cellWidth = 5;
         $this->cellHeight = 5;
 
-        if (!$this->disabled) {
-            // connect to the socket that the python script is listening on
-            $this->fp = stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+        // Setup the array of spaces
+        $this->out = $this->outBlank;
 
-            if (!$this->fp) {
-                throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
+        try {
+            $this->connect();
+        } catch (\Exception $e) {
+            // Allow the driver to exist is an unconnected state
+            // so it can be connected later with the "connect" command
+            $this->container->log(LOG_ERR, $e->getMessage());
+        }
+
+    }
+
+    /**
+     * Try to make the socket connect.
+     * Disable this driver if the connection fails
+     *
+     * The driver can be reconnected later by the server command "connect"
+     *
+     * @throws \Exception
+     */
+    public function connect()
+    {
+
+        if ($this->fp) {
+            if (get_resource_type($this->fp) != 'stream') {
+                $this->fp = null;
+            } else {
+                // already connected
+                return;
             }
         }
 
-        // Setup the array of spaces
-        $this->out = $this->outBlank;
+        $this->container->log(LOG_DEBUG, 'Piplate connect()');
+
+        // connect to the socket that the python script is listening on
+        $this->fp = @stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
+
+        if (!$this->fp) {
+            $this->disabled = true;
+            throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
+        }
+        $this->disabled = false;
     }
 
     /**

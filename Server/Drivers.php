@@ -36,6 +36,7 @@ class Drivers
         if (!class_exists($fullClass)) {
             throw new \Exception('Undefined driver: ' . $name);
         }
+
         $driver = new $fullClass($this->container);
 
         // Add driver to list
@@ -250,6 +251,22 @@ class Drivers
                 if ($keystroke != null) {
                     return $keystroke;
                 }
+            }
+        }
+    }
+
+    /**
+     * Tells the unconnected drivers try to reconnect.
+     *
+     * Not part of lcdproc spec
+     */
+    public function connect()
+    {
+        foreach ($this->loadedDrivers as $driver) { var_dump($driver->getInfo());
+            if (method_exists($driver, 'connect')) {
+                try {
+                    $driver->connect();
+                } catch (\Exception $e) {}
             }
         }
     }

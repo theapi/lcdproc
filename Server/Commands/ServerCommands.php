@@ -56,4 +56,18 @@ class ServerCommands
 
         $this->client->sendString("success\n");
     }
+
+    /**
+     * Tells the unconneted drivers try to reconnect.
+     *
+     * Not part of lcdproc spec
+     */
+    public function connect($args)
+    {
+        if (!$this->client->isActive()) {
+            throw new ClientException();
+        }
+        $this->container->drivers->connect();
+        $this->client->sendString("success\n");
+    }
 }

@@ -52,6 +52,7 @@ class Client
         'output'         => array('serverCommands', 'output'),
         'sleep'          => array('serverCommands', 'sleep'),
         'noop'           => array('serverCommands', 'noop'),
+        'connect'        => array('serverCommands', 'connect'), // bespoke to php_lcdproc
 
         'screen_add'     => array('screenCommands', 'add'),
         'screen_del'     => array('screenCommands', 'del'),
