@@ -44,7 +44,10 @@ class Parse
         // the original c source expands \n \r \t
         // but I'm not...
         $str = str_replace(array('\n', '\r'), '', $str);
-        $str = str_replace(array('\t', '\r'), '  ', $str);
+        $str = str_replace('\t', '  ', $str);
+
+        // KLUDGE
+        $str = str_replace('\\', '', $str);
 
         $length = strlen($str);
         for ($i = 0; $i < $length; $i++) {
