@@ -237,19 +237,10 @@ class Piplate extends Driver
         }
 
         if (!$this->fp) {
-            throw new \Exception('No connection to ' . $this->server . ':' . $this->port);
+            return;
         }
 
         $line = fgets($this->fp);
-
-        if ($this->debug > 2) {
-            $info = stream_get_meta_data($this->fp);
-            echo " < $line".($info['timed_out'] ? " read timed out" : "")."\n";
-        }
-
-        if ($this->debug > 1) {
-            echo " < $line\n";
-        }
 
         return $line;
     }
@@ -267,29 +258,16 @@ class Piplate extends Driver
         $info = stream_get_meta_data($this->fp);
         $alive = !$info['eof'] && !$info['timed_out'];
         if (!$alive) {
-            throw new \Exception('Lost connection to ' . $this->server . ':' . $this->port, 0);
+            $this->container->log(LOG_ERR, 'Lost connection to ' . $this->server . ':' . $this->port);
+            $this->disabled = true;
         }
 
-        if ($this->debug > 1) {
-            foreach (explode("\n", $buf) as $line) {
-                echo " > $line\n";
-            }
-        }
         @fwrite($this->fp, "$buf\n");
 
     }
 
     public function disconnect()
     {
-        if ($this->debug > 1) {
-            echo ">< Disconnecting from LCDd\n";
-        }
-
-        $this->write('bye');
         fclose($this->fp);
-
-        if ($this->debug > 1) {
-            echo ">< Disconnected!\n";
-        }
     }
 }
