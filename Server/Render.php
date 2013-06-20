@@ -1,6 +1,8 @@
 <?php
 namespace Theapi\Lcdproc\Server;
 
+use Theapi\Lcdproc\Server\Event\RenderEvents;
+
 /**
  * This file contains code that actually generates the full screen data to
  * send to the LCD.
@@ -9,6 +11,9 @@ namespace Theapi\Lcdproc\Server;
 use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Screen;
 use Theapi\Lcdproc\Server\Widget;
+use Theapi\Lcdproc\Server\Event\RenderEvent;
+
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Render
 {
@@ -70,6 +75,8 @@ class Render
         $this->container = $container;
         $this->displayProps = $this->container->drivers->displayProps;
         $this->backlight = $this->container->config->backlight;
+
+        $this->dispatcher = new EventDispatcher();
     }
 
     /**
@@ -134,6 +141,7 @@ class Render
             } else {
                 $state = Render::BACKLIGHT_OFF;
             }
+            $this->dispatcher->dispatch(RenderEvents::BACKLIGHT_PRE, new RenderEvent(array($state)));
             $this->container->drivers->backlight($state);
         } elseif ($tmpState & Render::BACKLIGHT_BLINK) {
             // Backlight blink: check timer and flip backlight as appropriate
@@ -142,10 +150,13 @@ class Render
             } else {
                 $state = Render::BACKLIGHT_OFF;
             }
+            $this->dispatcher->dispatch(RenderEvents::BACKLIGHT_PRE, new RenderEvent(array($state)));
             $this->container->drivers->backlight($state);
         } else {
             // Simple: Only send lowest bit then...
-            $this->container->drivers->backlight($tmpState & Render::BACKLIGHT_ON);
+            $state = $tmpState & Render::BACKLIGHT_ON;
+            $this->dispatcher->dispatch(RenderEvents::BACKLIGHT_PRE, new RenderEvent(array($state)));
+            $this->container->drivers->backlight($state);
         }
 
         // 3. Output ports from LCD - outputs depend on the current screen
