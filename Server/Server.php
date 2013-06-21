@@ -10,6 +10,7 @@ use Theapi\Lcdproc\Server\Exception\ClientException;
 use Theapi\Lcdproc\Server\Drivers;
 use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
+use Theapi\Lcdproc\Server\Plugins\Backlight;
 
 class Server
 {
@@ -90,6 +91,9 @@ class Server
 
         // server_screen_init
         $this->serverScreen = new ServerScreens($this);
+
+        // plugins
+        $pluginBacklight = new Backlight($this);
     }
 
     public function log($priority, $message)

@@ -5,6 +5,8 @@ namespace Theapi\Lcdproc\Server;
  * Manage the lists of loaded drivers and perform actions on all drivers.
  */
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Drivers
 {
@@ -18,6 +20,8 @@ class Drivers
     public function __construct($container)
     {
         $this->container = $container;
+
+        $this->dispatcher = new EventDispatcher();
     }
 
     /**
@@ -217,6 +221,7 @@ class Drivers
      */
     public function backlight($state)
     {
+        $this->dispatcher->dispatch('drivers.backlight', new GenericEvent($state));
         foreach ($this->loadedDrivers as $driver) {
             if (method_exists($driver, 'backlight')) {
                 $driver->backlight($state);
