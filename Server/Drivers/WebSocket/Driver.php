@@ -24,7 +24,7 @@ class Driver extends BaseDriver
     protected $backlightState;
 
     protected $lastOut; // Remember what was last sent so as not to repeat messages
-
+    protected $clientCount;
 
     /**
      * Initialize the driver.
@@ -204,6 +204,14 @@ class Driver extends BaseDriver
      */
     public function backlight($state)
     {
+        // If we have a different number of clients send the backlight state again
+        $count = $this->container->clients->getCount();
+        if ($count != $this->clientCount) {
+            $count = $this->clientCount;
+            $this->backlightState = null;
+        }
+
+        // send backlight state only if needed
         if ($this->backlightState !== $state) {
             $this->backlightState = $state;
             $this->write("backlight:$state");

@@ -51,7 +51,7 @@ class Clients
 
     public function getCount()
     {
-
+        return count($this->clientList);
     }
 
     public function findByStream($stream)

@@ -100,9 +100,6 @@ class Render
         $this->container->drivers->clear();
 
         // 2. Set up the backlight
-
-        // TODO: handle colours!
-
         /*
          * 2.1:
          * First we find out who has set the backlight:

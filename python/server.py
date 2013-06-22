@@ -24,6 +24,20 @@ def handle_data (sock, message):
         elif backlight == '1':
             #print "   backlight: ON"
             lcd.backlight(lcd.ON)
+        elif backlight == 'red':
+            lcd.backlight(lcd.RED)
+        elif backlight == 'green':
+            lcd.backlight(lcd.GREEN)
+        elif backlight == 'blue':
+            lcd.backlight(lcd.BLUE)
+        elif backlight == 'yellow':
+            lcd.backlight(lcd.YELLOW)
+        elif backlight == 'teal':
+            lcd.backlight(lcd.TEAL)
+        elif backlight == 'violet':
+            lcd.backlight(lcd.VIOLET)       
+        elif backlight == 'white':
+            lcd.backlight(lcd.WHITE)         
 
     try:
         sock.send("ok\n")

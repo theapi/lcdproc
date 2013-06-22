@@ -51,19 +51,43 @@ $(document).ready(function() {
 	  
 	              message('Socket Status: ' + socket.readyState);  
 	  
-
+	              // NB this is a liitle clumsy as more than one command could be in the message.
 	              socket.onmessage = function(msg) {  
 	            	   $.trim(msg.data);
 	            	   if (msg.data.indexOf('backlight:') == 0) {
 	            		   backlight = msg.data.replace('backlight:', '');  
 	            		   //console.log(backlight);
-	            		   if (backlight == 0) {
-	            			   // off
-	            			   $('#lcd').css('background-color', '#FFF');
-	            		   } else {
-	            			   // on
-	                     $('#lcd').css('background-color', 'yellow');
+	            		   switch ($.trim(backlight)) {
+	            		     case 0:
+	            		    	 $('#lcd').css('background-color', '#C0C0C0');
+	            		    	 break;
+	            		     case 1:
+	            		    	 $('#lcd').css('background-color', '#FFF'); 
+	                       break;
+	            		     case 'red':
+	            		    	 $('#lcd').css('background-color', '#FF0000');
+	                       break;
+	            		     case 'green':
+	            		    	 $('#lcd').css('background-color', '#00FF00');      
+	                       break;
+	            		     case 'blue':
+	            		    	 $('#lcd').css('background-color', '#0000FF');      
+	                       break;
+	            		     case 'yellow':
+	            		    	 $('#lcd').css('background-color', '#FFFF00');      
+	                       break;
+	            		     case 'teal':
+	            		    	 $('#lcd').css('background-color', '#00FFFF');        
+	                       break;
+	            		     case 'violet':
+	            		    	 $('#lcd').css('background-color', '#FF00FF');        
+	                       break;
+	            		     case 'white':
+	            		    	 $('#lcd').css('background-color', '#FFF');
+	                       break;
+	            		   
 	            		   }
+
 	                 } else {
 	                	 message(msg.data);  
 	                 }

@@ -12,6 +12,7 @@ class Drivers
 {
 
     public $displayProps;
+    public $backlight;
 
     protected $loadedDrivers = array();
     protected $container;
@@ -221,10 +222,11 @@ class Drivers
      */
     public function backlight($state)
     {
-        $this->dispatcher->dispatch('drivers.backlight', new GenericEvent($state));
+        $this->backlight = $state;
+        $this->dispatcher->dispatch('drivers.backlight');
         foreach ($this->loadedDrivers as $driver) {
             if (method_exists($driver, 'backlight')) {
-                $driver->backlight($state);
+                $driver->backlight($this->backlight);
             }
         }
     }
