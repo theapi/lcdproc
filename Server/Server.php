@@ -12,6 +12,8 @@ use Theapi\Lcdproc\Server\Clients;
 use Theapi\Lcdproc\Server\Client;
 use Theapi\Lcdproc\Server\Plugins\Backlight;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 class Server
 {
 
@@ -63,6 +65,9 @@ class Server
 
         $this->log = new Log($opts['verbosity']);
 
+        // Events for plugins to react to
+        $this->dispatcher = new EventDispatcher();
+
         // set_default_settings
         $this->config = new Config($opts);
 
@@ -91,6 +96,8 @@ class Server
 
         // server_screen_init
         $this->serverScreen = new ServerScreens($this);
+
+
 
         // plugins
         $pluginBacklight = new Backlight($this);

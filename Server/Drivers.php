@@ -21,7 +21,7 @@ class Drivers
     {
         $this->container = $container;
 
-        $this->dispatcher = new EventDispatcher();
+        $this->dispatcher = $this->container->dispatcher;
     }
 
     /**
