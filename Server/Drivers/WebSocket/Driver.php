@@ -128,7 +128,7 @@ class Driver extends BaseDriver
         $line2 = substr($this->out[2], 1);
         try {
             $msg = "$line1\n$line2";
-            if ($msg != $this->lastOut) {
+            if ($msg != $this->lastOut || (time() % 30 == 0) ) {
                 $this->lastOut = $msg;
                 $this->write($msg);
                 // read just to clear the memory
