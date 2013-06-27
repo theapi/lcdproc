@@ -210,9 +210,24 @@ class Server
                 $s = $this->screenList->current();
                 if ($s) {
                     if ($s->id == '_server_screen') {
-                        $this->serverScreen->update();
-                    }
 
+                        // off spec
+                        if ($this->config->serverScreen == ServerScreens::SERVERSCREEN_SOLO) {
+                            // only show the server screen if no clients are connected
+                            if ($this->clients->getCount() > 0) {
+                                $this->screenList->gotoNext();
+                                $s = $this->screenList->current();
+                            } else {
+                                $this->serverScreen->update();
+                            }
+                        } else {
+                            $this->serverScreen->update();
+                        }
+
+                    }
+                }
+
+                if ($s) {
                     $this->render->screen($s, $this->timer);
                 }
 

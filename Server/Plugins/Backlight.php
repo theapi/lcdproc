@@ -39,7 +39,9 @@ class Backlight
 
         // rendom number for now
         $num = rand(0, 8);
-        $state = $this->backgrounds[$num];
+        //$state = $this->backgrounds[$num];
+
+        $state = $this->backgrounds[5];
 
         //$state = $this->container->drivers->backlight;
         //$screen = $this->container->screenList->current();
