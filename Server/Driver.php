@@ -225,7 +225,9 @@ abstract class Driver
               break;
         }
 
-        $this->chr($x, $y, $ch1);
+        if (isset($ch1)) {
+          $this->chr($x, $y, $ch1);
+        }
         if (isset($ch2)) {
         	$this->chr($x+1, $y, $ch2);
         }
