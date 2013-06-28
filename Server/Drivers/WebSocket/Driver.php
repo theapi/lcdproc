@@ -204,15 +204,8 @@ class Driver extends BaseDriver
      */
     public function backlight($state)
     {
-        // If we have a different number of clients send the backlight state again
-        $count = $this->container->clients->getCount();
-        if ($count != $this->clientCount) {
-            $count = $this->clientCount;
-            $this->backlightState = null;
-        }
-
-        // send backlight state only if needed
-        if ($this->backlightState !== $state) {
+        // send backlight state only if needed or if it's been a while
+        if ($this->backlightState !== $state || (time() % 30 == 0)) {
             $this->backlightState = $state;
             $this->write("backlight:$state");
         }

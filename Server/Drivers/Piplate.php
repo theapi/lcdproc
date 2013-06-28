@@ -130,12 +130,12 @@ class Piplate extends Driver
 
             // prepend the message with "message:"
             $msg = "message:$line1\n$line2";
-//            if ($msg != $this->lastOut) {
+            if ($msg != $this->lastOut || (time() % 30 == 0) ) {
                 $this->lastOut = $msg;
                 $this->write($msg);
                 // read just to clear the memory
                 $this->read();
-//            }
+            }
 
             // Reset to the blank screen array
             $this->out = $this->outBlank;
@@ -207,7 +207,8 @@ class Piplate extends Driver
      */
     public function backlight($state)
     {
-        if ($this->backlightState !== $state) {
+        // send backlight state only if needed or if it's been a while
+        if ($this->backlightState !== $state || (time() % 30 == 0)) {
             $this->backlightState = $state;
             $this->write("backlight:$state");
             // read just to clear the memory
