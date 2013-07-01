@@ -33,6 +33,10 @@ class ServerScreens
     const SERVERSCREEN_ON    = 1;
     const SERVERSCREEN_BLANK = 2;
 
+    // not part of spec
+    // show server screen only when no clients
+    const SERVERSCREEN_SOLO = 4;
+
     protected $container;
 
     protected $rotateServerScreen;
@@ -131,12 +135,6 @@ class ServerScreens
 
     public function update()
     {
-        // yada yada get useful info...
-
-        // bunch of stuff should be done here
-
-
-
         // update statistics if we do not only want to show a blank screen
         if ($this->rotateServerScreen != self::SERVERSCREEN_BLANK) {
             $w = $this->screen->findWidget('line2');
@@ -144,15 +142,5 @@ class ServerScreens
             $w->text = date('Y/m/d H:i');
         }
 
-        /*
-        // tmp jump straight to render
-        //TODO: not jump straight to render
-        $w = $this->screen->findWidget('line1');
-        $this->container->drivers->string($w->x, $w->y, $w->text);
-        $w = $this->screen->findWidget('line2');
-        $w->text = (string) microtime(true);
-        $this->container->drivers->string($w->x, $w->y, $w->text);
-        $this->container->drivers->flush();
-        */
     }
 }

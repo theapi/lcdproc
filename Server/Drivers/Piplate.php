@@ -80,6 +80,7 @@ class Piplate extends Driver
         // connect to the socket that the python script is listening on
         $this->fp = @stream_socket_client('tcp://' . $this->server . ':' . $this->port, $errno, $errstr, 30);
 
+        $this->container->log(LOG_DEBUG, $this->fp . ' ' . $errstr);
         if (!$this->fp) {
             $this->disabled = true;
             throw new \Exception('Unable to connect to ' . $this->server . ':' . $this->port, $errno);
@@ -129,7 +130,7 @@ class Piplate extends Driver
 
             // prepend the message with "message:"
             $msg = "message:$line1\n$line2";
-            if ($msg != $this->lastOut) {
+            if ($msg != $this->lastOut || (time() % 30 == 0) ) {
                 $this->lastOut = $msg;
                 $this->write($msg);
                 // read just to clear the memory
@@ -206,7 +207,8 @@ class Piplate extends Driver
      */
     public function backlight($state)
     {
-        if ($this->backlightState !== $state) {
+        // send backlight state only if needed or if it's been a while
+        if ($this->backlightState !== $state || (time() % 30 == 0)) {
             $this->backlightState = $state;
             $this->write("backlight:$state");
             // read just to clear the memory

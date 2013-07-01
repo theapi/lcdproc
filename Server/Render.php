@@ -452,6 +452,7 @@ class Render
             return;
         }
 
+        $screenWidth = $this->container->drivers->displayProps->width;
         if (($w->text != null) && ($w->right >= $w->left)) {
             $screenWidth = abs($w->right - $w->left + 1);
             //$screenWidth = min($screenWidth, strlen($w->text)-1);

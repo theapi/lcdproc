@@ -3,6 +3,7 @@ namespace Theapi\Lcdproc\Server;
 
 use Theapi\Lcdproc\Server\Server;
 use Theapi\Lcdproc\Server\Screen;
+use Theapi\Lcdproc\Server\Events;
 
 /**
  * All actions that can be performed on the list of screens.
@@ -82,6 +83,8 @@ class ScreenList
      */
     public function process()
     {
+        $this->container->dispatcher->dispatch(Events::SCREENLIST_PRE_PROCESS);
+
         // Sort the list according to priority class
         uasort($this->screenList, array($this, "comparePriority"));
         reset($this->screenList);
