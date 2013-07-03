@@ -2,7 +2,7 @@
     "name": "theapi/lcdproc",
     "description": "PHP port of lcdproc",
     "keywords":     ["lcd", "lcdproc", "Symfony2"],
-    "homepage":     "https://github.com/theapi/phpLCDd",
+    "homepage":     "https://github.com/theapi/lcdproc",
     "license": "GPL",
     "authors":      [
         {
