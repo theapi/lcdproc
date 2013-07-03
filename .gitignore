@@ -7,3 +7,5 @@ config.php
 composer.lock
 vendor/
 
+*.pyc
+
