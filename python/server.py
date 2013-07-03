@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, socket, select, atexit
+import os, sys, socket, select, atexit
 
 from time import sleep
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
@@ -92,7 +92,8 @@ if __name__ == "__main__":
         # Check for a button press
         if lcd.buttonPressed(lcd.SELECT):
             goodbye()
-            sys.exit(0)
+            os.system("shutdown -h now")
+            #sys.exit(0)
 
         # Get the list sockets which are ready to be read through select
         read_sockets,write_sockets,error_sockets = select.select(CONNECTION_LIST,[],[],0.1)
