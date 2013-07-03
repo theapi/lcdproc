@@ -262,6 +262,8 @@ class Piplate extends Driver
         if (!$alive) {
             $this->container->log(LOG_ERR, 'Lost connection to ' . $this->server . ':' . $this->port);
             $this->disabled = true;
+            fclose($this->fp);
+            $this->fp = null;
         }
 
         @fwrite($this->fp, "$buf\n");
