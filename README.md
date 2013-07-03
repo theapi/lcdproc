@@ -1,4 +1,4 @@
-phpLCDd
+PHP lcdproc
 ======================
 
 A php port of lcdproc server.
