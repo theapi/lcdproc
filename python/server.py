@@ -53,7 +53,17 @@ def goodbye():
     sleep(.2)
     lcd.backlight(lcd.OFF)
     lcd.clear()
-    lcd.stop() 
+    lcd.noDisplay() 
+
+def hello():
+    lcd.display()
+    lcd.clear()
+    lcd.backlight(lcd.YELLOW)
+    lcd.message("HI!")
+    sleep(.2)
+    lcd.backlight(lcd.OFF)
+    lcd.clear()
+
 
 atexit.register(goodbye)
 
@@ -92,7 +102,13 @@ if __name__ == "__main__":
         # Check for a button press
         if lcd.buttonPressed(lcd.SELECT):
             goodbye()
-            os.system("shutdown -h now")
+            #os.system("shutdown -h now")
+            #sys.exit(0)
+
+        if lcd.buttonPressed(lcd.RIGHT):
+            # turn the display on again
+            hello()
+            #os.system("shutdown -h now")
             #sys.exit(0)
 
         # Get the list sockets which are ready to be read through select
