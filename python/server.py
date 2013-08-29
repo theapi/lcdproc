@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os, sys, socket, select, atexit
+import socket, select, atexit
 
 from time import sleep
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
@@ -10,34 +10,36 @@ from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 #Function to received data
 def handle_data (sock, message):
     
-    # Find which function is wanted
-    if message[:8] == 'message:':
-        lcd.clear()
-        lcd.message(message[8:])
-
-    elif message[:10] == 'backlight:':
-        backlight = message[10:].strip()
-        # print backlight
-        if backlight == '0':
-            #print "   backlight: OFF"
-            lcd.backlight(lcd.OFF)
-        elif backlight == '1':
-            #print "   backlight: ON"
-            lcd.backlight(lcd.ON)
-        elif backlight == 'red':
-            lcd.backlight(lcd.RED)
-        elif backlight == 'green':
-            lcd.backlight(lcd.GREEN)
-        elif backlight == 'blue':
-            lcd.backlight(lcd.BLUE)
-        elif backlight == 'yellow':
-            lcd.backlight(lcd.YELLOW)
-        elif backlight == 'teal':
-            lcd.backlight(lcd.TEAL)
-        elif backlight == 'violet':
-            lcd.backlight(lcd.VIOLET)       
-        elif backlight == 'white':
-            lcd.backlight(lcd.WHITE)         
+    if lcd_status != 'off':
+        
+        # Find which function is wanted
+        if message[:8] == 'message:':
+            lcd.clear()
+            lcd.message(message[8:])
+    
+        elif message[:10] == 'backlight:':
+            backlight = message[10:].strip()
+            # print backlight
+            if backlight == '0':
+                #print "   backlight: OFF"
+                lcd.backlight(lcd.OFF)
+            elif backlight == '1':
+                #print "   backlight: ON"
+                lcd.backlight(lcd.ON)
+            elif backlight == 'red':
+                lcd.backlight(lcd.RED)
+            elif backlight == 'green':
+                lcd.backlight(lcd.GREEN)
+            elif backlight == 'blue':
+                lcd.backlight(lcd.BLUE)
+            elif backlight == 'yellow':
+                lcd.backlight(lcd.YELLOW)
+            elif backlight == 'teal':
+                lcd.backlight(lcd.TEAL)
+            elif backlight == 'violet':
+                lcd.backlight(lcd.VIOLET)       
+            elif backlight == 'white':
+                lcd.backlight(lcd.WHITE)         
 
     try:
         sock.send("ok\n")
@@ -97,16 +99,21 @@ if __name__ == "__main__":
     # no fancy utf8 like: lcd.message("❤")
     lcd.message("Started on\nport " + str(PORT))
     #lcd.write(u"\u2764"); 
+    
+    lcd_status = 'on'
+    
     while 1:
 
         # Check for a button press
         if lcd.buttonPressed(lcd.SELECT):
+            lcd_status = 'off'
             goodbye()
             #os.system("shutdown -h now")
             #sys.exit(0)
 
         if lcd.buttonPressed(lcd.RIGHT):
             # turn the display on again
+            lcd_status = 'on'
             hello()
             #os.system("shutdown -h now")
             #sys.exit(0)
